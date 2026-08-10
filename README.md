@@ -28,8 +28,8 @@ You can override it in:
 Supported languages:
 
 - English
-- Deutsch
 - Français
+- German
 - Italiano
 - Nederlands
 
