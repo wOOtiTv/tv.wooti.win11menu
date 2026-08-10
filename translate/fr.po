@@ -95,3 +95,100 @@ msgstr "Redémarrer"
 #: contents/ui/main.qml
 msgid "Shut Down"
 msgstr "Éteindre"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Menu icon:"
+msgstr "Icône du menu :"
+
+#: contents/ui/ConfigIcon.qml
+msgid "Choose..."
+msgstr "Choisir..."
+
+#: contents/ui/ConfigIcon.qml
+msgid "Reset to default"
+msgstr "Réinitialiser par défaut"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Current icon:"
+msgstr "Icône actuelle:"
+
+
+#: contents/ui/main.qml
+msgid "Lock Screen"
+msgstr "Verrouiller"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Session buttons:"
+msgstr "Boutons de session :"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Lock Screen"
+msgstr "Afficher le verrouillage"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Log Out"
+msgstr "Afficher la déconnexion"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Restart"
+msgstr "Afficher le redémarrage"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Shut Down"
+msgstr "Afficher l’arrêt"
+
+#: contents/ui/main.qml
+msgid "Rename group…"
+msgstr "Renommer le groupe…"
+
+#: contents/ui/main.qml
+msgid "Dissolve group"
+msgstr "Dissoudre le groupe"
+
+#: contents/ui/main.qml
+msgid "Add to group…"
+msgstr "Ajouter au groupe…"
+
+#: contents/ui/main.qml
+msgid "Add to group"
+msgstr "Ajouter au groupe"
+
+#: contents/ui/main.qml
+msgid "New group…"
+msgstr "Nouveau groupe…"
+
+#: contents/ui/main.qml
+msgid "Add %1 to:"
+msgstr "Ajouter %1 à :"
+
+#: contents/ui/main.qml
+msgid "Group name"
+msgstr "Nom du groupe"
+
+#: contents/ui/main.qml
+msgid "Rename group"
+msgstr "Renommer le groupe"
+
+#: contents/ui/main.qml
+msgid "Remove from group"
+msgstr "Retirer du groupe"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Pinned apps:"
+msgstr "Applications épinglées :"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Enable groups"
+msgstr "Activer les groupes"
+
+#: contents/ui/main.qml
+msgid "Add to Desktop"
+msgstr "Ajouter au bureau"
+
+#: contents/ui/main.qml
+msgid "Pin to Task Manager"
+msgstr "Épingler au gestionnaire de tâches"
+
+#: contents/ui/main.qml
+msgid "Edit Application…"
+msgstr "Modifier l’application…"

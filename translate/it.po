@@ -95,3 +95,100 @@ msgstr "Riavvia"
 #: contents/ui/main.qml
 msgid "Shut Down"
 msgstr "Spegni"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Menu icon:"
+msgstr "Icona del menu:"
+
+#: contents/ui/ConfigIcon.qml
+msgid "Choose..."
+msgstr "Scegli..."
+
+#: contents/ui/ConfigIcon.qml
+msgid "Reset to default"
+msgstr "Ripristina predefinito"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Current icon:"
+msgstr "Icona attuale:"
+
+
+#: contents/ui/main.qml
+msgid "Lock Screen"
+msgstr "Blocca"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Session buttons:"
+msgstr "Pulsanti di sessione:"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Lock Screen"
+msgstr "Mostra Blocca schermo"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Log Out"
+msgstr "Mostra Disconnetti"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Restart"
+msgstr "Mostra Riavvia"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Shut Down"
+msgstr "Mostra Spegni"
+
+#: contents/ui/main.qml
+msgid "Rename group…"
+msgstr "Rinomina gruppo…"
+
+#: contents/ui/main.qml
+msgid "Dissolve group"
+msgstr "Dissolvi gruppo"
+
+#: contents/ui/main.qml
+msgid "Add to group…"
+msgstr "Aggiungi al gruppo…"
+
+#: contents/ui/main.qml
+msgid "Add to group"
+msgstr "Aggiungi al gruppo"
+
+#: contents/ui/main.qml
+msgid "New group…"
+msgstr "Nuovo gruppo…"
+
+#: contents/ui/main.qml
+msgid "Add %1 to:"
+msgstr "Aggiungi %1 a:"
+
+#: contents/ui/main.qml
+msgid "Group name"
+msgstr "Nome gruppo"
+
+#: contents/ui/main.qml
+msgid "Rename group"
+msgstr "Rinomina gruppo"
+
+#: contents/ui/main.qml
+msgid "Remove from group"
+msgstr "Rimuovi dal gruppo"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Pinned apps:"
+msgstr "App fissate:"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Enable groups"
+msgstr "Abilita gruppi"
+
+#: contents/ui/main.qml
+msgid "Add to Desktop"
+msgstr "Aggiungi al desktop"
+
+#: contents/ui/main.qml
+msgid "Pin to Task Manager"
+msgstr "Fissa al gestore dei processi"
+
+#: contents/ui/main.qml
+msgid "Edit Application…"
+msgstr "Modifica applicazione…"

@@ -92,3 +92,88 @@ msgstr ""
 #: contents/ui/main.qml
 msgid "Shut Down"
 msgstr ""
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Menu icon:"
+msgstr ""
+
+#: contents/ui/ConfigIcon.qml
+msgid "Choose..."
+msgstr ""
+
+#: contents/ui/ConfigIcon.qml
+msgid "Reset to default"
+msgstr ""
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Current icon:"
+msgstr ""
+
+
+#: contents/ui/main.qml
+msgid "Lock Screen"
+msgstr ""
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Session buttons:"
+msgstr ""
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Lock Screen"
+msgstr ""
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Log Out"
+msgstr ""
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Restart"
+msgstr ""
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Shut Down"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Rename group…"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Dissolve group"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Add to group…"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Add to group"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "New group…"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Add %1 to:"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Group name"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Rename group"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "Remove from group"
+msgstr ""
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Pinned apps:"
+msgstr ""
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Enable groups"
+msgstr ""

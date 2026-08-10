@@ -6,6 +6,12 @@ Kirigami.FormLayout {
     id: page
 
     property string cfg_language: "system"
+    property alias cfg_icon: menuIcon.value
+    property bool cfg_showLockButton: true
+    property bool cfg_showLogoutButton: true
+    property bool cfg_showRestartButton: true
+    property bool cfg_showShutdownButton: true
+    property bool cfg_enablePinnedGroups: true
 
     Item {
         implicitHeight: Kirigami.Units.gridUnit
@@ -41,5 +47,49 @@ Kirigami.FormLayout {
         }
 
         onActivated: page.cfg_language = currentValue
+    }
+
+    ConfigIcon {
+        id: menuIcon
+
+        Kirigami.FormData.label: i18n("Menu icon:")
+        defaultValue: "start-here"
+    }
+
+    Controls.Label {
+        Kirigami.FormData.label: i18n("Current icon:")
+        text: menuIcon.value
+    }
+
+    Controls.CheckBox {
+        Kirigami.FormData.label: i18n("Pinned apps:")
+        text: i18n("Enable groups")
+        checked: page.cfg_enablePinnedGroups
+        onToggled: page.cfg_enablePinnedGroups = checked
+    }
+
+    Controls.CheckBox {
+        Kirigami.FormData.label: i18n("Session buttons:")
+        text: i18n("Show Lock Screen")
+        checked: page.cfg_showLockButton
+        onToggled: page.cfg_showLockButton = checked
+    }
+
+    Controls.CheckBox {
+        text: i18n("Show Log Out")
+        checked: page.cfg_showLogoutButton
+        onToggled: page.cfg_showLogoutButton = checked
+    }
+
+    Controls.CheckBox {
+        text: i18n("Show Restart")
+        checked: page.cfg_showRestartButton
+        onToggled: page.cfg_showRestartButton = checked
+    }
+
+    Controls.CheckBox {
+        text: i18n("Show Shut Down")
+        checked: page.cfg_showShutdownButton
+        onToggled: page.cfg_showShutdownButton = checked
     }
 }

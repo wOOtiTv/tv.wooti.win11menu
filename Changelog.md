@@ -1,6 +1,30 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.6] – Customization & Pinned Groups
+
+### Added
+- configurable launcher menu icon in General settings
+- display of the currently selected menu icon name
+- Lock Screen session action
+- individual visibility settings for Lock Screen, Log Out, Restart and Shut Down buttons
+- optional groups for pinned applications
+- create a new group or add pinned applications to an existing group via the right-click context menu
+- rename or dissolve pinned application groups
+- remove applications from a group without unpinning them
+- compact group preview directly in the pinned apps grid
+- group popup with up to 12 applications in a 4 × 3 layout
+- native KDE context actions for regular pinned applications:
+- Add to Desktop
+- Pin to Task Manager
+- Edit Application
+
+### Changed
+- pinned applications and groups are kept in alphabetical order
+- applications inside pinned groups are kept in alphabetical order
+- pinned groups can be enabled or disabled in General settings without deleting existing group assignments
+- expanded General settings with launcher icon, pinned group and session button options
+
 ## [1.0.5] – Internationalization & Language Support
 
 ### Added

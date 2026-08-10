@@ -95,3 +95,100 @@ msgstr "Neustart"
 #: contents/ui/main.qml
 msgid "Shut Down"
 msgstr "Beenden"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Menu icon:"
+msgstr "Menüsymbol:"
+
+#: contents/ui/ConfigIcon.qml
+msgid "Choose..."
+msgstr "Auswählen..."
+
+#: contents/ui/ConfigIcon.qml
+msgid "Reset to default"
+msgstr "Auf Standard zurücksetzen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Current icon:"
+msgstr "Aktuelles Symbol:"
+
+
+#: contents/ui/main.qml
+msgid "Lock Screen"
+msgstr "Sperren"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Session buttons:"
+msgstr "Sitzungsbuttons:"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Lock Screen"
+msgstr "Sperren anzeigen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Log Out"
+msgstr "Abmelden anzeigen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Restart"
+msgstr "Neustart anzeigen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Shut Down"
+msgstr "Beenden anzeigen"
+
+#: contents/ui/main.qml
+msgid "Rename group…"
+msgstr "Gruppe umbenennen…"
+
+#: contents/ui/main.qml
+msgid "Dissolve group"
+msgstr "Gruppe auflösen"
+
+#: contents/ui/main.qml
+msgid "Add to group…"
+msgstr "Zur Gruppe hinzufügen…"
+
+#: contents/ui/main.qml
+msgid "Add to group"
+msgstr "Zur Gruppe hinzufügen"
+
+#: contents/ui/main.qml
+msgid "New group…"
+msgstr "Neue Gruppe…"
+
+#: contents/ui/main.qml
+msgid "Add %1 to:"
+msgstr "%1 hinzufügen zu:"
+
+#: contents/ui/main.qml
+msgid "Group name"
+msgstr "Gruppenname"
+
+#: contents/ui/main.qml
+msgid "Rename group"
+msgstr "Gruppe umbenennen"
+
+#: contents/ui/main.qml
+msgid "Remove from group"
+msgstr "Aus Gruppe entfernen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Pinned apps:"
+msgstr "Angeheftete Apps:"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Enable groups"
+msgstr "Gruppen aktivieren"
+
+#: contents/ui/main.qml
+msgid "Add to Desktop"
+msgstr "Zur Arbeitsfläche hinzufügen"
+
+#: contents/ui/main.qml
+msgid "Pin to Task Manager"
+msgstr "An Fensterleiste anheften"
+
+#: contents/ui/main.qml
+msgid "Edit Application…"
+msgstr "Anwendung bearbeiten…"

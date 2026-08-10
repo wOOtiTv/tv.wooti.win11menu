@@ -95,3 +95,100 @@ msgstr "Opnieuw opstarten"
 #: contents/ui/main.qml
 msgid "Shut Down"
 msgstr "Afsluiten"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Menu icon:"
+msgstr "Menupictogram:"
+
+#: contents/ui/ConfigIcon.qml
+msgid "Choose..."
+msgstr "Kiezen..."
+
+#: contents/ui/ConfigIcon.qml
+msgid "Reset to default"
+msgstr "Standaard herstellen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Current icon:"
+msgstr "Huidig pictogram:"
+
+
+#: contents/ui/main.qml
+msgid "Lock Screen"
+msgstr "Vergrendelen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Session buttons:"
+msgstr "Sessieknoppen:"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Lock Screen"
+msgstr "Vergrendelen tonen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Log Out"
+msgstr "Afmelden tonen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Restart"
+msgstr "Herstarten tonen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Shut Down"
+msgstr "Afsluiten tonen"
+
+#: contents/ui/main.qml
+msgid "Rename group…"
+msgstr "Groep hernoemen…"
+
+#: contents/ui/main.qml
+msgid "Dissolve group"
+msgstr "Groep opheffen"
+
+#: contents/ui/main.qml
+msgid "Add to group…"
+msgstr "Toevoegen aan groep…"
+
+#: contents/ui/main.qml
+msgid "Add to group"
+msgstr "Toevoegen aan groep"
+
+#: contents/ui/main.qml
+msgid "New group…"
+msgstr "Nieuwe groep…"
+
+#: contents/ui/main.qml
+msgid "Add %1 to:"
+msgstr "%1 toevoegen aan:"
+
+#: contents/ui/main.qml
+msgid "Group name"
+msgstr "Groepsnaam"
+
+#: contents/ui/main.qml
+msgid "Rename group"
+msgstr "Groep hernoemen"
+
+#: contents/ui/main.qml
+msgid "Remove from group"
+msgstr "Uit groep verwijderen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Pinned apps:"
+msgstr "Vastgemaakte apps:"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Enable groups"
+msgstr "Groepen inschakelen"
+
+#: contents/ui/main.qml
+msgid "Add to Desktop"
+msgstr "Aan bureaublad toevoegen"
+
+#: contents/ui/main.qml
+msgid "Pin to Task Manager"
+msgstr "Aan taakbeheer vastmaken"
+
+#: contents/ui/main.qml
+msgid "Edit Application…"
+msgstr "Toepassing bewerken…"

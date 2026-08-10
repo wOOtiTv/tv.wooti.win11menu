@@ -95,3 +95,100 @@ msgstr "Restart"
 #: contents/ui/main.qml
 msgid "Shut Down"
 msgstr "Shut Down"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Menu icon:"
+msgstr "Menu icon:"
+
+#: contents/ui/ConfigIcon.qml
+msgid "Choose..."
+msgstr "Choose..."
+
+#: contents/ui/ConfigIcon.qml
+msgid "Reset to default"
+msgstr "Reset to default"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Current icon:"
+msgstr "Current icon:"
+
+
+#: contents/ui/main.qml
+msgid "Lock Screen"
+msgstr "Lock Screen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Session buttons:"
+msgstr "Session buttons:"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Lock Screen"
+msgstr "Show Lock Screen"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Log Out"
+msgstr "Show Log Out"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Restart"
+msgstr "Show Restart"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show Shut Down"
+msgstr "Show Shut Down"
+
+#: contents/ui/main.qml
+msgid "Rename group…"
+msgstr "Rename group…"
+
+#: contents/ui/main.qml
+msgid "Dissolve group"
+msgstr "Dissolve group"
+
+#: contents/ui/main.qml
+msgid "Add to group…"
+msgstr "Add to group…"
+
+#: contents/ui/main.qml
+msgid "Add to group"
+msgstr "Add to group"
+
+#: contents/ui/main.qml
+msgid "New group…"
+msgstr "New group…"
+
+#: contents/ui/main.qml
+msgid "Add %1 to:"
+msgstr "Add %1 to:"
+
+#: contents/ui/main.qml
+msgid "Group name"
+msgstr "Group name"
+
+#: contents/ui/main.qml
+msgid "Rename group"
+msgstr "Rename group"
+
+#: contents/ui/main.qml
+msgid "Remove from group"
+msgstr "Remove from group"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Pinned apps:"
+msgstr "Pinned apps:"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Enable groups"
+msgstr "Enable groups"
+
+#: contents/ui/main.qml
+msgid "Add to Desktop"
+msgstr "Add to Desktop"
+
+#: contents/ui/main.qml
+msgid "Pin to Task Manager"
+msgstr "Pin to Task Manager"
+
+#: contents/ui/main.qml
+msgid "Edit Application…"
+msgstr "Edit Application…"

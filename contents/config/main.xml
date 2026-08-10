@@ -9,5 +9,33 @@
     <entry name="language" type="String">
       <default>system</default>
     </entry>
+
+    <entry name="icon" type="String">
+      <default>start-here</default>
+    </entry>
+
+    <entry name="showLockButton" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <entry name="showLogoutButton" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <entry name="showRestartButton" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <entry name="showShutdownButton" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <entry name="enablePinnedGroups" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <entry name="pinnedGroups" type="String">
+      <default>[]</default>
+    </entry>
   </group>
 </kcfg>
