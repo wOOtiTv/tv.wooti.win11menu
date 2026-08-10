@@ -7,16 +7,16 @@
                 "Name": "wOOtiTv"
             }
         ],
-        "BugReportUrl": "httsp://wooti.tv",
+        "BugReportUrl": "https://github.com/wOOtiTv/tv.wooti.win11menu/issues",
         "Category": "Application Launchers",
-        "Description": "Ein elegantes, vertrautes Startmenü im Windows 11 Stil, optimiert für CachyOS.",
+        "Description": "Win11-style application launcher for KDE Plasma.",
         "EnabledByDefault": true,
         "Icon": "start-here-kde",
         "Id": "tv.wooti.win11menu",
-        "License": "GPL-2.0+",
-        "Name": "Windows 11 Startmenü",
-        "Version": "1.3",
-        "Website": "httsp://wooti.tv"
+        "License": "GPL-2.0-or-later",
+        "Name": "Windows 11 Start Menu",
+        "Version": "1.0.5",
+        "Website": "https://wooti.tv"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-Provides": [

@@ -12,6 +12,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.coreaddons as KCoreAddons
 import org.kde.kitemmodels
 import org.kde.plasma.private.sessions 2.0
+import "Translations.js" as Translations
 
 PlasmoidItem {
     id: root
@@ -19,6 +20,17 @@ PlasmoidItem {
     Plasmoid.icon: "start-here"
     property string searchText: ""
     signal closeContextMenus()
+
+    // Per-widget translation override.
+    // "system" follows the current system locale; any other configured
+    // language applies only to this plasmoid instance.
+    function i18n(sourceText) {
+        return Translations.translate(
+            sourceText,
+            plasmoid.configuration.language,
+            Qt.locale().name
+        )
+    }
 
     onExpandedChanged: function() {
         if (!plasmoid.expanded) {
@@ -215,7 +227,7 @@ PlasmoidItem {
                 leftPadding: 52
                 rightPadding: 16
 
-                placeholderText: "Nach Apps und Einstellungen suchen"
+                placeholderText: i18n("Search for apps, files and settings")
 
                 background: null
 
@@ -249,7 +261,7 @@ PlasmoidItem {
             x: 32
             y: 105
 
-            text: "Angeheftet:"
+            text: i18n("Pinned")
 
             font.pixelSize: 16
             font.bold: true
@@ -343,7 +355,7 @@ PlasmoidItem {
                         }
 
                         Controls.MenuItem {
-                            text: "Von Angeheftet entfernen"
+                            text: i18n("Unpin")
                             icon.name: "list-remove"
 
                             onTriggered: {
@@ -405,7 +417,7 @@ PlasmoidItem {
 
             y: pinnedApps.y + pinnedApps.height + 25
 
-            text: "Alle"
+            text: i18n("All")
 
             font.pixelSize: 16
             font.bold: true
@@ -421,8 +433,8 @@ PlasmoidItem {
             y: allAppsLabel.y
 
             text: launcher.allAppsListView
-                ? "Ansicht: Liste  ▾"
-                : "Ansicht: Raster  ▾"
+                ? i18n("View: List  ▾")
+                : i18n("View: Grid  ▾")
 
             font.pixelSize: 14
             opacity: viewToggleMouseArea.containsMouse ? 1.0 : 0.85
@@ -643,7 +655,7 @@ PlasmoidItem {
                                     }
 
                                     Controls.MenuItem {
-                                        text: "Anheften"
+                                        text: i18n("Pin")
                                         icon.name: "list-add"
 
                                         onTriggered: {
@@ -747,7 +759,7 @@ PlasmoidItem {
                 x: 32
                 y: 5
 
-                text: "Suchergebnisse"
+                text: i18n("Search results")
 
                 font.pixelSize: 16
                 font.bold: true
@@ -875,7 +887,7 @@ PlasmoidItem {
                     ? appSearchGrid.y + appSearchGrid.height + 18
                     : 45
 
-                text: "Dateien"
+                text: i18n("Files")
 
                 font.pixelSize: 14
                 font.bold: true
@@ -995,7 +1007,7 @@ PlasmoidItem {
                         ? appSearchGrid.y + appSearchGrid.height + 18
                         : 45
 
-                text: "Einstellungen"
+                text: i18n("Settings")
 
                 font.pixelSize: 14
                 font.bold: true
@@ -1111,8 +1123,8 @@ PlasmoidItem {
                 text: root.searchText.length >= 3
                     && fileSearchResultsModel
                     && fileSearchResultsModel.count === 0
-                    ? "Keine Ergebnisse gefunden\n\n💡 Baloo durchsucht nur indizierte Ordner.\nPrüfe die Dateisuche unter Systemeinstellungen → Suche → Dateisuche."
-                    : "Keine Ergebnisse gefunden"
+                    ? i18n("No results found\n\n💡 Baloo only searches indexed folders.\nCheck file search under System Settings → Search → File Search.")
+                    : i18n("No results found")
 
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -1297,7 +1309,7 @@ PlasmoidItem {
                     anchors.leftMargin: 42
                     anchors.verticalCenter: parent.verticalCenter
 
-                    text: "Abmelden"
+                    text: i18n("Log Out")
                     font.pixelSize: 13
                 }
 
@@ -1348,7 +1360,7 @@ PlasmoidItem {
                     anchors.leftMargin: 42
                     anchors.verticalCenter: parent.verticalCenter
 
-                    text: "Neustart"
+                    text: i18n("Restart")
                     font.pixelSize: 13
                 }
 
@@ -1399,7 +1411,7 @@ PlasmoidItem {
                     anchors.leftMargin: 42
                     anchors.verticalCenter: parent.verticalCenter
 
-                    text: "Beenden"
+                    text: i18n("Shut Down")
                     font.pixelSize: 13
                 }
 

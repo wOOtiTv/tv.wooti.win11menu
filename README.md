@@ -10,9 +10,30 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 - 📐 **Grid / List view** – switch between a compact grid and a clean list layout
 - 🔍 **Integrated search** – applications, files (via Baloo) and system settings
 - ⌨️ **Quick search** – press `Ctrl+F` to instantly focus the search field
+- 🌍 **Multi-language support** – English, German, French, Italian and Dutch
+- ⚙️ **Language selection** – follow the system language or choose a language manually
+- 🇬🇧 **English fallback** – missing translations fall back to English
 - 👤 **User info** – avatar and full name of the current user
 - ⚡ **Session actions** – logout, restart and shutdown
 - 🔒 **Fixed popup size** – additional pinned apps do not resize the launcher
+
+### 🌍 Languages
+
+The launcher follows the system language by default.
+
+You can override it in:
+
+**Configure Windows 11 Start Menu → General → Language**
+
+Supported languages:
+
+- English
+- Deutsch
+- Français
+- Italiano
+- Nederlands
+
+If a translation is missing, the launcher falls back to English.
 
 ### 📦 Requirements
 
@@ -33,13 +54,7 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 
    `~/.local/share/plasma/plasmoids/tv.wooti.win11menu`
 
-2. Restart Plasma:
-
-   ```bash
-   killall plasmashell && kstart plasmashell
-   ```
-
-   or log out and back in.
+2. Restart Plasma or log out and back in.
 
 ### 📁 Setting up file search (Baloo)
 
@@ -67,7 +82,7 @@ balooctl6 status
 
 ---
 
-## 📄 License / Lizenz
+## 📄 License
 
 GPL-2.0-or-later
 

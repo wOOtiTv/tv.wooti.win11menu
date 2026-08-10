@@ -1,0 +1,97 @@
+# Italian translation for wOOti Win11 Menu.
+# Copyright (C) 2026 wOOtiTv
+# This file is distributed under the same license as the wOOti Win11 Menu package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: wOOti Win11 Menu 1.0.5\n"
+"Report-Msgid-Bugs-To: https://github.com/wOOtiTv/tv.wooti.win11menu/issues\n"
+"POT-Creation-Date: 2026-08-10 10:45+0200\n"
+"PO-Revision-Date: 2026-08-10 10:45+0200\n"
+"Last-Translator: wOOtiTv <mail@wooti.tv>\n"
+"Language-Team: Italian\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: contents/config/config.qml
+msgid "General"
+msgstr "Generale"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Language:"
+msgstr "Lingua:"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "System default"
+msgstr "Predefinito di sistema"
+
+#: contents/ui/main.qml
+msgid "Search for apps, files and settings"
+msgstr "Cerca app, file e impostazioni"
+
+#: contents/ui/main.qml
+msgid "Pinned"
+msgstr "Appuntati"
+
+#: contents/ui/main.qml
+msgid "Unpin"
+msgstr "Rimuovi dai preferiti"
+
+#: contents/ui/main.qml
+msgid "All"
+msgstr "Tutti"
+
+#: contents/ui/main.qml
+msgid "View: List  ▾"
+msgstr "Visualizzazione: Elenco  ▾"
+
+#: contents/ui/main.qml
+msgid "View: Grid  ▾"
+msgstr "Visualizzazione: Griglia  ▾"
+
+#: contents/ui/main.qml
+msgid "Pin"
+msgstr "Aggiungi ai preferiti"
+
+#: contents/ui/main.qml
+msgid "Search results"
+msgstr "Risultati della ricerca"
+
+#: contents/ui/main.qml
+msgid "Files"
+msgstr "File"
+
+#: contents/ui/main.qml
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: contents/ui/main.qml
+msgid ""
+"No results found\n"
+"\n"
+"💡 Baloo only searches indexed folders.\n"
+"Check file search under System Settings → Search → File Search."
+msgstr ""
+"Nessun risultato trovato\n"
+"\n"
+"💡 Baloo cerca solo nelle cartelle indicizzate.\n"
+"Controlla la ricerca dei file in Impostazioni di sistema → Cerca → Ricerca file."
+
+#: contents/ui/main.qml
+msgid "No results found"
+msgstr "Nessun risultato trovato"
+
+#: contents/ui/main.qml
+msgid "Log Out"
+msgstr "Disconnetti"
+
+#: contents/ui/main.qml
+msgid "Restart"
+msgstr "Riavvia"
+
+#: contents/ui/main.qml
+msgid "Shut Down"
+msgstr "Spegni"

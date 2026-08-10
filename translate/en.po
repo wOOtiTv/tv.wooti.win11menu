@@ -1,0 +1,97 @@
+# English translation for wOOti Win11 Menu.
+# Copyright (C) 2026 wOOtiTv
+# This file is distributed under the same license as the wOOti Win11 Menu package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: wOOti Win11 Menu 1.0.5\n"
+"Report-Msgid-Bugs-To: https://github.com/wOOtiTv/tv.wooti.win11menu/issues\n"
+"POT-Creation-Date: 2026-08-10 10:45+0200\n"
+"PO-Revision-Date: 2026-08-10 10:45+0200\n"
+"Last-Translator: wOOtiTv <mail@wooti.tv>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: contents/config/config.qml
+msgid "General"
+msgstr "General"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Language:"
+msgstr "Language:"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "System default"
+msgstr "System default"
+
+#: contents/ui/main.qml
+msgid "Search for apps, files and settings"
+msgstr "Search for apps, files and settings"
+
+#: contents/ui/main.qml
+msgid "Pinned"
+msgstr "Pinned"
+
+#: contents/ui/main.qml
+msgid "Unpin"
+msgstr "Unpin"
+
+#: contents/ui/main.qml
+msgid "All"
+msgstr "All"
+
+#: contents/ui/main.qml
+msgid "View: List  ▾"
+msgstr "View: List  ▾"
+
+#: contents/ui/main.qml
+msgid "View: Grid  ▾"
+msgstr "View: Grid  ▾"
+
+#: contents/ui/main.qml
+msgid "Pin"
+msgstr "Pin"
+
+#: contents/ui/main.qml
+msgid "Search results"
+msgstr "Search results"
+
+#: contents/ui/main.qml
+msgid "Files"
+msgstr "Files"
+
+#: contents/ui/main.qml
+msgid "Settings"
+msgstr "Settings"
+
+#: contents/ui/main.qml
+msgid ""
+"No results found\n"
+"\n"
+"💡 Baloo only searches indexed folders.\n"
+"Check file search under System Settings → Search → File Search."
+msgstr ""
+"No results found\n"
+"\n"
+"💡 Baloo only searches indexed folders.\n"
+"Check file search under System Settings → Search → File Search."
+
+#: contents/ui/main.qml
+msgid "No results found"
+msgstr "No results found"
+
+#: contents/ui/main.qml
+msgid "Log Out"
+msgstr "Log Out"
+
+#: contents/ui/main.qml
+msgid "Restart"
+msgstr "Restart"
+
+#: contents/ui/main.qml
+msgid "Shut Down"
+msgstr "Shut Down"
