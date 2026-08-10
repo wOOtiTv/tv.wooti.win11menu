@@ -1,5 +1,4 @@
 # Changelog
-
 All notable changes to this project will be documented in this file.
 
 ## [1.0.5] – Internationalization & Language Support
@@ -9,12 +8,38 @@ All notable changes to this project will be documented in this file.
 - system language as the default launcher language
 - manual language override in General settings
 - English fallback for missing translations
-- translation template and build/merge workflow for future languages
 - per-widget runtime translation handling without changing the global Plasma language
 
 ### Changed
-- moved launcher UI strings to the translation system
 - updated bug report target to GitHub Issues
+
+## [1.0.4] – Maintenance & Localization Preparation
+
+### Added
+- translation template and build/merge workflow for future languages
+
+### Changed
+- moved launcher UI strings to the translation system
+- prepared runtime translation handling for widgets
+
+## [1.0.3] – Maintenance & Search Polish
+
+### Changed
+- improved integrated search for apps, files (Baloo) and system settings
+- improved helpful hint when the Baloo file search returns no results
+- refined dark design, hover effects and smooth animations
+
+## [1.0.2] – Maintenance & Launcher Layout Refinements
+
+### Changed
+- refined pinned apps grid and pin/unpin context menu behavior
+- refined alphabetically grouped "All Applications" view with scrollbar
+- refined adaptive popup size based on screen dimensions
+
+## [1.0.1] – Maintenance After Initial Release
+
+### Fixed
+- small stability, packaging and metadata fixes after the initial release
 
 ## [1.0.0] – Initial Release
 
