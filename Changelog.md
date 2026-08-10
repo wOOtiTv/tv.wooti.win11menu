@@ -13,30 +13,27 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - updated bug report target to GitHub Issues
 
-## [1.0.4] – Maintenance & Localization Preparation
-
-### Added
-- translation template and build/merge workflow for future languages
+## [1.0.4] – Polish & Localization Preparation
 
 ### Changed
-- moved launcher UI strings to the translation system
-- prepared runtime translation handling for widgets
+- prepared the launcher UI strings for the upcoming translation system
+- improved the runtime translation handling for widgets
 
-## [1.0.3] – Maintenance & Search Polish
+## [1.0.3] – Search & UX Polish
 
 ### Changed
 - improved integrated search for apps, files (Baloo) and system settings
-- improved helpful hint when the Baloo file search returns no results
+- improved the helpful hint when the Baloo file search returns no results
 - refined dark design, hover effects and smooth animations
 
-## [1.0.2] – Maintenance & Launcher Layout Refinements
+## [1.0.2] – Layout Refinements
 
 ### Changed
 - refined pinned apps grid and pin/unpin context menu behavior
 - refined alphabetically grouped "All Applications" view with scrollbar
 - refined adaptive popup size based on screen dimensions
 
-## [1.0.1] – Maintenance After Initial Release
+## [1.0.1] – Post-Release Hotfixes
 
 ### Fixed
 - small stability, packaging and metadata fixes after the initial release
