@@ -336,10 +336,12 @@ PlasmoidItem {
                 for (var groupIndex = 0; groupIndex < root.pinnedGroups.length; ++groupIndex) {
                     var group = root.pinnedGroups[groupIndex]
                     var groupApps = group.apps || []
+                    var previewEntries = []
                     var previewIcons = []
 
-                    // Show up to four small app icons as a quick preview.
-                    for (var appIndex = 0; appIndex < groupApps.length && previewIcons.length < 4; ++appIndex) {
+                    // Collect all grouped apps with their display names so the
+                    // preview follows the same alphabetical order as the launcher.
+                    for (var appIndex = 0; appIndex < groupApps.length; ++appIndex) {
                         var groupFavoriteId = String(groupApps[appIndex] || "")
 
                         for (var favoriteLookup = 0; favoriteLookup < pinnedFavoriteData.count; ++favoriteLookup) {
@@ -347,10 +349,22 @@ PlasmoidItem {
 
                             if (previewFavorite
                                     && previewFavorite.favoriteIdValue === groupFavoriteId) {
-                                previewIcons.push(previewFavorite.decorationValue)
+                                previewEntries.push({
+                                    sortName: previewFavorite.displayName,
+                                    decoration: previewFavorite.decorationValue
+                                })
                                 break
                             }
                         }
+                    }
+
+                    previewEntries.sort(comparePinnedEntries)
+
+                    // Show up to four alphabetically sorted app icons as a quick preview.
+                    for (var previewIndex = 0;
+                            previewIndex < previewEntries.length && previewIndex < 4;
+                            ++previewIndex) {
+                        previewIcons.push(previewEntries[previewIndex].decoration)
                     }
 
                     entries.push({
@@ -934,6 +948,23 @@ PlasmoidItem {
                 }
             }
 
+            MouseArea {
+                id: groupPopupDismissArea
+
+                anchors.fill: parent
+                z: 1000
+
+                visible: groupPopup.visible
+                enabled: visible
+
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+                onPressed: function(mouse) {
+                    groupPopup.close()
+                    mouse.accepted = true
+                }
+            }
+
             Controls.Popup {
                 id: groupPopup
 
@@ -995,6 +1026,14 @@ PlasmoidItem {
 
                     entries.sort(launcher.comparePinnedEntries)
                     appEntries = entries
+                }
+
+                Connections {
+                    target: root
+
+                    function onCloseContextMenus() {
+                        groupPopup.close()
+                    }
                 }
 
                 background: Rectangle {
@@ -1109,14 +1148,20 @@ PlasmoidItem {
                                             icon.name: "go-up"
 
                                             onTriggered: {
+                                                var wasLastApp = groupPopup.appEntries.length <= 1
+
+                                                if (wasLastApp) {
+                                                    groupAppContextMenu.close()
+                                                    groupPopup.close()
+                                                }
+
                                                 root.removeFavoriteFromGroup(
                                                     groupAppItem.appData.favoriteId,
                                                     groupPopup.groupId
                                                 )
 
-                                                if (root.groupIndex(groupPopup.groupId) < 0) {
-                                                    groupPopup.close()
-                                                } else {
+                                                if (!wasLastApp) {
+                                                    groupAppContextMenu.close()
                                                     groupPopup.rebuildApps()
                                                 }
                                             }
@@ -1127,16 +1172,23 @@ PlasmoidItem {
                                             icon.name: "list-remove"
 
                                             onTriggered: {
+                                                var wasLastApp = groupPopup.appEntries.length <= 1
+
+                                                if (wasLastApp) {
+                                                    groupAppContextMenu.close()
+                                                    groupPopup.close()
+                                                }
+
                                                 root.removeFavoriteFromAllGroups(
                                                     groupAppItem.appData.favoriteId
                                                 )
+
                                                 rootModel.favoritesModel.removeFavorite(
                                                     groupAppItem.appData.favoriteId
                                                 )
 
-                                                if (root.groupIndex(groupPopup.groupId) < 0) {
-                                                    groupPopup.close()
-                                                } else {
+                                                if (!wasLastApp) {
+                                                    groupAppContextMenu.close()
                                                     groupPopup.rebuildApps()
                                                 }
                                             }
