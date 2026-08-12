@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] – Modularization & Context Menu Improvements
+
+### Added
+- split the launcher UI into dedicated QML components for Search Bar, Pinned Section, Pinned Group Dialogs, Pinned Group Popup, All Applications, Search Results and Launcher Footer
+- added native KDE context actions to applications in the All Applications view:
+  - Pin to Task Manager
+  - Edit Application
+- added the same native KDE context actions to application search results
+
+### Changed
+- refactored `main.qml` into a smaller central launcher/controller while keeping KDE models and shared launcher logic centralized
+- simplified the context menu for applications inside pinned groups to **Remove from group** only
+- file and system-settings search results now explicitly accept left-click only; right-click remains reserved for application results
+- cleaned up obsolete Pinned Group Popup properties and bindings
+
+### Fixed
+- improved closing behavior for pinned group popups and their context menus when clicking outside or closing the launcher
+- removing one application from a multi-app group now keeps the group popup open, while removing the last application closes the popup and removes the empty group
+- pinned group preview icons now follow the same alphabetical ordering as the launcher
+
 ## [1.0.7] – Stability & KDE Integration
 
 ### Fixed
@@ -27,9 +47,9 @@ All notable changes to this project will be documented in this file.
 - compact group preview directly in the pinned apps grid
 - group popup with up to 12 applications in a 4 × 3 layout
 - native KDE context actions for regular pinned applications:
-- Add to Desktop
-- Pin to Task Manager
-- Edit Application
+  - Add to Desktop
+  - Pin to Task Manager
+  - Edit Application
 
 ### Changed
 - pinned applications and groups are kept in alphabetical order
