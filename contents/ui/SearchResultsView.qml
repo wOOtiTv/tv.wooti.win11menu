@@ -20,6 +20,8 @@ Item {
     property string appsText: ""
     property string filesText: ""
     property string settingsText: ""
+    property string pinText: ""
+    property string unpinText: ""
     property string noResultsText: ""
     property string balooNoResultsText: ""
 
@@ -185,8 +187,8 @@ Item {
                     Controls.MenuItem {
                         text: searchResultsView.favoritesModel
                             && searchResultsView.favoritesModel.isFavorite(model.favoriteId)
-                                ? "Unpin"
-                                : "Pin"
+                                ? searchResultsView.unpinText
+                                : searchResultsView.pinText
                         icon.name: searchResultsView.favoritesModel
                             && searchResultsView.favoritesModel.isFavorite(model.favoriteId)
                                 ? "list-remove"
