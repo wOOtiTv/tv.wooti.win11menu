@@ -12,6 +12,8 @@ Controls.Popup {
     property var favoritesModel
     property var launcherController
 
+    property bool launcherOpen: true
+
     property string removeFromGroupText: ""
     property string unpinText: ""
 
@@ -32,6 +34,20 @@ Controls.Popup {
     modal: false
     focus: true
     closePolicy: Controls.Popup.CloseOnEscape | Controls.Popup.CloseOnPressOutside
+
+    // Close explicitly when the window overlay is pressed.
+    // This keeps the popup behaviour reliable inside Plasma as well.
+    Controls.Overlay.onPressed: {
+        if (groupPopup.visible) {
+            groupPopup.close()
+        }
+    }
+
+    onLauncherOpenChanged: {
+        if (!launcherOpen && visible) {
+            close()
+        }
+    }
 
     // Groups are limited to 12 apps (4 columns × 3 rows), so the
     // complete group is shown at once without scrolling.
@@ -110,6 +126,22 @@ Controls.Popup {
         }
 
         appEntries = entries
+    }
+
+    function refreshOrClose() {
+        Qt.callLater(function() {
+            if (!groupController
+                    || groupController.groupIndex(groupId) < 0) {
+                close()
+                return
+            }
+
+            rebuildApps()
+
+            if (appEntries.length === 0) {
+                close()
+            }
+        })
     }
 
     background: Rectangle {
@@ -234,13 +266,7 @@ Controls.Popup {
                                         groupPopup.groupId
                                     )
 
-                                    if (groupPopup.groupController.groupIndex(
-                                            groupPopup.groupId
-                                        ) < 0) {
-                                        groupPopup.close()
-                                    } else {
-                                        groupPopup.rebuildApps()
-                                    }
+                                    groupPopup.refreshOrClose()
                                 }
                             }
 
@@ -261,13 +287,7 @@ Controls.Popup {
                                         groupAppItem.appData.favoriteId
                                     )
 
-                                    if (groupPopup.groupController.groupIndex(
-                                            groupPopup.groupId
-                                        ) < 0) {
-                                        groupPopup.close()
-                                    } else {
-                                        groupPopup.rebuildApps()
-                                    }
+                                    groupPopup.refreshOrClose()
                                 }
                             }
                         }
