@@ -581,1016 +581,720 @@ PlasmoidItem {
             radius: 18
             clip: true
 
-        // ─────────────────────────────────────────
-        // Hintergrund
-        // ─────────────────────────────────────────
+            // ─────────────────────────────────────────
+            // Hintergrund
+            // ─────────────────────────────────────────
 
-        Rectangle {
-            anchors.fill: parent
-            radius: parent.radius
-            color: "#20232b"
-            opacity: 0.92
-        }
-
-        // ─────────────────────────────────────────
-        // Suchfeld
-        // ─────────────────────────────────────────
-
-        SearchBar {
-            id: searchBar
-
-            x: 32
-            y: 24
-            width: parent.width - 64
-
-            searchText: root.searchText
-            placeholderText: i18n("Search for apps, files and settings")
-
-            onSearchTextEdited: function(text) {
-                root.searchText = text
+            Rectangle {
+                anchors.fill: parent
+                radius: parent.radius
+                color: "#20232b"
+                opacity: 0.92
             }
-        }
 
-        // Ctrl+F bringt den Fokus jederzeit direkt zurück ins Suchfeld.
-        Shortcut {
-            sequence: "Ctrl+F"
-            enabled: plasmoid.expanded
+            // ─────────────────────────────────────────
+            // Suchfeld
+            // ─────────────────────────────────────────
 
-            onActivated: {
-                searchBar.focusSearchField()
-            }
-        }
+            SearchBar {
+                id: searchBar
 
-        // ─────────────────────────────────────────────
-        // ANGEHEFTETE ANWENDUNGEN
-        // ─────────────────────────────────────────────
+                x: 32
+                y: 24
+                width: parent.width - 64
 
-        PlasmaComponents.Label {
-            id: pinnedLabel
+                searchText: root.searchText
+                placeholderText: i18n("Search for apps, files and settings")
 
-            x: 32
-            y: 105
-
-            text: i18n("Pinned")
-
-            font.pixelSize: 16
-            font.bold: true
-
-            visible: root.searchText.length === 0
-        }
-
-        // Unsichtbarer Daten-Spiegel des bereits alphabetisch sortierten
-        // KDE-Favoritenmodells. Er liefert Rollen wie Name, ID und Icon an
-        // unsere gemeinsame Pinned-Darstellung.
-        Item {
-            id: pinnedFavoriteDataHost
-            width: 0
-            height: 0
-            visible: false
-
-            Repeater {
-                id: pinnedFavoriteData
-                model: pinnedFavoritesModel
-                onCountChanged: launcher.schedulePinnedDisplayRebuild()
-
-                delegate: Item {
-                    width: 0
-                    height: 0
-
-                    property string favoriteIdValue: String(model.favoriteId || "")
-                    property string displayName: String(model.display || "")
-                    property var decorationValue: model.decoration
-
-                    Component.onCompleted: launcher.schedulePinnedDisplayRebuild()
-                    onFavoriteIdValueChanged: launcher.schedulePinnedDisplayRebuild()
-                    onDisplayNameChanged: launcher.schedulePinnedDisplayRebuild()
-                    onDecorationValueChanged: launcher.schedulePinnedDisplayRebuild()
+                onSearchTextEdited: function(text) {
+                    root.searchText = text
                 }
             }
-        }
 
-        Grid {
-            id: pinnedApps
+            // Ctrl+F bringt den Fokus jederzeit direkt zurück ins Suchfeld.
+            Shortcut {
+                sequence: "Ctrl+F"
+                enabled: plasmoid.expanded
 
-            x: 32
-            y: 145
+                onActivated: {
+                    searchBar.focusSearchField()
+                }
+            }
 
-            columns: 8
-            rowSpacing: 0
-            columnSpacing: 0
+            // ─────────────────────────────────────────────
+            // ANGEHEFTETE ANWENDUNGEN
+            // ─────────────────────────────────────────────
 
-            visible: root.searchText.length === 0
+            PlasmaComponents.Label {
+                id: pinnedLabel
 
-            Repeater {
-                model: launcher.pinnedDisplayEntries
+                x: 32
+                y: 105
 
-                delegate: Item {
-                    id: pinnedEntry
+                text: i18n("Pinned")
 
-                    property var entryData: modelData
-                    property bool isGroup: entryData && entryData.entryType === "group"
+                font.pixelSize: 16
+                font.bold: true
 
-                    height: launcher.cellHeight
-                    width: launcher.cellWidth
+                visible: root.searchText.length === 0
+            }
 
-                    Rectangle {
-                        anchors.fill: parent
-                        anchors.margins: 2
-                        radius: 12
-                        color: "#30343d"
-                        opacity: pinnedEntryMouseArea.containsMouse ? 1 : 0
+            // Unsichtbarer Daten-Spiegel des bereits alphabetisch sortierten
+            // KDE-Favoritenmodells. Er liefert Rollen wie Name, ID und Icon an
+            // unsere gemeinsame Pinned-Darstellung.
+            Item {
+                id: pinnedFavoriteDataHost
+                width: 0
+                height: 0
+                visible: false
 
-                        Behavior on opacity {
-                            NumberAnimation { duration: 120 }
-                        }
+                Repeater {
+                    id: pinnedFavoriteData
+                    model: pinnedFavoritesModel
+                    onCountChanged: launcher.schedulePinnedDisplayRebuild()
+
+                    delegate: Item {
+                        width: 0
+                        height: 0
+
+                        property string favoriteIdValue: String(model.favoriteId || "")
+                        property string displayName: String(model.display || "")
+                        property var decorationValue: model.decoration
+
+                        Component.onCompleted: launcher.schedulePinnedDisplayRebuild()
+                        onFavoriteIdValueChanged: launcher.schedulePinnedDisplayRebuild()
+                        onDisplayNameChanged: launcher.schedulePinnedDisplayRebuild()
+                        onDecorationValueChanged: launcher.schedulePinnedDisplayRebuild()
                     }
+                }
+            }
 
-                    Rectangle {
-                        id: pinnedGroupPreview
-                        visible: pinnedEntry.isGroup
+            Grid {
+                id: pinnedApps
 
-                        width: 46
-                        height: 46
-                        radius: 10
+                x: 32
+                y: 145
 
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: parent.top
-                        anchors.topMargin: 4
+                columns: 8
+                rowSpacing: 0
+                columnSpacing: 0
 
-                        color: "#272b33"
-                        border.color: "#454b56"
-                        border.width: 1
-                        clip: true
+                visible: root.searchText.length === 0
 
-                        Grid {
-                            anchors.centerIn: parent
-                            columns: 2
-                            spacing: 2
+                Repeater {
+                    model: launcher.pinnedDisplayEntries
 
-                            Repeater {
-                                model: pinnedEntry.entryData
-                                    ? (pinnedEntry.entryData.previewIcons || [])
-                                    : []
+                    delegate: Item {
+                        id: pinnedEntry
 
-                                delegate: Item {
-                                    width: 18
-                                    height: 18
+                        property var entryData: modelData
+                        property bool isGroup: entryData && entryData.entryType === "group"
 
-                                    Kirigami.Icon {
-                                        anchors.fill: parent
-                                        source: modelData
+                        height: launcher.cellHeight
+                        width: launcher.cellWidth
+
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 2
+                            radius: 12
+                            color: "#30343d"
+                            opacity: pinnedEntryMouseArea.containsMouse ? 1 : 0
+
+                            Behavior on opacity {
+                                NumberAnimation { duration: 120 }
+                            }
+                        }
+
+                        Rectangle {
+                            id: pinnedGroupPreview
+                            visible: pinnedEntry.isGroup
+
+                            width: 46
+                            height: 46
+                            radius: 10
+
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.top: parent.top
+                            anchors.topMargin: 4
+
+                            color: "#272b33"
+                            border.color: "#454b56"
+                            border.width: 1
+                            clip: true
+
+                            Grid {
+                                anchors.centerIn: parent
+                                columns: 2
+                                spacing: 2
+
+                                Repeater {
+                                    model: pinnedEntry.entryData
+                                        ? (pinnedEntry.entryData.previewIcons || [])
+                                        : []
+
+                                    delegate: Item {
+                                        width: 18
+                                        height: 18
+
+                                        Kirigami.Icon {
+                                            anchors.fill: parent
+                                            source: modelData
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    PlasmaComponents.Label {
-                        visible: pinnedEntry.isGroup
+                        PlasmaComponents.Label {
+                            visible: pinnedEntry.isGroup
 
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: pinnedGroupPreview.bottom
-                        anchors.topMargin: 4
-                        anchors.leftMargin: 4
-                        anchors.rightMargin: 4
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: pinnedGroupPreview.bottom
+                            anchors.topMargin: 4
+                            anchors.leftMargin: 4
+                            anchors.rightMargin: 4
 
-                        text: pinnedEntry.entryData
-                            ? String(pinnedEntry.entryData.groupName || "")
-                            : ""
+                            text: pinnedEntry.entryData
+                                ? String(pinnedEntry.entryData.groupName || "")
+                                : ""
 
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        maximumLineCount: 1
-                        elide: Text.ElideRight
-                        font.pixelSize: 13
-                    }
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            maximumLineCount: 1
+                            elide: Text.ElideRight
+                            font.pixelSize: 13
+                        }
 
-                    Kirigami.Icon {
-                        id: pinnedEntryIcon
-                        visible: !pinnedEntry.isGroup
+                        Kirigami.Icon {
+                            id: pinnedEntryIcon
+                            visible: !pinnedEntry.isGroup
 
-                        height: 36
-                        width: 36
+                            height: 36
+                            width: 36
 
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: parent.top
-                        anchors.topMargin: 8
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.top: parent.top
+                            anchors.topMargin: 8
 
-                        source: pinnedEntry.entryData
-                            ? pinnedEntry.entryData.decoration
-                            : ""
-                    }
+                            source: pinnedEntry.entryData
+                                ? pinnedEntry.entryData.decoration
+                                : ""
+                        }
 
-                    PlasmaComponents.Label {
-                        visible: !pinnedEntry.isGroup
+                        PlasmaComponents.Label {
+                            visible: !pinnedEntry.isGroup
 
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: pinnedEntryIcon.bottom
-                        anchors.topMargin: 4
-                        anchors.leftMargin: 4
-                        anchors.rightMargin: 4
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: pinnedEntryIcon.bottom
+                            anchors.topMargin: 4
+                            anchors.leftMargin: 4
+                            anchors.rightMargin: 4
 
-                        text: pinnedEntry.entryData
-                            ? String(pinnedEntry.entryData.displayName || "")
-                            : ""
+                            text: pinnedEntry.entryData
+                                ? String(pinnedEntry.entryData.displayName || "")
+                                : ""
 
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        maximumLineCount: 1
-                        elide: Text.ElideRight
-                        font.pixelSize: 13
-                    }
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            maximumLineCount: 1
+                            elide: Text.ElideRight
+                            font.pixelSize: 13
+                        }
 
-                    Controls.Menu {
-                        id: pinnedGroupContextMenu
+                        Controls.Menu {
+                            id: pinnedGroupContextMenu
 
-                        Connections {
-                            target: root
+                            Connections {
+                                target: root
 
-                            function onCloseContextMenus() {
-                                pinnedGroupContextMenu.close()
+                                function onCloseContextMenus() {
+                                    pinnedGroupContextMenu.close()
+                                }
+                            }
+
+                            Controls.MenuItem {
+                                text: i18n("Rename group…")
+                                icon.name: "edit-rename"
+
+                                onTriggered: {
+                                    renameGroupDialog.groupId = String(pinnedEntry.entryData.groupId)
+                                    renameGroupDialog.groupName = String(pinnedEntry.entryData.groupName)
+                                    renameGroupField.text = String(pinnedEntry.entryData.groupName)
+                                    renameGroupDialog.open()
+                                    renameGroupField.forceActiveFocus()
+                                    renameGroupField.selectAll()
+                                }
+                            }
+
+                            Controls.MenuItem {
+                                text: i18n("Dissolve group")
+                                icon.name: "folder-remove"
+
+                                onTriggered: {
+                                    if (groupPopup.groupId === String(pinnedEntry.entryData.groupId)) {
+                                        groupPopup.close()
+                                    }
+
+                                    root.dissolveGroup(String(pinnedEntry.entryData.groupId))
+                                }
                             }
                         }
 
-                        Controls.MenuItem {
-                            text: i18n("Rename group…")
-                            icon.name: "edit-rename"
+                        Controls.Menu {
+                            id: pinnedFavoriteContextMenu
 
-                            onTriggered: {
-                                renameGroupDialog.groupId = String(pinnedEntry.entryData.groupId)
-                                renameGroupDialog.groupName = String(pinnedEntry.entryData.groupName)
-                                renameGroupField.text = String(pinnedEntry.entryData.groupName)
-                                renameGroupDialog.open()
-                                renameGroupField.forceActiveFocus()
-                                renameGroupField.selectAll()
+                            Connections {
+                                target: root
+
+                                function onCloseContextMenus() {
+                                    pinnedFavoriteContextMenu.close()
+                                }
+                            }
+
+                            Controls.MenuItem {
+                                visible: root.pinnedGroupsEnabled
+                                text: i18n("Add to group…")
+                                icon.name: "folder-new"
+
+                                onTriggered: {
+                                    addToGroupDialog.favoriteId = String(pinnedEntry.entryData.favoriteId)
+                                    addToGroupDialog.favoriteName = String(pinnedEntry.entryData.displayName)
+                                    addToGroupDialog.rebuildChoices()
+                                    addToGroupDialog.open()
+                                }
+                            }
+
+                            Controls.MenuSeparator { }
+
+                            Controls.MenuItem {
+                                text: i18n("Pin to Task Manager")
+                                icon.name: "pin"
+
+                                onTriggered: launcher.triggerPinnedFavoriteAction(
+                                    pinnedEntry.entryData.favoriteId,
+                                    "addToTaskManager"
+                                )
+                            }
+
+                            Controls.MenuItem {
+                                text: i18n("Edit Application…")
+                                icon.name: "kmenuedit"
+
+                                onTriggered: launcher.triggerPinnedFavoriteAction(
+                                    pinnedEntry.entryData.favoriteId,
+                                    "editApplication"
+                                )
+                            }
+
+                            Controls.MenuSeparator { }
+
+                            Controls.MenuItem {
+                                text: i18n("Unpin")
+                                icon.name: "list-remove"
+
+                                onTriggered: {
+                                    root.removeFavoriteFromAllGroups(pinnedEntry.entryData.favoriteId)
+                                    rootModel.favoritesModel.removeFavorite(
+                                        pinnedEntry.entryData.favoriteId
+                                    )
+                                }
                             }
                         }
 
-                        Controls.MenuItem {
-                            text: i18n("Dissolve group")
-                            icon.name: "folder-remove"
+                        MouseArea {
+                            id: pinnedEntryMouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+                            cursorShape: Qt.PointingHandCursor
 
-                            onTriggered: {
-                                if (groupPopup.groupId === String(pinnedEntry.entryData.groupId)) {
-                                    groupPopup.close()
+                            onClicked: function(mouse) {
+                                if (mouse.button === Qt.RightButton) {
+                                    if (pinnedEntry.isGroup) {
+                                        pinnedGroupContextMenu.popup(
+                                            pinnedEntryMouseArea,
+                                            mouse.x,
+                                            mouse.y
+                                        )
+                                    } else {
+                                        pinnedFavoriteContextMenu.popup(
+                                            pinnedEntryMouseArea,
+                                            mouse.x,
+                                            mouse.y
+                                        )
+                                    }
+                                    return
                                 }
 
-                                root.dissolveGroup(String(pinnedEntry.entryData.groupId))
-                            }
-                        }
-                    }
+                                if (pinnedEntry.isGroup) {
+                                    groupPopup.groupId = String(pinnedEntry.entryData.groupId)
+                                    groupPopup.groupName = String(pinnedEntry.entryData.groupName)
+                                    groupPopup.rebuildApps()
+                                    groupPopup.openFor(pinnedEntry)
+                                    return
+                                }
 
-                    Controls.Menu {
-                        id: pinnedFavoriteContextMenu
-
-                        Connections {
-                            target: root
-
-                            function onCloseContextMenus() {
-                                pinnedFavoriteContextMenu.close()
-                            }
-                        }
-
-                        Controls.MenuItem {
-                            visible: root.pinnedGroupsEnabled
-                            text: i18n("Add to group…")
-                            icon.name: "folder-new"
-
-                            onTriggered: {
-                                addToGroupDialog.favoriteId = String(pinnedEntry.entryData.favoriteId)
-                                addToGroupDialog.favoriteName = String(pinnedEntry.entryData.displayName)
-                                addToGroupDialog.rebuildChoices()
-                                addToGroupDialog.open()
-                            }
-                        }
-
-                        Controls.MenuSeparator { }
-
-                        Controls.MenuItem {
-                            text: i18n("Pin to Task Manager")
-                            icon.name: "pin"
-
-                            onTriggered: launcher.triggerPinnedFavoriteAction(
-                                pinnedEntry.entryData.favoriteId,
-                                "addToTaskManager"
-                            )
-                        }
-
-                        Controls.MenuItem {
-                            text: i18n("Edit Application…")
-                            icon.name: "kmenuedit"
-
-                            onTriggered: launcher.triggerPinnedFavoriteAction(
-                                pinnedEntry.entryData.favoriteId,
-                                "editApplication"
-                            )
-                        }
-
-                        Controls.MenuSeparator { }
-
-                        Controls.MenuItem {
-                            text: i18n("Unpin")
-                            icon.name: "list-remove"
-
-                            onTriggered: {
-                                root.removeFavoriteFromAllGroups(pinnedEntry.entryData.favoriteId)
-                                rootModel.favoritesModel.removeFavorite(
+                                launcher.triggerPinnedFavorite(
                                     pinnedEntry.entryData.favoriteId
                                 )
                             }
                         }
                     }
-
-                    MouseArea {
-                        id: pinnedEntryMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        acceptedButtons: Qt.LeftButton | Qt.RightButton
-                        cursorShape: Qt.PointingHandCursor
-
-                        onClicked: function(mouse) {
-                            if (mouse.button === Qt.RightButton) {
-                                if (pinnedEntry.isGroup) {
-                                    pinnedGroupContextMenu.popup(
-                                        pinnedEntryMouseArea,
-                                        mouse.x,
-                                        mouse.y
-                                    )
-                                } else {
-                                    pinnedFavoriteContextMenu.popup(
-                                        pinnedEntryMouseArea,
-                                        mouse.x,
-                                        mouse.y
-                                    )
-                                }
-                                return
-                            }
-
-                            if (pinnedEntry.isGroup) {
-                                groupPopup.groupId = String(pinnedEntry.entryData.groupId)
-                                groupPopup.groupName = String(pinnedEntry.entryData.groupName)
-                                groupPopup.rebuildApps()
-                                groupPopup.openFor(pinnedEntry)
-                                return
-                            }
-
-                            launcher.triggerPinnedFavorite(
-                                pinnedEntry.entryData.favoriteId
-                            )
-                        }
-                    }
                 }
             }
-        }
 
-        // ─────────────────────────────────────────────
-        // PINNED-GRUPPEN – Dialoge und Gruppenansicht
-        // ─────────────────────────────────────────────
+            // ─────────────────────────────────────────────
+            // PINNED-GRUPPEN – Dialoge und Gruppenansicht
+            // ─────────────────────────────────────────────
 
-        ListModel {
-            id: groupChoiceModel
-        }
+            ListModel {
+                id: groupChoiceModel
+            }
 
-        Controls.Dialog {
-            id: addToGroupDialog
+            Controls.Dialog {
+                id: addToGroupDialog
 
-            parent: launcher
-            x: Math.round((launcher.width - width) / 2)
-            y: Math.round((launcher.height - height) / 2)
-            width: 420
-            modal: true
-            focus: true
-            title: i18n("Add to group")
-            standardButtons: Controls.Dialog.Ok | Controls.Dialog.Cancel
+                parent: launcher
+                x: Math.round((launcher.width - width) / 2)
+                y: Math.round((launcher.height - height) / 2)
+                width: 420
+                modal: true
+                focus: true
+                title: i18n("Add to group")
+                standardButtons: Controls.Dialog.Ok | Controls.Dialog.Cancel
 
-            property string favoriteId: ""
-            property string favoriteName: ""
+                property string favoriteId: ""
+                property string favoriteName: ""
 
-            function rebuildChoices() {
-                groupChoiceModel.clear()
+                function rebuildChoices() {
+                    groupChoiceModel.clear()
 
-                for (var i = 0; i < root.pinnedGroups.length; ++i) {
-                    var groupApps = root.pinnedGroups[i].apps || []
+                    for (var i = 0; i < root.pinnedGroups.length; ++i) {
+                        var groupApps = root.pinnedGroups[i].apps || []
 
-                    // Full groups are intentionally omitted from the target list.
-                    if (groupApps.length >= root.maxPinnedGroupApps) {
-                        continue
+                        // Full groups are intentionally omitted from the target list.
+                        if (groupApps.length >= root.maxPinnedGroupApps) {
+                            continue
+                        }
+
+                        groupChoiceModel.append({
+                            label: String(root.pinnedGroups[i].name),
+                            groupId: String(root.pinnedGroups[i].id),
+                            createNew: false
+                        })
                     }
 
                     groupChoiceModel.append({
-                        label: String(root.pinnedGroups[i].name),
-                        groupId: String(root.pinnedGroups[i].id),
-                        createNew: false
+                        label: i18n("New group…"),
+                        groupId: "",
+                        createNew: true
                     })
+
+                    groupChoice.currentIndex = groupChoiceModel.count > 0 ? 0 : -1
+                    newGroupField.text = ""
                 }
 
-                groupChoiceModel.append({
-                    label: i18n("New group…"),
-                    groupId: "",
-                    createNew: true
-                })
+                contentItem: Column {
+                    spacing: 12
 
-                groupChoice.currentIndex = groupChoiceModel.count > 0 ? 0 : -1
-                newGroupField.text = ""
+                    Controls.Label {
+                        width: 360
+                        wrapMode: Text.WordWrap
+                        text: i18n("Add %1 to:").replace("%1", addToGroupDialog.favoriteName)
+                    }
+
+                    Controls.ComboBox {
+                        id: groupChoice
+                        width: 360
+                        model: groupChoiceModel
+                        textRole: "label"
+                    }
+
+                    Controls.TextField {
+                        id: newGroupField
+                        width: 360
+                        visible: groupChoice.currentIndex >= 0
+                                && groupChoiceModel.get(groupChoice.currentIndex).createNew
+                        placeholderText: i18n("Group name")
+                        onAccepted: addToGroupDialog.accept()
+                    }
+                }
+
+                onAccepted: {
+                    if (groupChoice.currentIndex < 0) {
+                        return
+                    }
+
+                    var choice = groupChoiceModel.get(groupChoice.currentIndex)
+
+                    if (choice.createNew) {
+                        root.createGroupAndAdd(newGroupField.text, favoriteId)
+                    } else {
+                        root.addFavoriteToGroup(favoriteId, choice.groupId)
+                    }
+                }
             }
 
-            contentItem: Column {
-                spacing: 12
+            Controls.Dialog {
+                id: renameGroupDialog
 
-                Controls.Label {
-                    width: 360
-                    wrapMode: Text.WordWrap
-                    text: i18n("Add %1 to:").replace("%1", addToGroupDialog.favoriteName)
-                }
+                parent: launcher
+                x: Math.round((launcher.width - width) / 2)
+                y: Math.round((launcher.height - height) / 2)
+                width: 420
+                modal: true
+                focus: true
+                title: i18n("Rename group")
+                standardButtons: Controls.Dialog.Ok | Controls.Dialog.Cancel
 
-                Controls.ComboBox {
-                    id: groupChoice
-                    width: 360
-                    model: groupChoiceModel
-                    textRole: "label"
-                }
+                property string groupId: ""
+                property string groupName: ""
 
-                Controls.TextField {
-                    id: newGroupField
+                contentItem: Controls.TextField {
+                    id: renameGroupField
                     width: 360
-                    visible: groupChoice.currentIndex >= 0
-                             && groupChoiceModel.get(groupChoice.currentIndex).createNew
                     placeholderText: i18n("Group name")
-                    onAccepted: addToGroupDialog.accept()
+                    onAccepted: renameGroupDialog.accept()
+                }
+
+                onAccepted: {
+                    root.renameGroup(groupId, renameGroupField.text)
                 }
             }
 
-            onAccepted: {
-                if (groupChoice.currentIndex < 0) {
-                    return
-                }
+            Controls.Popup {
+                id: groupPopup
 
-                var choice = groupChoiceModel.get(groupChoice.currentIndex)
+                parent: launcher
+                x: Math.round((launcher.width - width) / 2)
+                y: 120
+                width: Math.min(620, launcher.width - 80)
+                padding: 18
+                modal: false
+                focus: true
+                closePolicy: Controls.Popup.CloseOnEscape | Controls.Popup.CloseOnPressOutside
 
-                if (choice.createNew) {
-                    root.createGroupAndAdd(newGroupField.text, favoriteId)
-                } else {
-                    root.addFavoriteToGroup(favoriteId, choice.groupId)
-                }
-            }
-        }
+                property string groupId: ""
+                property string groupName: ""
+                property var appEntries: []
 
-        Controls.Dialog {
-            id: renameGroupDialog
+                // Groups are limited to 12 apps (4 columns × 3 rows), so the
+                // complete group is shown at once without scrolling.
+                property int visibleRows: Math.min(3, Math.max(1, Math.ceil(appEntries.length / 4)))
+                property int appsAreaHeight: visibleRows * 86 + Math.max(0, visibleRows - 1) * 4
+                height: 28 + 12 + appsAreaHeight + padding * 2
 
-            parent: launcher
-            x: Math.round((launcher.width - width) / 2)
-            y: Math.round((launcher.height - height) / 2)
-            width: 420
-            modal: true
-            focus: true
-            title: i18n("Rename group")
-            standardButtons: Controls.Dialog.Ok | Controls.Dialog.Cancel
+                function openFor(anchorItem) {
+                    var point = anchorItem.mapToItem(launcher, 0, 0)
+                    var desiredX = point.x + Math.round((anchorItem.width - width) / 2)
+                    var desiredY = point.y + anchorItem.height + 8
 
-            property string groupId: ""
-            property string groupName: ""
+                    x = Math.max(20, Math.min(desiredX, launcher.width - width - 20))
 
-            contentItem: Controls.TextField {
-                id: renameGroupField
-                width: 360
-                placeholderText: i18n("Group name")
-                onAccepted: renameGroupDialog.accept()
-            }
-
-            onAccepted: {
-                root.renameGroup(groupId, renameGroupField.text)
-            }
-        }
-
-        Controls.Popup {
-            id: groupPopup
-
-            parent: launcher
-            x: Math.round((launcher.width - width) / 2)
-            y: 120
-            width: Math.min(620, launcher.width - 80)
-            padding: 18
-            modal: false
-            focus: true
-            closePolicy: Controls.Popup.CloseOnEscape | Controls.Popup.CloseOnPressOutside
-
-            property string groupId: ""
-            property string groupName: ""
-            property var appEntries: []
-
-            // Groups are limited to 12 apps (4 columns × 3 rows), so the
-            // complete group is shown at once without scrolling.
-            property int visibleRows: Math.min(3, Math.max(1, Math.ceil(appEntries.length / 4)))
-            property int appsAreaHeight: visibleRows * 86 + Math.max(0, visibleRows - 1) * 4
-            height: 28 + 12 + appsAreaHeight + padding * 2
-
-            function openFor(anchorItem) {
-                var point = anchorItem.mapToItem(launcher, 0, 0)
-                var desiredX = point.x + Math.round((anchorItem.width - width) / 2)
-                var desiredY = point.y + anchorItem.height + 8
-
-                x = Math.max(20, Math.min(desiredX, launcher.width - width - 20))
-
-                if (desiredY + height > launcher.height - 20) {
-                    desiredY = point.y - height - 8
-                }
-
-                y = Math.max(20, Math.min(desiredY, launcher.height - height - 20))
-                open()
-            }
-
-            function rebuildApps() {
-                var entries = []
-
-                for (var i = 0; i < pinnedFavoriteData.count; ++i) {
-                    var favorite = pinnedFavoriteData.itemAt(i)
-
-                    if (!favorite || !favorite.favoriteIdValue) {
-                        continue
+                    if (desiredY + height > launcher.height - 20) {
+                        desiredY = point.y - height - 8
                     }
 
-                    if (!root.favoriteBelongsToGroup(favorite.favoriteIdValue, groupId)) {
-                        continue
-                    }
-
-                    entries.push({
-                        sortName: favorite.displayName,
-                        favoriteId: favorite.favoriteIdValue,
-                        displayName: favorite.displayName,
-                        decoration: favorite.decorationValue
-                    })
+                    y = Math.max(20, Math.min(desiredY, launcher.height - height - 20))
+                    open()
                 }
 
-                entries.sort(launcher.comparePinnedEntries)
-                appEntries = entries
-            }
+                function rebuildApps() {
+                    var entries = []
 
-            background: Rectangle {
-                color: "#20232b"
-                radius: 16
-                border.color: "#3b414c"
-                border.width: 1
-            }
+                    for (var i = 0; i < pinnedFavoriteData.count; ++i) {
+                        var favorite = pinnedFavoriteData.itemAt(i)
 
-            contentItem: Column {
-                spacing: 12
-
-                Item {
-                    width: parent.width
-                    height: 28
-
-                    PlasmaComponents.Label {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.leftMargin: 38
-                        anchors.rightMargin: 38
-                        text: groupPopup.groupName
-                        font.pixelSize: 18
-                        font.bold: true
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
-                    }
-
-                    Controls.ToolButton {
-                        width: 28
-                        height: 28
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        icon.name: "dialog-close"
-                        onClicked: groupPopup.close()
-                    }
-                }
-
-                Flickable {
-                    width: parent.width
-                    height: groupPopup.appsAreaHeight
-                    contentWidth: width
-                    contentHeight: groupAppsGrid.implicitHeight
-                    clip: true
-                    interactive: false
-
-                    Grid {
-                        id: groupAppsGrid
-                        width: parent.width
-                        columns: 4
-                        rowSpacing: 4
-                        columnSpacing: 4
-
-                        Repeater {
-                            model: groupPopup.appEntries
-
-                            delegate: Item {
-                                id: groupAppItem
-                                property var appData: modelData
-
-                                width: Math.floor((groupAppsGrid.width - 12) / 4)
-                                height: 86
-
-                                Rectangle {
-                                    anchors.fill: parent
-                                    radius: 10
-                                    color: "#30343d"
-                                    opacity: groupAppMouse.containsMouse ? 1 : 0
-
-                                    Behavior on opacity {
-                                        NumberAnimation { duration: 120 }
-                                    }
-                                }
-
-                                Kirigami.Icon {
-                                    id: groupAppIcon
-
-                                      width: 36
-                                    height: 36
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    anchors.top: parent.top
-                                    anchors.topMargin: 8
-                                    source: groupAppItem.appData
-                                        ? groupAppItem.appData.decoration
-                                        : ""
-                                }
-
-                                PlasmaComponents.Label {
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.top: groupAppIcon.bottom
-                                    anchors.topMargin: 4
-                                    anchors.leftMargin: 4
-                                    anchors.rightMargin: 4
-                                    text: groupAppItem.appData
-                                        ? String(groupAppItem.appData.displayName || "")
-                                        : ""
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                    maximumLineCount: 1
-                                    elide: Text.ElideRight
-                                    font.pixelSize: 13
-                                }
-
-                                Controls.Menu {
-                                    id: groupAppContextMenu
-
-                                    Controls.MenuItem {
-                                        text: i18n("Remove from group")
-                                        icon.name: "go-up"
-
-                                        onTriggered: {
-                                            root.removeFavoriteFromGroup(
-                                                groupAppItem.appData.favoriteId,
-                                                groupPopup.groupId
-                                            )
-
-                                            if (root.groupIndex(groupPopup.groupId) < 0) {
-                                                groupPopup.close()
-                                            } else {
-                                                groupPopup.rebuildApps()
-                                            }
-                                        }
-                                    }
-
-                                    Controls.MenuItem {
-                                        text: i18n("Unpin")
-                                        icon.name: "list-remove"
-
-                                        onTriggered: {
-                                            root.removeFavoriteFromAllGroups(
-                                                groupAppItem.appData.favoriteId
-                                            )
-                                            rootModel.favoritesModel.removeFavorite(
-                                                groupAppItem.appData.favoriteId
-                                            )
-
-                                            if (root.groupIndex(groupPopup.groupId) < 0) {
-                                                groupPopup.close()
-                                            } else {
-                                                groupPopup.rebuildApps()
-                                            }
-                                        }
-                                    }
-                                }
-
-                                MouseArea {
-                                    id: groupAppMouse
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                    cursorShape: Qt.PointingHandCursor
-
-                                    onClicked: function(mouse) {
-                                        if (mouse.button === Qt.RightButton) {
-                                            groupAppContextMenu.popup(
-                                                groupAppMouse,
-                                                mouse.x,
-                                                mouse.y
-                                            )
-                                            return
-                                        }
-
-                                        groupPopup.close()
-                                        launcher.triggerPinnedFavorite(
-                                            groupAppItem.appData.favoriteId
-                                        )
-                                    }
-                                }
-                            }
+                        if (!favorite || !favorite.favoriteIdValue) {
+                            continue
                         }
+
+                        if (!root.favoriteBelongsToGroup(favorite.favoriteIdValue, groupId)) {
+                            continue
+                        }
+
+                        entries.push({
+                            sortName: favorite.displayName,
+                            favoriteId: favorite.favoriteIdValue,
+                            displayName: favorite.displayName,
+                            decoration: favorite.decorationValue
+                        })
                     }
-                }
-            }
-        }
 
-        // ─────────────────────────────────────────────
-        // ALLE ANWENDUNGEN
-        // ─────────────────────────────────────────────
-
-        PlasmaComponents.Label {
-            id: allAppsLabel
-
-            x: 32
-
-            y: pinnedApps.y + pinnedApps.height + 25
-
-            text: i18n("All")
-
-            font.pixelSize: 16
-            font.bold: true
-
-            visible: root.searchText.length === 0
-        }
-
-        PlasmaComponents.Label {
-            id: viewLabel
-
-            x: parent.width - 140
-
-            y: allAppsLabel.y
-
-            text: launcher.allAppsListView
-                ? i18n("View: List  ▾")
-                : i18n("View: Grid  ▾")
-
-            font.pixelSize: 14
-            opacity: viewToggleMouseArea.containsMouse ? 1.0 : 0.85
-
-            visible: root.searchText.length === 0
-
-            MouseArea {
-                id: viewToggleMouseArea
-
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-
-                onClicked: {
-                    launcher.allAppsListView = !launcher.allAppsListView
-                }
-            }
-        }
-
-        // ─────────────────────────────────────────
-        // ALLE APPS – ALPHABETISCH
-        // ─────────────────────────────────────────
-
-        Flickable {
-            id: allAppsScroll
-
-            x: 32
-            y: allAppsLabel.y + 40
-
-            width: parent.width - 64
-            height: Math.max(
-                0,
-                Math.min(
-                    launcher.allAppsVisibleHeight,
-                    parent.height - y - 100
-                )
-            )
-
-            clip: true
-
-            contentWidth: width
-            contentHeight: launcher.allAppsContentHeight()
-
-            boundsBehavior: Flickable.StopAtBounds
-
-            // Dezente, dauerhaft sichtbare Scrollbar wie bei KDE/Windows 11.
-            Controls.ScrollBar.vertical: Controls.ScrollBar {
-                policy: Controls.ScrollBar.AlwaysOn
-
-                width: 6
-
-                contentItem: Rectangle {
-                    implicitWidth: 5
-                    radius: width / 2
-                    color: "#555a66"
-                    opacity: parent.pressed ? 0.9 : 0.65
+                    entries.sort(launcher.comparePinnedEntries)
+                    appEntries = entries
                 }
 
                 background: Rectangle {
-                    color: "transparent"
+                    color: "#20232b"
+                    radius: 16
+                    border.color: "#3b414c"
+                    border.width: 1
                 }
-            }
 
-            visible: root.searchText.length === 0
+                contentItem: Column {
+                    spacing: 12
 
-            Column {
-                id: allAppsColumn
-
-                width: allAppsScroll.width
-                spacing: 0
-
-                Repeater {
-                    model: launcher.allAppsModel
-                        ? launcher.allAppsModel.count
-                        : 0
-
-                    delegate: Item {
-                        id: appSection
-
-                        width: allAppsColumn.width
-
-                        property var sectionModel: launcher.allAppsModel
-                            ? launcher.allAppsModel.modelForRow(index)
-                            : null
-
-                        height: launcher.sectionHeaderHeight +
-                                (sectionModel
-                                 ? Math.ceil(
-                                       sectionModel.count /
-                                       launcher.allAppsColumnCount
-                                   ) * launcher.allAppsCellHeight
-                                 : 0) +
-                                launcher.sectionSpacing
+                    Item {
+                        width: parent.width
+                        height: 28
 
                         PlasmaComponents.Label {
-                            id: sectionLabel
-
-                            x: 0
-                            y: 0
-
-                            width: parent.width
-                            height: launcher.sectionHeaderHeight
-
-                            text: appSection.sectionModel
-                                ? (appSection.sectionModel.description === "0-9"
-                                   ? "#"
-                                   : appSection.sectionModel.description)
-                                : ""
-
-                            font.pixelSize: 15
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.leftMargin: 38
+                            anchors.rightMargin: 38
+                            text: groupPopup.groupName
+                            font.pixelSize: 18
                             font.bold: true
-
+                            horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
+                            elide: Text.ElideRight
                         }
 
-                        GridView {
-                            id: sectionGrid
+                        Controls.ToolButton {
+                            width: 28
+                            height: 28
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            icon.name: "dialog-close"
+                            onClicked: groupPopup.close()
+                        }
+                    }
 
-                            x: 0
-                            y: sectionLabel.height
+                    Flickable {
+                        width: parent.width
+                        height: groupPopup.appsAreaHeight
+                        contentWidth: width
+                        contentHeight: groupAppsGrid.implicitHeight
+                        clip: true
+                        interactive: false
 
+                        Grid {
+                            id: groupAppsGrid
                             width: parent.width
-                            height: appSection.sectionModel
-                                ? Math.ceil(
-                                      appSection.sectionModel.count /
-                                      launcher.allAppsColumnCount
-                                  ) * launcher.allAppsCellHeight
-                                : 0
+                            columns: 4
+                            rowSpacing: 4
+                            columnSpacing: 4
 
-                            cellWidth: width / launcher.allAppsColumnCount
-                            cellHeight: launcher.allAppsCellHeight
+                            Repeater {
+                                model: groupPopup.appEntries
 
-                            interactive: false
-                            clip: false
+                                delegate: Item {
+                                    id: groupAppItem
+                                    property var appData: modelData
 
-                            model: appSection.sectionModel
+                                    width: Math.floor((groupAppsGrid.width - 12) / 4)
+                                    height: 86
 
-                            delegate: Item {
-                                id: appItem
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        radius: 10
+                                        color: "#30343d"
+                                        opacity: groupAppMouse.containsMouse ? 1 : 0
 
-                                width: sectionGrid.cellWidth
-                                height: sectionGrid.cellHeight
-
-                                Rectangle {
-                                    id: hoverBackground
-
-                                    anchors.fill: parent
-                                    anchors.margins: 2
-
-                                    radius: 12
-
-                                    color: "#30343d"
-
-                                    opacity: mouseArea.containsMouse ? 1 : 0
-
-                                    Behavior on opacity {
-                                        NumberAnimation {
-                                            duration: 120
-                                        }
-                                    }
-                                }
-
-                                Kirigami.Icon {
-                                    id: appIcon
-
-                                    width: 36
-                                    height: 36
-
-                                    x: launcher.allAppsListView
-                                        ? 16
-                                        : (parent.width - width) / 2
-
-                                    y: launcher.allAppsListView
-                                        ? (parent.height - height) / 2
-                                        : 8
-
-                                    source: model.decoration
-                                }
-
-                                PlasmaComponents.Label {
-                                    x: launcher.allAppsListView
-                                        ? appIcon.x + appIcon.width + 12
-                                        : 4
-
-                                    y: launcher.allAppsListView
-                                        ? (parent.height - height) / 2
-                                        : appIcon.y + appIcon.height + 4
-
-                                    width: launcher.allAppsListView
-                                        ? parent.width - appIcon.x - appIcon.width - 28
-                                        : parent.width - 8
-
-                                    height: launcher.allAppsListView
-                                        ? 28
-                                        : parent.height - appIcon.height - appIcon.y - 4
-
-                                    text: model.display
-
-                                    horizontalAlignment: launcher.allAppsListView
-                                        ? Text.AlignLeft                                        : Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-
-                                    maximumLineCount: 1
-                                    elide: Text.ElideRight
-
-                                    font.pixelSize: 13
-                                }
-
-                                Controls.Menu {
-                                    id: appContextMenu
-
-                                    Connections {
-                                        target: root
-
-                                        function onCloseContextMenus() {
-                                            appContextMenu.close()
+                                        Behavior on opacity {
+                                            NumberAnimation { duration: 120 }
                                         }
                                     }
 
-                                    Controls.MenuItem {
-                                        text: i18n("Pin")
-                                        icon.name: "list-add"
+                                    Kirigami.Icon {
+                                        id: groupAppIcon
 
-                                        onTriggered: {
-                                            var favoriteId = model.favoriteId
+                                        width: 36
+                                        height: 36
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        anchors.top: parent.top
+                                        anchors.topMargin: 8
+                                        source: groupAppItem.appData
+                                            ? groupAppItem.appData.decoration
+                                            : ""
+                                    }
 
-                                            if (favoriteId) {
-                                                rootModel.favoritesModel.addFavorite(
-                                                    favoriteId
+                                    PlasmaComponents.Label {
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.top: groupAppIcon.bottom
+                                        anchors.topMargin: 4
+                                        anchors.leftMargin: 4
+                                        anchors.rightMargin: 4
+                                        text: groupAppItem.appData
+                                            ? String(groupAppItem.appData.displayName || "")
+                                            : ""
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                        maximumLineCount: 1
+                                        elide: Text.ElideRight
+                                        font.pixelSize: 13
+                                    }
+
+                                    Controls.Menu {
+                                        id: groupAppContextMenu
+
+                                        Controls.MenuItem {
+                                            text: i18n("Remove from group")
+                                            icon.name: "go-up"
+
+                                            onTriggered: {
+                                                root.removeFavoriteFromGroup(
+                                                    groupAppItem.appData.favoriteId,
+                                                    groupPopup.groupId
                                                 )
+
+                                                if (root.groupIndex(groupPopup.groupId) < 0) {
+                                                    groupPopup.close()
+                                                } else {
+                                                    groupPopup.rebuildApps()
+                                                }
+                                            }
+                                        }
+
+                                        Controls.MenuItem {
+                                            text: i18n("Unpin")
+                                            icon.name: "list-remove"
+
+                                            onTriggered: {
+                                                root.removeFavoriteFromAllGroups(
+                                                    groupAppItem.appData.favoriteId
+                                                )
+                                                rootModel.favoritesModel.removeFavorite(
+                                                    groupAppItem.appData.favoriteId
+                                                )
+
+                                                if (root.groupIndex(groupPopup.groupId) < 0) {
+                                                    groupPopup.close()
+                                                } else {
+                                                    groupPopup.rebuildApps()
+                                                }
                                             }
                                         }
                                     }
-                                }
 
-                                MouseArea {
-                                    id: mouseArea
+                                    MouseArea {
+                                        id: groupAppMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                        cursorShape: Qt.PointingHandCursor
 
-                                    anchors.fill: parent
+                                        onClicked: function(mouse) {
+                                            if (mouse.button === Qt.RightButton) {
+                                                groupAppContextMenu.popup(
+                                                    groupAppMouse,
+                                                    mouse.x,
+                                                    mouse.y
+                                                )
+                                                return
+                                            }
 
-                                    hoverEnabled: true
-                                    acceptedButtons: Qt.LeftButton | Qt.RightButton
-
-                                    cursorShape: Qt.PointingHandCursor
-
-                                    onClicked: function(mouse) {
-                                        if (mouse.button === Qt.RightButton) {
-                                            appContextMenu.popup(
-                                                mouseArea,
-                                                mouse.x,
-                                                mouse.y
+                                            groupPopup.close()
+                                            launcher.triggerPinnedFavorite(
+                                                groupAppItem.appData.favoriteId
                                             )
-                                            return
                                         }
-
-                                        console.log("🦊 ALL APPS CLICK:", model.display, model.favoriteId)
-                                        Qt.callLater(function() {
-                                            appSection.sectionModel.trigger(index, "", null)
-                                        })
                                     }
                                 }
                             }
@@ -1598,838 +1302,813 @@ PlasmoidItem {
                     }
                 }
             }
-        }
 
-        // ─────────────────────────────────────────
-        // SUCHERGEBNISSE
-        // Apps + Dateien + Systemeinstellungen
-        // Ein gemeinsamer Scrollbereich für die komplette Suche.
-        // ─────────────────────────────────────────
-
-        Flickable {
-            id: searchResultsScroll
-
-            x: 0
-            y: 100
-            width: parent.width
-            height: parent.height - y - 78
-
-            clip: true
-
-            visible: root.searchText.length > 0   // ✅ NUR diese Zeile hinzufügen!
-
-            contentWidth: width
-            contentHeight: Math.max(
-                settingsSearchGrid.visible
-                    ? settingsSearchGrid.y + settingsSearchGrid.height + 30
-                    : fileSearchGrid.visible
-                        ? fileSearchGrid.y + fileSearchGrid.height + 30
-                        : appSearchGrid.visible
-                            ? appSearchGrid.y + appSearchGrid.height + 30
-                            : noSearchResultsLabel.y + noSearchResultsLabel.height + 30,
-                height
-            )
-
-            boundsBehavior: Flickable.StopAtBounds
-
-            // Ein einziger dezenter Scrollbalken für die komplette Suche.
-            Controls.ScrollBar.vertical: Controls.ScrollBar {
-                policy: Controls.ScrollBar.AlwaysOn
-
-                width: 6
-
-                contentItem: Rectangle {
-                    implicitWidth: 5
-                    radius: width / 2
-                    color: "#555a66"
-                    opacity: parent.pressed ? 0.9 : 0.65
-                }
-
-                background: Rectangle {
-                    color: "transparent"
-                }
-            }
+            // ─────────────────────────────────────────────
+            // ALLE ANWENDUNGEN
+            // ─────────────────────────────────────────────
 
             PlasmaComponents.Label {
-                id: searchResultsLabel
+                id: allAppsLabel
 
                 x: 32
-                y: 5
 
-                text: i18n("Search results")
+                y: pinnedApps.y + pinnedApps.height + 25
+
+                text: i18n("All")
 
                 font.pixelSize: 16
                 font.bold: true
 
-                visible: root.searchText.length > 0
+                visible: root.searchText.length === 0
             }
 
             PlasmaComponents.Label {
-                id: appsResultsLabel
+                id: viewLabel
 
-                x: 32
-                y: 45
+                x: parent.width - 140
 
-                text: "Apps"
+                y: allAppsLabel.y
+
+                text: launcher.allAppsListView
+                    ? i18n("View: List  ▾")
+                    : i18n("View: Grid  ▾")
 
                 font.pixelSize: 14
-                font.bold: true
-                opacity: 0.85
+                opacity: viewToggleMouseArea.containsMouse ? 1.0 : 0.85
 
-                visible: root.searchText.length > 0 && appSearchGrid.count > 0
+                visible: root.searchText.length === 0
+
+                MouseArea {
+                    id: viewToggleMouseArea
+
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+
+                    onClicked: {
+                        launcher.allAppsListView = !launcher.allAppsListView
+                    }
+                }
             }
 
-            GridView {
-                id: appSearchGrid
+            // ─────────────────────────────────────────
+            // ALLE APPS – ALPHABETISCH
+            // ─────────────────────────────────────────
+
+            Flickable {
+                id: allAppsScroll
 
                 x: 32
-                y: 75
+                y: allAppsLabel.y + 40
 
-                height: appSearchGrid.count > 0
-                    ? Math.ceil(appSearchGrid.count / launcher.columnCount) * appSearchGrid.cellHeight
-                    : 0
                 width: parent.width - 64
+                height: Math.max(
+                    0,
+                    Math.min(
+                        launcher.allAppsVisibleHeight,
+                        parent.height - y - 100
+                    )
+                )
 
                 clip: true
 
-                cellHeight: 80
-                cellWidth: width / launcher.columnCount
+                contentWidth: width
+                contentHeight: launcher.allAppsContentHeight()
 
-                visible: root.searchText.length > 0 && appSearchGrid.count > 0
+                boundsBehavior: Flickable.StopAtBounds
 
-                interactive: false
+                // Dezente, dauerhaft sichtbare Scrollbar wie bei KDE/Windows 11.
+                Controls.ScrollBar.vertical: Controls.ScrollBar {
+                    policy: Controls.ScrollBar.AlwaysOn
 
-                model: appRunnerModel.count > 0 ? appRunnerModel.modelForRow(0) : null
+                    width: 6
 
-                delegate: Item {
-                    id: searchAppItem
+                    contentItem: Rectangle {
+                        implicitWidth: 5
+                        radius: width / 2
+                        color: "#555a66"
+                        opacity: parent.pressed ? 0.9 : 0.65
+                    }
 
-                    height: appSearchGrid.cellHeight
-                    width: appSearchGrid.cellWidth
+                    background: Rectangle {
+                        color: "transparent"
+                    }
+                }
 
-                    Rectangle {
-                        id: searchAppHover
+                visible: root.searchText.length === 0
 
-                        anchors.fill: parent
-                        anchors.margins: 2
+                Column {
+                    id: allAppsColumn
 
-                        radius: 12
-                        color: "#30343d"
+                    width: allAppsScroll.width
+                    spacing: 0
 
-                        opacity: searchAppMouseArea.containsMouse ? 1 : 0
+                    Repeater {
+                        model: launcher.allAppsModel
+                            ? launcher.allAppsModel.count
+                            : 0
 
-                        Behavior on opacity {
-                            NumberAnimation { duration: 120 }
+                        delegate: Item {
+                            id: appSection
+
+                            width: allAppsColumn.width
+
+                            property var sectionModel: launcher.allAppsModel
+                                ? launcher.allAppsModel.modelForRow(index)
+                                : null
+
+                            height: launcher.sectionHeaderHeight +
+                                    (sectionModel
+                                    ? Math.ceil(
+                                        sectionModel.count /
+                                        launcher.allAppsColumnCount
+                                    ) * launcher.allAppsCellHeight
+                                    : 0) +
+                                    launcher.sectionSpacing
+
+                            PlasmaComponents.Label {
+                                id: sectionLabel
+
+                                x: 0
+                                y: 0
+
+                                width: parent.width
+                                height: launcher.sectionHeaderHeight
+
+                                text: appSection.sectionModel
+                                    ? (appSection.sectionModel.description === "0-9"
+                                    ? "#"
+                                    : appSection.sectionModel.description)
+                                    : ""
+
+                                font.pixelSize: 15
+                                font.bold: true
+
+                                verticalAlignment: Text.AlignVCenter
+                            }
+
+                            GridView {
+                                id: sectionGrid
+
+                                x: 0
+                                y: sectionLabel.height
+
+                                width: parent.width
+                                height: appSection.sectionModel
+                                    ? Math.ceil(
+                                        appSection.sectionModel.count /
+                                        launcher.allAppsColumnCount
+                                    ) * launcher.allAppsCellHeight
+                                    : 0
+
+                                cellWidth: width / launcher.allAppsColumnCount
+                                cellHeight: launcher.allAppsCellHeight
+
+                                interactive: false
+                                clip: false
+
+                                model: appSection.sectionModel
+
+                                delegate: Item {
+                                    id: appItem
+
+                                    width: sectionGrid.cellWidth
+                                    height: sectionGrid.cellHeight
+
+                                    Rectangle {
+                                        id: hoverBackground
+
+                                        anchors.fill: parent
+                                        anchors.margins: 2
+
+                                        radius: 12
+
+                                        color: "#30343d"
+
+                                        opacity: mouseArea.containsMouse ? 1 : 0
+
+                                        Behavior on opacity {
+                                            NumberAnimation {
+                                                duration: 120
+                                            }
+                                        }
+                                    }
+
+                                    Kirigami.Icon {
+                                        id: appIcon
+
+                                        width: 36
+                                        height: 36
+
+                                        x: launcher.allAppsListView
+                                            ? 16
+                                            : (parent.width - width) / 2
+
+                                        y: launcher.allAppsListView
+                                            ? (parent.height - height) / 2
+                                            : 8
+
+                                        source: model.decoration
+                                    }
+
+                                    PlasmaComponents.Label {
+                                        x: launcher.allAppsListView
+                                            ? appIcon.x + appIcon.width + 12
+                                            : 4
+
+                                        y: launcher.allAppsListView
+                                            ? (parent.height - height) / 2
+                                            : appIcon.y + appIcon.height + 4
+
+                                        width: launcher.allAppsListView
+                                            ? parent.width - appIcon.x - appIcon.width - 28
+                                            : parent.width - 8
+
+                                        height: launcher.allAppsListView
+                                            ? 28
+                                            : parent.height - appIcon.height - appIcon.y - 4
+
+                                        text: model.display
+
+                                        horizontalAlignment: launcher.allAppsListView
+                                            ? Text.AlignLeft                                        : Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+
+                                        maximumLineCount: 1
+                                        elide: Text.ElideRight
+
+                                        font.pixelSize: 13
+                                    }
+
+                                    Controls.Menu {
+                                        id: appContextMenu
+
+                                        Connections {
+                                            target: root
+
+                                            function onCloseContextMenus() {
+                                                appContextMenu.close()
+                                            }
+                                        }
+
+                                        Controls.MenuItem {
+                                            text: i18n("Pin")
+                                            icon.name: "list-add"
+
+                                            onTriggered: {
+                                                var favoriteId = model.favoriteId
+
+                                                if (favoriteId) {
+                                                    rootModel.favoritesModel.addFavorite(
+                                                        favoriteId
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        id: mouseArea
+
+                                        anchors.fill: parent
+
+                                        hoverEnabled: true
+                                        acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+                                        cursorShape: Qt.PointingHandCursor
+
+                                        onClicked: function(mouse) {
+                                            if (mouse.button === Qt.RightButton) {
+                                                appContextMenu.popup(
+                                                    mouseArea,
+                                                    mouse.x,
+                                                    mouse.y
+                                                )
+                                                return
+                                            }
+
+                                            console.log("🦊 ALL APPS CLICK:", model.display, model.favoriteId)
+                                            Qt.callLater(function() {
+                                                appSection.sectionModel.trigger(index, "", null)
+                                            })
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
+                }
+            }
 
-                    Kirigami.Icon {
-                        id: searchAppIcon
+            // ─────────────────────────────────────────
+            // SUCHERGEBNISSE
+            // Apps + Dateien + Systemeinstellungen
+            // Ein gemeinsamer Scrollbereich für die komplette Suche.
+            // ─────────────────────────────────────────
 
-                        width: 36
-                        height: 36
+            Flickable {
+                id: searchResultsScroll
 
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: parent.top
-                        anchors.topMargin: 8
+                x: 0
+                y: 100
+                width: parent.width
+                height: parent.height - y - 78
 
-                        source: model.decoration
+                clip: true
+
+                visible: root.searchText.length > 0   // ✅ NUR diese Zeile hinzufügen!
+
+                contentWidth: width
+                contentHeight: Math.max(
+                    settingsSearchGrid.visible
+                        ? settingsSearchGrid.y + settingsSearchGrid.height + 30
+                        : fileSearchGrid.visible
+                            ? fileSearchGrid.y + fileSearchGrid.height + 30
+                            : appSearchGrid.visible
+                                ? appSearchGrid.y + appSearchGrid.height + 30
+                                : noSearchResultsLabel.y + noSearchResultsLabel.height + 30,
+                    height
+                )
+
+                boundsBehavior: Flickable.StopAtBounds
+
+                // Ein einziger dezenter Scrollbalken für die komplette Suche.
+                Controls.ScrollBar.vertical: Controls.ScrollBar {
+                    policy: Controls.ScrollBar.AlwaysOn
+
+                    width: 6
+
+                    contentItem: Rectangle {
+                        implicitWidth: 5
+                        radius: width / 2
+                        color: "#555a66"
+                        opacity: parent.pressed ? 0.9 : 0.65
                     }
 
-                    PlasmaComponents.Label {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-
-                        anchors.top: searchAppIcon.bottom
-                        anchors.topMargin: 5
-
-                        anchors.leftMargin: 4
-                        anchors.rightMargin: 4
-
-                        text: model.display
-
-                        horizontalAlignment: Text.AlignHCenter
-
-                        maximumLineCount: 2
-                        elide: Text.ElideRight
-
-                        font.pixelSize: 13
+                    background: Rectangle {
+                        color: "transparent"
                     }
+                }
 
-                    Controls.Menu {
-                        id: searchAppContextMenu
+                PlasmaComponents.Label {
+                    id: searchResultsLabel
 
-                        Connections {
-                            target: root
+                    x: 32
+                    y: 5
 
-                            function onCloseContextMenus() {
-                                searchAppContextMenu.close()
+                    text: i18n("Search results")
+
+                    font.pixelSize: 16
+                    font.bold: true
+
+                    visible: root.searchText.length > 0
+                }
+
+                PlasmaComponents.Label {
+                    id: appsResultsLabel
+
+                    x: 32
+                    y: 45
+
+                    text: "Apps"
+
+                    font.pixelSize: 14
+                    font.bold: true
+                    opacity: 0.85
+
+                    visible: root.searchText.length > 0 && appSearchGrid.count > 0
+                }
+
+                GridView {
+                    id: appSearchGrid
+
+                    x: 32
+                    y: 75
+
+                    height: appSearchGrid.count > 0
+                        ? Math.ceil(appSearchGrid.count / launcher.columnCount) * appSearchGrid.cellHeight
+                        : 0
+                    width: parent.width - 64
+
+                    clip: true
+
+                    cellHeight: 80
+                    cellWidth: width / launcher.columnCount
+
+                    visible: root.searchText.length > 0 && appSearchGrid.count > 0
+
+                    interactive: false
+
+                    model: appRunnerModel.count > 0 ? appRunnerModel.modelForRow(0) : null
+
+                    delegate: Item {
+                        id: searchAppItem
+
+                        height: appSearchGrid.cellHeight
+                        width: appSearchGrid.cellWidth
+
+                        Rectangle {
+                            id: searchAppHover
+
+                            anchors.fill: parent
+                            anchors.margins: 2
+
+                            radius: 12
+                            color: "#30343d"
+
+                            opacity: searchAppMouseArea.containsMouse ? 1 : 0
+
+                            Behavior on opacity {
+                                NumberAnimation { duration: 120 }
                             }
                         }
 
-                        Controls.MenuItem {
-                            text: rootModel.favoritesModel
-                                && rootModel.favoritesModel.isFavorite(model.favoriteId)
-                                    ? i18n("Unpin")
-                                    : i18n("Pin")
-                            icon.name: rootModel.favoritesModel
-                                && rootModel.favoritesModel.isFavorite(model.favoriteId)
-                                    ? "list-remove"
-                                    : "list-add"
+                        Kirigami.Icon {
+                            id: searchAppIcon
 
-                            onTriggered: {
-                                var favoriteId = String(model.favoriteId || "")
+                            width: 36
+                            height: 36
 
-                                if (!favoriteId || !rootModel.favoritesModel) {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.top: parent.top
+                            anchors.topMargin: 8
+
+                            source: model.decoration
+                        }
+
+                        PlasmaComponents.Label {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+
+                            anchors.top: searchAppIcon.bottom
+                            anchors.topMargin: 5
+
+                            anchors.leftMargin: 4
+                            anchors.rightMargin: 4
+
+                            text: model.display
+
+                            horizontalAlignment: Text.AlignHCenter
+
+                            maximumLineCount: 2
+                            elide: Text.ElideRight
+
+                            font.pixelSize: 13
+                        }
+
+                        Controls.Menu {
+                            id: searchAppContextMenu
+
+                            Connections {
+                                target: root
+
+                                function onCloseContextMenus() {
+                                    searchAppContextMenu.close()
+                                }
+                            }
+
+                            Controls.MenuItem {
+                                text: rootModel.favoritesModel
+                                    && rootModel.favoritesModel.isFavorite(model.favoriteId)
+                                        ? i18n("Unpin")
+                                        : i18n("Pin")
+                                icon.name: rootModel.favoritesModel
+                                    && rootModel.favoritesModel.isFavorite(model.favoriteId)
+                                        ? "list-remove"
+                                        : "list-add"
+
+                                onTriggered: {
+                                    var favoriteId = String(model.favoriteId || "")
+
+                                    if (!favoriteId || !rootModel.favoritesModel) {
+                                        return
+                                    }
+
+                                    if (rootModel.favoritesModel.isFavorite(favoriteId)) {
+                                        root.removeFavoriteFromAllGroups(favoriteId)
+                                        rootModel.favoritesModel.removeFavorite(favoriteId)
+                                    } else {
+                                        rootModel.favoritesModel.addFavorite(favoriteId)
+                                    }
+                                }
+                            }
+                        }
+
+                        MouseArea {
+                            id: searchAppMouseArea
+
+                            anchors.fill: parent
+
+                            hoverEnabled: true
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+                            cursorShape: Qt.PointingHandCursor
+
+                            onClicked: function(mouse) {
+                                if (mouse.button === Qt.RightButton) {
+                                    searchAppContextMenu.popup(
+                                        searchAppMouseArea,
+                                        mouse.x,
+                                        mouse.y
+                                    )
                                     return
                                 }
 
-                                if (rootModel.favoritesModel.isFavorite(favoriteId)) {
-                                    root.removeFavoriteFromAllGroups(favoriteId)
-                                    rootModel.favoritesModel.removeFavorite(favoriteId)
-                                } else {
-                                    rootModel.favoritesModel.addFavorite(favoriteId)
-                                }
+                                appSearchGrid.model.trigger(index, "", null)
+                                root.searchText = ""
+                                plasmoid.expanded = false
                             }
-                        }
-                    }
-
-                    MouseArea {
-                        id: searchAppMouseArea
-
-                        anchors.fill: parent
-
-                        hoverEnabled: true
-                        acceptedButtons: Qt.LeftButton | Qt.RightButton
-                        cursorShape: Qt.PointingHandCursor
-
-                        onClicked: function(mouse) {
-                            if (mouse.button === Qt.RightButton) {
-                                searchAppContextMenu.popup(
-                                    searchAppMouseArea,
-                                    mouse.x,
-                                    mouse.y
-                                )
-                                return
-                            }
-
-                            appSearchGrid.model.trigger(index, "", null)
-                            root.searchText = ""
-                            plasmoid.expanded = false
                         }
                     }
                 }
-            }
 
-            PlasmaComponents.Label {
-                id: filesResultsLabel
+                PlasmaComponents.Label {
+                    id: filesResultsLabel
 
-                x: 32
+                    x: 32
 
-                // Wenn Apps fehlen, rutscht "Dateien" direkt unter
-                // "Suchergebnisse", statt eine leere App-Fläche zu lassen.
-                y: appSearchGrid.count > 0
-                    ? appSearchGrid.y + appSearchGrid.height + 18
-                    : 45
-
-                text: i18n("Files")
-
-                font.pixelSize: 14
-                font.bold: true
-                opacity: 0.85
-
-                visible: root.searchText.length > 0 && fileSearchGrid.count > 0
-            }
-
-            GridView {
-                id: fileSearchGrid
-
-                x: 32
-
-                y: filesResultsLabel.y + 30
-
-                height: fileSearchGrid.count > 0
-                    ? Math.ceil(fileSearchGrid.count / launcher.columnCount) * fileSearchGrid.cellHeight
-                    : 0
-                width: parent.width - 64
-
-                clip: true
-
-                cellHeight: 80
-                cellWidth: width / launcher.columnCount
-
-                visible: root.searchText.length > 0 && fileSearchGrid.count > 0
-
-                interactive: false
-
-                // Native KDE/KRunner-Dateisuche über den Baloo-Runner.
-                model: fileSearchResultsModel
-
-                delegate: Item {
-                    id: searchFileItem
-
-                    height: fileSearchGrid.cellHeight
-                    width: fileSearchGrid.cellWidth
-
-                    Rectangle {
-                        id: searchFileHover
-
-                        anchors.fill: parent
-                        anchors.margins: 2
-
-                        radius: 12
-                        color: "#30343d"
-
-                        opacity: searchFileMouseArea.containsMouse ? 1 : 0
-
-                        Behavior on opacity {
-                            NumberAnimation { duration: 120 }
-                        }
-                    }
-
-                    Kirigami.Icon {
-                        id: searchFileIcon
-
-                        width: 36
-                        height: 36
-
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: parent.top
-                        anchors.topMargin: 8
-
-                        source: model.decoration || "text-x-generic"
-                    }
-
-                    PlasmaComponents.Label {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-
-                        anchors.top: searchFileIcon.bottom
-                        anchors.topMargin: 5
-
-                        anchors.leftMargin: 4
-                        anchors.rightMargin: 4
-
-                        text: model.display
-
-                        horizontalAlignment: Text.AlignHCenter
-
-                        maximumLineCount: 2
-                        elide: Text.ElideRight
-
-                        font.pixelSize: 13
-                    }
-
-                    MouseArea {
-                        id: searchFileMouseArea
-
-                        anchors.fill: parent
-
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-
-                        onClicked: {
-                            if (fileSearchGrid.model) {
-                                fileSearchGrid.model.trigger(index, "", null)
-                            }
-                            root.searchText = ""
-                            plasmoid.expanded = false
-                        }
-                    }
-                }
-            }
-
-            PlasmaComponents.Label {
-                id: settingsResultsLabel
-
-                x: 32
-
-                // Einstellungen folgen immer direkt auf den letzten
-                // tatsächlich sichtbaren Bereich.
-                y: fileSearchGrid.count > 0
-                    ? fileSearchGrid.y + fileSearchGrid.height + 18
-                    : appSearchGrid.count > 0
+                    // Wenn Apps fehlen, rutscht "Dateien" direkt unter
+                    // "Suchergebnisse", statt eine leere App-Fläche zu lassen.
+                    y: appSearchGrid.count > 0
                         ? appSearchGrid.y + appSearchGrid.height + 18
                         : 45
 
-                text: i18n("Settings")
+                    text: i18n("Files")
 
-                font.pixelSize: 14
-                font.bold: true
-                opacity: 0.85
+                    font.pixelSize: 14
+                    font.bold: true
+                    opacity: 0.85
 
-                visible: root.searchText.length > 0 && settingsSearchGrid.count > 0
-            }
+                    visible: root.searchText.length > 0 && fileSearchGrid.count > 0
+                }
 
-            GridView {
-                id: settingsSearchGrid
+                GridView {
+                    id: fileSearchGrid
 
-                x: 32
+                    x: 32
 
-                y: settingsResultsLabel.y + 30
+                    y: filesResultsLabel.y + 30
 
-                height: settingsSearchGrid.count > 0
-                    ? Math.ceil(settingsSearchGrid.count / launcher.columnCount) * settingsSearchGrid.cellHeight
-                    : 0
-                width: parent.width - 64
+                    height: fileSearchGrid.count > 0
+                        ? Math.ceil(fileSearchGrid.count / launcher.columnCount) * fileSearchGrid.cellHeight
+                        : 0
+                    width: parent.width - 64
 
-                clip: true
+                    clip: true
 
-                cellHeight: 80
-                cellWidth: width / launcher.columnCount
+                    cellHeight: 80
+                    cellWidth: width / launcher.columnCount
 
-                visible: root.searchText.length > 0 && settingsSearchGrid.count > 0
+                    visible: root.searchText.length > 0 && fileSearchGrid.count > 0
 
-                interactive: false
+                    interactive: false
 
-                model: settingsRunnerModel.count > 0 ? settingsRunnerModel.modelForRow(0) : null
+                    // Native KDE/KRunner-Dateisuche über den Baloo-Runner.
+                    model: fileSearchResultsModel
 
-                delegate: Item {
-                    id: searchSettingsItem
+                    delegate: Item {
+                        id: searchFileItem
 
-                    height: settingsSearchGrid.cellHeight
-                    width: settingsSearchGrid.cellWidth
+                        height: fileSearchGrid.cellHeight
+                        width: fileSearchGrid.cellWidth
 
-                    Rectangle {
-                        id: searchSettingsHover
+                        Rectangle {
+                            id: searchFileHover
 
-                        anchors.fill: parent
-                        anchors.margins: 2
+                            anchors.fill: parent
+                            anchors.margins: 2
 
-                        radius: 12
-                        color: "#30343d"
+                            radius: 12
+                            color: "#30343d"
 
-                        opacity: searchSettingsMouseArea.containsMouse ? 1 : 0
+                            opacity: searchFileMouseArea.containsMouse ? 1 : 0
 
-                        Behavior on opacity {
-                            NumberAnimation { duration: 120 }
+                            Behavior on opacity {
+                                NumberAnimation { duration: 120 }
+                            }
+                        }
+
+                        Kirigami.Icon {
+                            id: searchFileIcon
+
+                            width: 36
+                            height: 36
+
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.top: parent.top
+                            anchors.topMargin: 8
+
+                            source: model.decoration || "text-x-generic"
+                        }
+
+                        PlasmaComponents.Label {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+
+                            anchors.top: searchFileIcon.bottom
+                            anchors.topMargin: 5
+
+                            anchors.leftMargin: 4
+                            anchors.rightMargin: 4
+
+                            text: model.display
+
+                            horizontalAlignment: Text.AlignHCenter
+
+                            maximumLineCount: 2
+                            elide: Text.ElideRight
+
+                            font.pixelSize: 13
+                        }
+
+                        MouseArea {
+                            id: searchFileMouseArea
+
+                            anchors.fill: parent
+
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+
+                            onClicked: {
+                                if (fileSearchGrid.model) {
+                                    fileSearchGrid.model.trigger(index, "", null)
+                                }
+                                root.searchText = ""
+                                plasmoid.expanded = false
+                            }
                         }
                     }
+                }
 
-                    Kirigami.Icon {
-                        id: searchSettingsIcon
+                PlasmaComponents.Label {
+                    id: settingsResultsLabel
 
-                        width: 36
-                        height: 36
+                    x: 32
 
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: parent.top
-                        anchors.topMargin: 8
+                    // Einstellungen folgen immer direkt auf den letzten
+                    // tatsächlich sichtbaren Bereich.
+                    y: fileSearchGrid.count > 0
+                        ? fileSearchGrid.y + fileSearchGrid.height + 18
+                        : appSearchGrid.count > 0
+                            ? appSearchGrid.y + appSearchGrid.height + 18
+                            : 45
 
-                        source: model.decoration
-                    }
+                    text: i18n("Settings")
 
-                    PlasmaComponents.Label {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+                    font.pixelSize: 14
+                    font.bold: true
+                    opacity: 0.85
 
-                        anchors.top: searchSettingsIcon.bottom
-                        anchors.topMargin: 5
+                    visible: root.searchText.length > 0 && settingsSearchGrid.count > 0
+                }
 
-                        anchors.leftMargin: 4
-                        anchors.rightMargin: 4
+                GridView {
+                    id: settingsSearchGrid
 
-                        text: model.display
+                    x: 32
 
-                        horizontalAlignment: Text.AlignHCenter
+                    y: settingsResultsLabel.y + 30
 
-                        maximumLineCount: 2
-                        elide: Text.ElideRight
+                    height: settingsSearchGrid.count > 0
+                        ? Math.ceil(settingsSearchGrid.count / launcher.columnCount) * settingsSearchGrid.cellHeight
+                        : 0
+                    width: parent.width - 64
 
-                        font.pixelSize: 13
-                    }
+                    clip: true
 
-                    MouseArea {
-                        id: searchSettingsMouseArea
+                    cellHeight: 80
+                    cellWidth: width / launcher.columnCount
 
-                        anchors.fill: parent
+                    visible: root.searchText.length > 0 && settingsSearchGrid.count > 0
 
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
+                    interactive: false
 
-                        onClicked: {
-                            settingsSearchGrid.model.trigger(index, "", null)
-                            root.searchText = ""
-                            plasmoid.expanded = false
+                    model: settingsRunnerModel.count > 0 ? settingsRunnerModel.modelForRow(0) : null
+
+                    delegate: Item {
+                        id: searchSettingsItem
+
+                        height: settingsSearchGrid.cellHeight
+                        width: settingsSearchGrid.cellWidth
+
+                        Rectangle {
+                            id: searchSettingsHover
+
+                            anchors.fill: parent
+                            anchors.margins: 2
+
+                            radius: 12
+                            color: "#30343d"
+
+                            opacity: searchSettingsMouseArea.containsMouse ? 1 : 0
+
+                            Behavior on opacity {
+                                NumberAnimation { duration: 120 }
+                            }
+                        }
+
+                        Kirigami.Icon {
+                            id: searchSettingsIcon
+
+                            width: 36
+                            height: 36
+
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.top: parent.top
+                            anchors.topMargin: 8
+
+                            source: model.decoration
+                        }
+
+                        PlasmaComponents.Label {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+
+                            anchors.top: searchSettingsIcon.bottom
+                            anchors.topMargin: 5
+
+                            anchors.leftMargin: 4
+                            anchors.rightMargin: 4
+
+                            text: model.display
+
+                            horizontalAlignment: Text.AlignHCenter
+
+                            maximumLineCount: 2
+                            elide: Text.ElideRight
+
+                            font.pixelSize: 13
+                        }
+
+                        MouseArea {
+                            id: searchSettingsMouseArea
+
+                            anchors.fill: parent
+
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+
+                            onClicked: {
+                                settingsSearchGrid.model.trigger(index, "", null)
+                                root.searchText = ""
+                                plasmoid.expanded = false
+                            }
                         }
                     }
                 }
+
+                PlasmaComponents.Label {
+                    id: noSearchResultsLabel
+
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    y: 75
+                    height: 150
+
+                    text: root.searchText.length >= 3
+                        && fileSearchResultsModel
+                        && fileSearchResultsModel.count === 0
+                        ? i18n("No results found\n\n💡 Baloo only searches indexed folders.\nCheck file search under System Settings → Search → File Search.")
+                        : i18n("No results found")
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+
+                    font.pixelSize: 16
+                    opacity: 0.7
+
+                    visible: root.searchText.length > 0
+                        && appSearchGrid.count === 0
+                        && fileSearchGrid.count === 0
+                        && settingsSearchGrid.count === 0
+                }
             }
 
-            PlasmaComponents.Label {
-                id: noSearchResultsLabel
+            // ─────────────────────────────────────────
+            // Unterer Bereich
+            // ─────────────────────────────────────────
 
+            LauncherFooter {
                 anchors.left: parent.left
                 anchors.right: parent.right
+                anchors.bottom: parent.bottom
 
-                y: 75
-                height: 150
+                sessionManager: sessionManagement
 
-                text: root.searchText.length >= 3
-                    && fileSearchResultsModel
-                    && fileSearchResultsModel.count === 0
-                    ? i18n("No results found\n\n💡 Baloo only searches indexed folders.\nCheck file search under System Settings → Search → File Search.")
-                    : i18n("No results found")
+                showLockButton: plasmoid.configuration.showLockButton
+                showLogoutButton: plasmoid.configuration.showLogoutButton
+                showRestartButton: plasmoid.configuration.showRestartButton
+                showShutdownButton: plasmoid.configuration.showShutdownButton
 
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+                lockText: i18n("Lock Screen")
+                logoutText: i18n("Log Out")
+                restartText: i18n("Restart")
+                shutdownText: i18n("Shut Down")
 
-                font.pixelSize: 16
-                opacity: 0.7
-
-                visible: root.searchText.length > 0
-                    && appSearchGrid.count === 0
-                    && fileSearchGrid.count === 0
-                    && settingsSearchGrid.count === 0
-            }
-        }
-
-        // Unterer Bereich
-        // ─────────────────────────────────────────
-
-        Rectangle {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-
-            height: 78
-            radius: 18
-
-            color: "#15171d"
-        }
-
-        // ─────────────────────────────────────────
-        // Aktueller Benutzer
-        // ─────────────────────────────────────────
-
-        KCoreAddons.KUser {
-            id: currentUser
-        }
-
-        Item {
-            id: userInfo
-
-            anchors.left: parent.left
-            anchors.leftMargin: 24
-
-            anchors.verticalCenter: parent.bottom
-            anchors.verticalCenterOffset: -39
-
-            width: 250
-            height: 48
-
-            // ─────────────────────────────────────
-            // Benutzer-Avatar
-            // ─────────────────────────────────────
-
-            Rectangle {
-                id: avatarFrame
-
-                width: 32
-                height: 32
-
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-
-                radius: width / 2
-                color: "#30343d"
-
-                clip: true
-
-                Image {
-                    id: userAvatar
-
-                    anchors.fill: parent
-
-                    source: currentUser.faceIconUrl
-
-                    fillMode: Image.PreserveAspectCrop
-
-                    asynchronous: true
-                    cache: false
-                }
-
-                // Macht das Benutzerbild tatsächlich kreisrund.
-                // Das runde Rectangle allein würde das Bild nur
-                // innerhalb eines rechteckigen Clipping-Bereichs halten.
-                OpacityMask {
-                    anchors.fill: userAvatar
-
-                    source: userAvatar
-                    maskSource: avatarMask
-
-                    visible: userAvatar.status === Image.Ready
-                }
-
-                Rectangle {
-                    id: avatarMask
-
-                    anchors.fill: parent
-                    radius: width / 2
-                    color: "white"
-
-                    visible: false
-                }
-
-                // Falls kein Avatar vorhanden ist oder das Bild
-                // nicht geladen werden kann, wird ein neutrales
-                // Benutzer-Symbol angezeigt.
-                Kirigami.Icon {
-                    anchors.centerIn: parent
-
-                    width: 24
-                    height: 24
-
-                    source: "user"
-
-                    visible: userAvatar.status !== Image.Ready
+                onCloseLauncherRequested: {
+                    plasmoid.expanded = false
                 }
             }
-
-            // ─────────────────────────────────────
-            // Benutzername
-            // ─────────────────────────────────────
-
-            PlasmaComponents.Label {
-                anchors.left: avatarFrame.right
-                anchors.leftMargin: 12
-
-                anchors.right: parent.right
-                anchors.verticalCenter: avatarFrame.verticalCenter
-
-                text: currentUser.fullName
-
-                font.pixelSize: 15
-                font.bold: true
-
-                maximumLineCount: 1
-                elide: Text.ElideRight
-            }
-        }
-
-        // ─────────────────────────────────────────
-        // Sitzungs- und Energieaktionen
-        // ─────────────────────────────────────────
-
-        Row {
-            id: sessionActions
-
-            anchors.right: parent.right
-            anchors.rightMargin: 24
-            anchors.verticalCenter: parent.bottom
-            anchors.verticalCenterOffset: -39
-
-            spacing: 8
-
-            Rectangle {
-                id: lockButton
-
-                visible: plasmoid.configuration.showLockButton
-                width: 118
-                height: 42
-                radius: 12
-
-                color: lockMouse.containsMouse
-                    ? "#30343d"
-                    : "transparent"
-
-                opacity: sessionManagement.canLock ? 1 : 0.45
-
-                Behavior on color {
-                    ColorAnimation { duration: 120 }
-                }
-
-                Kirigami.Icon {
-                    width: 20
-                    height: 20
-
-                    anchors.left: parent.left
-                    anchors.leftMargin: 14
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    source: "system-lock-screen"
-                }
-
-                PlasmaComponents.Label {
-                    anchors.left: parent.left
-                    anchors.leftMargin: 42
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: i18n("Lock Screen")
-                    font.pixelSize: 13
-                }
-
-                MouseArea {
-                    id: lockMouse
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    enabled: sessionManagement.canLock
-                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-
-                    onClicked: {
-                        plasmoid.expanded = false
-                        sessionManagement.lock()
-                    }
-                }
-            }
-
-            Rectangle {
-                id: logoutButton
-
-                visible: plasmoid.configuration.showLogoutButton
-                width: 118
-                height: 42
-                radius: 12
-
-                color: logoutMouse.containsMouse
-                    ? "#30343d"
-                    : "transparent"
-
-                opacity: sessionManagement.canLogout ? 1 : 0.45
-
-                Behavior on color {
-                    ColorAnimation { duration: 120 }
-                }
-
-                Kirigami.Icon {
-                    width: 20
-                    height: 20
-
-                    anchors.left: parent.left
-                    anchors.leftMargin: 14
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    source: "system-log-out"
-                }
-
-                PlasmaComponents.Label {
-                    anchors.left: parent.left
-                    anchors.leftMargin: 42
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: i18n("Log Out")
-                    font.pixelSize: 13
-                }
-
-                MouseArea {
-                    id: logoutMouse
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    enabled: sessionManagement.canLogout
-                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-
-                    onClicked: {
-                        sessionManagement.requestLogout(1)
-                    }
-                }
-            }
-
-            Rectangle {
-                id: rebootButton
-
-                visible: plasmoid.configuration.showRestartButton
-                width: 112
-                height: 42
-                radius: 12
-
-                color: rebootMouse.containsMouse
-                    ? "#30343d"
-                    : "transparent"
-
-                opacity: sessionManagement.canReboot ? 1 : 0.45
-
-                Behavior on color {
-                    ColorAnimation { duration: 120 }
-                }
-
-                Kirigami.Icon {
-                    width: 20
-                    height: 20
-
-                    anchors.left: parent.left
-                    anchors.leftMargin: 14
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    source: "system-reboot"
-                }
-
-                PlasmaComponents.Label {
-                    anchors.left: parent.left
-                    anchors.leftMargin: 42
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: i18n("Restart")
-                    font.pixelSize: 13
-                }
-
-                MouseArea {
-                    id: rebootMouse
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    enabled: sessionManagement.canReboot
-                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-
-                    onClicked: {
-                        sessionManagement.requestReboot(1)
-                    }
-                }
-            }
-
-            Rectangle {
-                id: shutdownButton
-
-                visible: plasmoid.configuration.showShutdownButton
-                width: 108
-                height: 42
-                radius: 12
-
-                color: shutdownMouse.containsMouse
-                    ? "#30343d"
-                    : "transparent"
-
-                opacity: sessionManagement.canShutdown ? 1 : 0.45
-
-                Behavior on color {
-                    ColorAnimation { duration: 120 }
-                }
-
-                Kirigami.Icon {
-                    width: 20
-                    height: 20
-
-                    anchors.left: parent.left
-                    anchors.leftMargin: 14
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    source: "system-shutdown"
-                }
-
-                PlasmaComponents.Label {
-                    anchors.left: parent.left
-                    anchors.leftMargin: 42
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: i18n("Shut Down")
-                    font.pixelSize: 13
-                }
-
-                MouseArea {
-                    id: shutdownMouse
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    enabled: sessionManagement.canShutdown
-                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-
-                    onClicked: {
-                        sessionManagement.requestShutdown(1)
-                    }
-                }
-            }
-        }
         }
     }
 
@@ -2557,5 +2236,4 @@ PlasmoidItem {
 
         }
     }
-
 }
