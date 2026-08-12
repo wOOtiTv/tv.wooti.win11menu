@@ -780,12 +780,10 @@ PlasmoidItem {
                                 icon.name: "edit-rename"
 
                                 onTriggered: {
-                                    renameGroupDialog.groupId = String(pinnedEntry.entryData.groupId)
-                                    renameGroupDialog.groupName = String(pinnedEntry.entryData.groupName)
-                                    renameGroupField.text = String(pinnedEntry.entryData.groupName)
-                                    renameGroupDialog.open()
-                                    renameGroupField.forceActiveFocus()
-                                    renameGroupField.selectAll()
+                                    pinnedGroupDialogs.openRenameGroup(
+                                        pinnedEntry.entryData.groupId,
+                                        pinnedEntry.entryData.groupName
+                                    )
                                 }
                             }
 
@@ -820,10 +818,10 @@ PlasmoidItem {
                                 icon.name: "folder-new"
 
                                 onTriggered: {
-                                    addToGroupDialog.favoriteId = String(pinnedEntry.entryData.favoriteId)
-                                    addToGroupDialog.favoriteName = String(pinnedEntry.entryData.displayName)
-                                    addToGroupDialog.rebuildChoices()
-                                    addToGroupDialog.open()
+                                    pinnedGroupDialogs.openAddToGroup(
+                                        pinnedEntry.entryData.favoriteId,
+                                        pinnedEntry.entryData.displayName
+                                    )
                                 }
                             }
 
@@ -909,119 +907,30 @@ PlasmoidItem {
             // ─────────────────────────────────────────────
             // PINNED-GRUPPEN – Dialoge und Gruppenansicht
             // ─────────────────────────────────────────────
+            PinnedGroupDialogs {
+                id: pinnedGroupDialogs
 
-            ListModel {
-                id: groupChoiceModel
-            }
+                popupParent: launcher
 
-            Controls.Dialog {
-                id: addToGroupDialog
+                pinnedGroups: root.pinnedGroups
+                maxGroupApps: root.maxPinnedGroupApps
 
-                parent: launcher
-                x: Math.round((launcher.width - width) / 2)
-                y: Math.round((launcher.height - height) / 2)
-                width: 420
-                modal: true
-                focus: true
-                title: i18n("Add to group")
-                standardButtons: Controls.Dialog.Ok | Controls.Dialog.Cancel
+                addToGroupTitle: i18n("Add to group")
+                addToGroupText: i18n("Add %1 to:")
+                newGroupText: i18n("New group…")
+                groupNamePlaceholder: i18n("Group name")
+                renameGroupTitle: i18n("Rename group")
 
-                property string favoriteId: ""
-                property string favoriteName: ""
-
-                function rebuildChoices() {
-                    groupChoiceModel.clear()
-
-                    for (var i = 0; i < root.pinnedGroups.length; ++i) {
-                        var groupApps = root.pinnedGroups[i].apps || []
-
-                        // Full groups are intentionally omitted from the target list.
-                        if (groupApps.length >= root.maxPinnedGroupApps) {
-                            continue
-                        }
-
-                        groupChoiceModel.append({
-                            label: String(root.pinnedGroups[i].name),
-                            groupId: String(root.pinnedGroups[i].id),
-                            createNew: false
-                        })
-                    }
-
-                    groupChoiceModel.append({
-                        label: i18n("New group…"),
-                        groupId: "",
-                        createNew: true
-                    })
-
-                    groupChoice.currentIndex = groupChoiceModel.count > 0 ? 0 : -1
-                    newGroupField.text = ""
+                onCreateGroupRequested: function(name, favoriteId) {
+                    root.createGroupAndAdd(name, favoriteId)
                 }
 
-                contentItem: Column {
-                    spacing: 12
-
-                    Controls.Label {
-                        width: 360
-                        wrapMode: Text.WordWrap
-                        text: i18n("Add %1 to:").replace("%1", addToGroupDialog.favoriteName)
-                    }
-
-                    Controls.ComboBox {
-                        id: groupChoice
-                        width: 360
-                        model: groupChoiceModel
-                        textRole: "label"
-                    }
-
-                    Controls.TextField {
-                        id: newGroupField
-                        width: 360
-                        visible: groupChoice.currentIndex >= 0
-                                && groupChoiceModel.get(groupChoice.currentIndex).createNew
-                        placeholderText: i18n("Group name")
-                        onAccepted: addToGroupDialog.accept()
-                    }
+                onAddFavoriteToGroupRequested: function(favoriteId, groupId) {
+                    root.addFavoriteToGroup(favoriteId, groupId)
                 }
 
-                onAccepted: {
-                    if (groupChoice.currentIndex < 0) {
-                        return
-                    }
-
-                    var choice = groupChoiceModel.get(groupChoice.currentIndex)
-
-                    if (choice.createNew) {
-                        root.createGroupAndAdd(newGroupField.text, favoriteId)
-                    } else {
-                        root.addFavoriteToGroup(favoriteId, choice.groupId)
-                    }
-                }
-            }
-
-            Controls.Dialog {
-                id: renameGroupDialog
-
-                parent: launcher
-                x: Math.round((launcher.width - width) / 2)
-                y: Math.round((launcher.height - height) / 2)
-                width: 420
-                modal: true
-                focus: true
-                title: i18n("Rename group")
-                standardButtons: Controls.Dialog.Ok | Controls.Dialog.Cancel
-
-                property string groupId: ""
-                property string groupName: ""
-
-                contentItem: Controls.TextField {
-                    id: renameGroupField
-                    width: 360
-                    placeholderText: i18n("Group name")
-                    onAccepted: renameGroupDialog.accept()
-                }
-
-                onAccepted: {
-                    root.renameGroup(groupId, renameGroupField.text)
+                onRenameGroupRequested: function(groupId, name) {
+                    root.renameGroup(groupId, name)
                 }
             }
 
