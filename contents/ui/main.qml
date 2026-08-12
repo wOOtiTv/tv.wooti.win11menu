@@ -752,9 +752,15 @@ PlasmoidItem {
                 viewListText: i18n("View: List  ▾")
                 viewGridText: i18n("View: Grid  ▾")
                 pinText: i18n("Pin")
+                pinToTaskManagerText: i18n("Pin to Task Manager")
+                editApplicationText: i18n("Edit Application…")
 
                 onListViewToggleRequested: {
                     launcher.allAppsListView = !launcher.allAppsListView
+                }
+
+                onCloseLauncherRequested: {
+                    plasmoid.expanded = false
                 }
             }
 
@@ -789,6 +795,8 @@ PlasmoidItem {
 
                 pinText: i18n("Pin")
                 unpinText: i18n("Unpin")
+                pinToTaskManagerText: i18n("Pin to Task Manager")
+                editApplicationText: i18n("Edit Application…")
 
                 noResultsText: i18n("No results found")
 

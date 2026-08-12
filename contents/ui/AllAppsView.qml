@@ -23,6 +23,11 @@ Item {
     property string viewGridText: ""
     property string pinText: ""
 
+    property string pinToTaskManagerText: ""
+    property string editApplicationText: ""
+
+    signal closeLauncherRequested()
+
     signal listViewToggleRequested()
 
     readonly property int allAppsColumnCount:
@@ -305,6 +310,50 @@ Item {
                                             allAppsView.favoritesModel.addFavorite(
                                                 favoriteId
                                             )
+                                        }
+                                    }
+                                }
+
+                                Controls.MenuSeparator { }
+
+                                Controls.MenuItem {
+                                    text: allAppsView.pinToTaskManagerText
+                                    icon.name: "pin"
+
+                                    onTriggered: {
+                                        if (!appSection.sectionModel) {
+                                            return
+                                        }
+
+                                        var closeRequested = appSection.sectionModel.trigger(
+                                            index,
+                                            "addToTaskManager",
+                                            null
+                                        )
+
+                                        if (closeRequested) {
+                                            allAppsView.closeLauncherRequested()
+                                        }
+                                    }
+                                }
+
+                                Controls.MenuItem {
+                                    text: allAppsView.editApplicationText
+                                    icon.name: "kmenuedit"
+
+                                    onTriggered: {
+                                        if (!appSection.sectionModel) {
+                                            return
+                                        }
+
+                                        var closeRequested = appSection.sectionModel.trigger(
+                                            index,
+                                            "editApplication",
+                                            null
+                                        )
+
+                                        if (closeRequested) {
+                                            allAppsView.closeLauncherRequested()
                                         }
                                     }
                                 }

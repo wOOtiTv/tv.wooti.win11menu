@@ -21,6 +21,8 @@ Item {
     property string filesText: ""
     property string settingsText: ""
     property string pinText: ""
+    property string pinToTaskManagerText: ""
+    property string editApplicationText: ""
     property string unpinText: ""
     property string noResultsText: ""
     property string balooNoResultsText: ""
@@ -176,6 +178,8 @@ Item {
                 Controls.Menu {
                     id: searchAppContextMenu
 
+                    Controls.MenuSeparator { }
+
                     Connections {
                         target: searchResultsView.contextController
 
@@ -206,6 +210,48 @@ Item {
                                 searchResultsView.favorites.removeFavorite(favoriteId)
                             } else {
                                 searchResultsView.favorites.addFavorite(favoriteId)
+                            }
+                        }
+                    }
+
+                    Controls.MenuItem {
+                        text: searchResultsView.pinToTaskManagerText
+                        icon.name: "pin"
+
+                        onTriggered: {
+                            if (!appSearchGrid.model) {
+                                return
+                            }
+
+                            var closeRequested = appSearchGrid.model.trigger(
+                                index,
+                                "addToTaskManager",
+                                null
+                            )
+
+                            if (closeRequested) {
+                                searchResultsView.closeLauncherRequested()
+                            }
+                        }
+                    }
+
+                    Controls.MenuItem {
+                        text: searchResultsView.editApplicationText
+                        icon.name: "kmenuedit"
+
+                        onTriggered: {
+                            if (!appSearchGrid.model) {
+                                return
+                            }
+
+                            var closeRequested = appSearchGrid.model.trigger(
+                                index,
+                                "editApplication",
+                                null
+                            )
+
+                            if (closeRequested) {
+                                searchResultsView.closeLauncherRequested()
                             }
                         }
                     }
@@ -330,6 +376,7 @@ Item {
 
                     anchors.fill: parent
                     hoverEnabled: true
+                    acceptedButtons: Qt.LeftButton
                     cursorShape: Qt.PointingHandCursor
 
                     onClicked: {
@@ -442,6 +489,7 @@ Item {
 
                     anchors.fill: parent
                     hoverEnabled: true
+                    acceptedButtons: Qt.LeftButton
                     cursorShape: Qt.PointingHandCursor
 
                     onClicked: {
