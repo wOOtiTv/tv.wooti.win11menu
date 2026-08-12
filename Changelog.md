@@ -1,18 +1,6 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.7] – Stability & KDE Integration
-
-### Fixed
-- restored reliable loading of the alphabetically grouped All Applications view after launcher and Plasma model refreshes
-- fixed pin/unpin support for application search results
-- fixed KDE launcher actions by passing the correct plasmoid interface to Kicker models
-- fixed Pin to Task Manager behavior
-- initialized KDE favorites per launcher instance, matching the native Kicker/Kickoff behavior
-
-### Changed
-- removed Add to Desktop from the launcher context menu because the corresponding Plasma action can fail with desktop-link permission errors independently of this launcher
-
 ## [1.0.6] – Customization & Pinned Groups
 
 ### Added
