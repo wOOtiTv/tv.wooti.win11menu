@@ -599,19 +599,36 @@ PlasmoidItem {
             // ─────────────────────────────────────────────
             // ANGEHEFTETE ANWENDUNGEN
             // ─────────────────────────────────────────────
+            PinnedSection {
+                id: pinnedSection
 
-            PlasmaComponents.Label {
-                id: pinnedLabel
-
-                x: 32
+                x: 0
                 y: 105
+                width: parent.width
 
-                text: i18n("Pinned")
+                searchText: root.searchText
+                entriesModel: launcher.pinnedDisplayEntries
 
-                font.pixelSize: 16
-                font.bold: true
+                columnCount: launcher.columnCount
+                cellWidth: launcher.cellWidth
+                cellHeight: launcher.cellHeight
 
-                visible: root.searchText.length === 0
+                groupsEnabled: root.pinnedGroupsEnabled
+
+                groupController: root
+                favoritesModel: rootModel.favoritesModel
+                launcherController: launcher
+                groupDialogsController: pinnedGroupDialogs
+                groupPopupController: groupPopup
+                contextMenuController: root
+
+                pinnedText: i18n("Pinned")
+                renameGroupText: i18n("Rename group…")
+                dissolveGroupText: i18n("Dissolve group")
+                addToGroupText: i18n("Add to group…")
+                pinToTaskManagerText: i18n("Pin to Task Manager")
+                editApplicationText: i18n("Edit Application…")
+                unpinText: i18n("Unpin")
             }
 
             // Unsichtbarer Daten-Spiegel des bereits alphabetisch sortierten
@@ -640,280 +657,6 @@ PlasmoidItem {
                         onFavoriteIdValueChanged: launcher.schedulePinnedDisplayRebuild()
                         onDisplayNameChanged: launcher.schedulePinnedDisplayRebuild()
                         onDecorationValueChanged: launcher.schedulePinnedDisplayRebuild()
-                    }
-                }
-            }
-
-            Grid {
-                id: pinnedApps
-
-                x: 32
-                y: 145
-
-                columns: 8
-                rowSpacing: 0
-                columnSpacing: 0
-
-                visible: root.searchText.length === 0
-
-                Repeater {
-                    model: launcher.pinnedDisplayEntries
-
-                    delegate: Item {
-                        id: pinnedEntry
-
-                        property var entryData: modelData
-                        property bool isGroup: entryData && entryData.entryType === "group"
-
-                        height: launcher.cellHeight
-                        width: launcher.cellWidth
-
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: 2
-                            radius: 12
-                            color: "#30343d"
-                            opacity: pinnedEntryMouseArea.containsMouse ? 1 : 0
-
-                            Behavior on opacity {
-                                NumberAnimation { duration: 120 }
-                            }
-                        }
-
-                        Rectangle {
-                            id: pinnedGroupPreview
-                            visible: pinnedEntry.isGroup
-
-                            width: 46
-                            height: 46
-                            radius: 10
-
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.top: parent.top
-                            anchors.topMargin: 4
-
-                            color: "#272b33"
-                            border.color: "#454b56"
-                            border.width: 1
-                            clip: true
-
-                            Grid {
-                                anchors.centerIn: parent
-                                columns: 2
-                                spacing: 2
-
-                                Repeater {
-                                    model: pinnedEntry.entryData
-                                        ? (pinnedEntry.entryData.previewIcons || [])
-                                        : []
-
-                                    delegate: Item {
-                                        width: 18
-                                        height: 18
-
-                                        Kirigami.Icon {
-                                            anchors.fill: parent
-                                            source: modelData
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        PlasmaComponents.Label {
-                            visible: pinnedEntry.isGroup
-
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: pinnedGroupPreview.bottom
-                            anchors.topMargin: 4
-                            anchors.leftMargin: 4
-                            anchors.rightMargin: 4
-
-                            text: pinnedEntry.entryData
-                                ? String(pinnedEntry.entryData.groupName || "")
-                                : ""
-
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            maximumLineCount: 1
-                            elide: Text.ElideRight
-                            font.pixelSize: 13
-                        }
-
-                        Kirigami.Icon {
-                            id: pinnedEntryIcon
-                            visible: !pinnedEntry.isGroup
-
-                            height: 36
-                            width: 36
-
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.top: parent.top
-                            anchors.topMargin: 8
-
-                            source: pinnedEntry.entryData
-                                ? pinnedEntry.entryData.decoration
-                                : ""
-                        }
-
-                        PlasmaComponents.Label {
-                            visible: !pinnedEntry.isGroup
-
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: pinnedEntryIcon.bottom
-                            anchors.topMargin: 4
-                            anchors.leftMargin: 4
-                            anchors.rightMargin: 4
-
-                            text: pinnedEntry.entryData
-                                ? String(pinnedEntry.entryData.displayName || "")
-                                : ""
-
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            maximumLineCount: 1
-                            elide: Text.ElideRight
-                            font.pixelSize: 13
-                        }
-
-                        Controls.Menu {
-                            id: pinnedGroupContextMenu
-
-                            Connections {
-                                target: root
-
-                                function onCloseContextMenus() {
-                                    pinnedGroupContextMenu.close()
-                                }
-                            }
-
-                            Controls.MenuItem {
-                                text: i18n("Rename group…")
-                                icon.name: "edit-rename"
-
-                                onTriggered: {
-                                    pinnedGroupDialogs.openRenameGroup(
-                                        pinnedEntry.entryData.groupId,
-                                        pinnedEntry.entryData.groupName
-                                    )
-                                }
-                            }
-
-                            Controls.MenuItem {
-                                text: i18n("Dissolve group")
-                                icon.name: "folder-remove"
-
-                                onTriggered: {
-                                    if (groupPopup.groupId === String(pinnedEntry.entryData.groupId)) {
-                                        groupPopup.close()
-                                    }
-
-                                    root.dissolveGroup(String(pinnedEntry.entryData.groupId))
-                                }
-                            }
-                        }
-
-                        Controls.Menu {
-                            id: pinnedFavoriteContextMenu
-
-                            Connections {
-                                target: root
-
-                                function onCloseContextMenus() {
-                                    pinnedFavoriteContextMenu.close()
-                                }
-                            }
-
-                            Controls.MenuItem {
-                                visible: root.pinnedGroupsEnabled
-                                text: i18n("Add to group…")
-                                icon.name: "folder-new"
-
-                                onTriggered: {
-                                    pinnedGroupDialogs.openAddToGroup(
-                                        pinnedEntry.entryData.favoriteId,
-                                        pinnedEntry.entryData.displayName
-                                    )
-                                }
-                            }
-
-                            Controls.MenuSeparator { }
-
-                            Controls.MenuItem {
-                                text: i18n("Pin to Task Manager")
-                                icon.name: "pin"
-
-                                onTriggered: launcher.triggerPinnedFavoriteAction(
-                                    pinnedEntry.entryData.favoriteId,
-                                    "addToTaskManager"
-                                )
-                            }
-
-                            Controls.MenuItem {
-                                text: i18n("Edit Application…")
-                                icon.name: "kmenuedit"
-
-                                onTriggered: launcher.triggerPinnedFavoriteAction(
-                                    pinnedEntry.entryData.favoriteId,
-                                    "editApplication"
-                                )
-                            }
-
-                            Controls.MenuSeparator { }
-
-                            Controls.MenuItem {
-                                text: i18n("Unpin")
-                                icon.name: "list-remove"
-
-                                onTriggered: {
-                                    root.removeFavoriteFromAllGroups(pinnedEntry.entryData.favoriteId)
-                                    rootModel.favoritesModel.removeFavorite(
-                                        pinnedEntry.entryData.favoriteId
-                                    )
-                                }
-                            }
-                        }
-
-                        MouseArea {
-                            id: pinnedEntryMouseArea
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton
-                            cursorShape: Qt.PointingHandCursor
-
-                            onClicked: function(mouse) {
-                                if (mouse.button === Qt.RightButton) {
-                                    if (pinnedEntry.isGroup) {
-                                        pinnedGroupContextMenu.popup(
-                                            pinnedEntryMouseArea,
-                                            mouse.x,
-                                            mouse.y
-                                        )
-                                    } else {
-                                        pinnedFavoriteContextMenu.popup(
-                                            pinnedEntryMouseArea,
-                                            mouse.x,
-                                            mouse.y
-                                        )
-                                    }
-                                    return
-                                }
-
-                                if (pinnedEntry.isGroup) {
-                                    groupPopup.groupId = String(pinnedEntry.entryData.groupId)
-                                    groupPopup.groupName = String(pinnedEntry.entryData.groupName)
-                                    groupPopup.rebuildApps()
-                                    groupPopup.openFor(pinnedEntry)
-                                    return
-                                }
-
-                                launcher.triggerPinnedFavorite(
-                                    pinnedEntry.entryData.favoriteId
-                                )
-                            }
-                        }
                     }
                 }
             }
@@ -989,7 +732,7 @@ PlasmoidItem {
                 id: allAppsView
 
                 x: 0
-                y: pinnedApps.y + pinnedApps.height + 25
+                y: pinnedSection.y + pinnedSection.height + 25
 
                 width: parent.width
                 height: Math.max(0, parent.height - y)
