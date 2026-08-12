@@ -7,7 +7,7 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 
 - 📌 **Pinned apps** – pin/unpin applications via right-click context menu
 - 🗂️ **Pinned groups** – organize pinned apps into optional named groups with up to 12 apps per group
-- 🧩 **KDE context actions** – pin regular pinned apps to the Task Manager or edit their application entry
+- 🧩 **KDE context actions** – pin applications to the Task Manager or edit their application entry from Pinned, All Applications and application search results
 - 🔤 **All applications** – alphabetically grouped applications
 - 📐 **Grid / List view** – switch between a compact grid and a clean list layout
 - 🔍 **Integrated search** – applications, files (via Baloo) and system settings
@@ -55,12 +55,14 @@ Group behavior:
 - each group can contain up to **12 applications**
 - the popup displays up to **4 columns × 3 rows** without scrolling
 - right-click a group to rename or dissolve it
-- right-click an application inside a group to remove it from the group or unpin it completely
+- right-click an application inside a group to remove it from the group
 
-Regular pinned applications also expose selected native KDE actions in their context menu:
+Application entries in **Pinned**, **All Applications** and **application search results** expose selected native KDE actions in their context menu:
 
 - **Pin to Task Manager**
 - **Edit Application**
+
+Pinned applications and application search results additionally support pin/unpin behavior for the launcher itself.
 
 ### 🌍 Languages
 
@@ -128,7 +130,7 @@ balooctl6 status
 
 ## 📄 License
 
-GPL-2.0-or-later
+This project is licensed under **GPL-2.0-or-later**. See [`LICENSE`](LICENSE) for the full license text.
 
 ---
 
