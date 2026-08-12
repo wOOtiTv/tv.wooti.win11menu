@@ -228,9 +228,17 @@ Controls.Popup {
                         Controls.Menu {
                             id: groupAppContextMenu
 
+                            Connections {
+                                target: groupPopup.contextMenuController
+
+                                function onCloseContextMenus() {
+                                    groupAppContextMenu.close()
+                                }
+                            }
+
                             Controls.MenuItem {
                                 text: groupPopup.removeFromGroupText
-                                icon.name: "go-up"
+                                icon.name: "list-remove"
 
                                 onTriggered: {
                                     if (!groupPopup.groupController) {
@@ -247,38 +255,6 @@ Controls.Popup {
                                     groupPopup.groupController.removeFavoriteFromGroup(
                                         groupAppItem.appData.favoriteId,
                                         groupPopup.groupId
-                                    )
-
-                                    if (!wasLastApp) {
-                                        groupAppContextMenu.close()
-                                        groupPopup.rebuildApps()
-                                    }
-                                }
-                            }
-
-                            Controls.MenuItem {
-                                text: groupPopup.unpinText
-                                icon.name: "list-remove"
-
-                                onTriggered: {
-                                    if (!groupPopup.groupController
-                                            || !groupPopup.favoritesModel) {
-                                        return
-                                    }
-
-                                    var wasLastApp = groupPopup.appEntries.length <= 1
-
-                                    if (wasLastApp) {
-                                        groupAppContextMenu.close()
-                                        groupPopup.close()
-                                    }
-
-                                    groupPopup.groupController.removeFavoriteFromAllGroups(
-                                        groupAppItem.appData.favoriteId
-                                    )
-
-                                    groupPopup.favoritesModel.removeFavorite(
-                                        groupAppItem.appData.favoriteId
                                     )
 
                                     if (!wasLastApp) {
