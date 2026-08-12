@@ -716,12 +716,10 @@ PlasmoidItem {
 
                 favoriteDataSource: pinnedFavoriteData
                 groupController: root
-                favoritesModel: rootModel.favoritesModel
                 launcherController: launcher
                 contextMenuController: root
 
                 removeFromGroupText: i18n("Remove from group")
-                unpinText: i18n("Unpin")
             }
 
             // ─────────────────────────────────────────────
