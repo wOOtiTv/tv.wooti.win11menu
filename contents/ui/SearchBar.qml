@@ -6,7 +6,6 @@ Rectangle {
 
     property string searchText: ""
     property string placeholderText: ""
-    property bool launcherExpanded: false
 
     signal searchTextEdited(string text)
 
@@ -47,15 +46,6 @@ Rectangle {
 
         onTextEdited: {
             searchBar.searchTextEdited(text)
-        }
-    }
-
-    Shortcut {
-        sequence: "Ctrl+F"
-        enabled: searchBar.launcherExpanded
-
-        onActivated: {
-            searchBar.focusSearchField()
         }
     }
 }

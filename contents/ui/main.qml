@@ -596,50 +596,18 @@ PlasmoidItem {
         // Suchfeld
         // ─────────────────────────────────────────
 
-        Rectangle {
-            id: searchBox
+        SearchBar {
+            id: searchBar
 
             x: 32
             y: 24
-            height: 46
             width: parent.width - 64
 
-            radius: 23
-            color: "#17191f"
-            border.color: "#30343d"
-            border.width: 1
+            searchText: root.searchText
+            placeholderText: i18n("Search for apps, files and settings")
 
-            Text {
-                anchors.left: parent.left
-                anchors.leftMargin: 20
-                anchors.verticalCenter: parent.verticalCenter
-
-                text: "⌕"
-                color: "#4da3ff"
-                font.pixelSize: 25
-            }
-
-            PlasmaComponents.TextField {
-                id: searchField
-
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-
-                leftPadding: 52
-                rightPadding: 16
-
-                placeholderText: i18n("Search for apps, files and settings")
-
-                background: null
-
-                font.pixelSize: 15
-
-                text: root.searchText
-
-                onTextEdited: {
-                    root.searchText = text
-                }
+            onSearchTextEdited: function(text) {
+                root.searchText = text
             }
         }
 
@@ -649,7 +617,7 @@ PlasmoidItem {
             enabled: plasmoid.expanded
 
             onActivated: {
-                searchField.forceActiveFocus()
+                searchBar.focusSearchField()
             }
         }
 
