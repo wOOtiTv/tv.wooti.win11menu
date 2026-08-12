@@ -9,12 +9,10 @@ Controls.Popup {
     property Item popupParent
     property var favoriteDataSource
     property var groupController
-    property var favoritesModel
     property var launcherController
     property var contextMenuController
 
     property string removeFromGroupText: ""
-    property string unpinText: ""
 
     property string groupId: ""
     property string groupName: ""
