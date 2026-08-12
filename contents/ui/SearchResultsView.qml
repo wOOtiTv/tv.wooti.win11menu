@@ -8,11 +8,11 @@ Item {
 
     property string searchText: ""
 
-    property var appRunnerModel
-    property var fileSearchResultsModel
-    property var settingsRunnerModel
-    property var favoritesModel
-    property var contextMenuController
+    property var appsRunner
+    property var filesResultsModel
+    property var settingsRunner
+    property var favorites
+    property var contextController
 
     property int columnCount: 8
 
@@ -118,9 +118,9 @@ Item {
 
             interactive: false
 
-            model: searchResultsView.appRunnerModel
-                && searchResultsView.appRunnerModel.count > 0
-                    ? searchResultsView.appRunnerModel.modelForRow(0)
+            model: searchResultsView.appsRunner
+                && searchResultsView.appsRunner.count > 0
+                    ? searchResultsView.appsRunner.modelForRow(0)
                     : null
 
             delegate: Item {
@@ -177,7 +177,7 @@ Item {
                     id: searchAppContextMenu
 
                     Connections {
-                        target: searchResultsView.contextMenuController
+                        target: searchResultsView.contextController
 
                         function onCloseContextMenus() {
                             searchAppContextMenu.close()
@@ -185,27 +185,27 @@ Item {
                     }
 
                     Controls.MenuItem {
-                        text: searchResultsView.favoritesModel
-                            && searchResultsView.favoritesModel.isFavorite(model.favoriteId)
+                        text: searchResultsView.favorites
+                            && searchResultsView.favorites.isFavorite(model.favoriteId)
                                 ? searchResultsView.unpinText
                                 : searchResultsView.pinText
-                        icon.name: searchResultsView.favoritesModel
-                            && searchResultsView.favoritesModel.isFavorite(model.favoriteId)
+                        icon.name: searchResultsView.favorites
+                            && searchResultsView.favorites.isFavorite(model.favoriteId)
                                 ? "list-remove"
                                 : "list-add"
 
                         onTriggered: {
                             var favoriteId = String(model.favoriteId || "")
 
-                            if (!favoriteId || !searchResultsView.favoritesModel) {
+                            if (!favoriteId || !searchResultsView.favorites) {
                                 return
                             }
 
-                            if (searchResultsView.favoritesModel.isFavorite(favoriteId)) {
+                            if (searchResultsView.favorites.isFavorite(favoriteId)) {
                                 searchResultsView.removeFavoriteFromGroupsRequested(favoriteId)
-                                searchResultsView.favoritesModel.removeFavorite(favoriteId)
+                                searchResultsView.favorites.removeFavorite(favoriteId)
                             } else {
-                                searchResultsView.favoritesModel.addFavorite(favoriteId)
+                                searchResultsView.favorites.addFavorite(favoriteId)
                             }
                         }
                     }
@@ -274,7 +274,7 @@ Item {
                 && fileSearchGrid.count > 0
 
             interactive: false
-            model: searchResultsView.fileSearchResultsModel
+            model: searchResultsView.filesResultsModel
 
             delegate: Item {
                 id: searchFileItem
@@ -383,9 +383,9 @@ Item {
 
             interactive: false
 
-            model: searchResultsView.settingsRunnerModel
-                && searchResultsView.settingsRunnerModel.count > 0
-                    ? searchResultsView.settingsRunnerModel.modelForRow(0)
+            model: searchResultsView.settingsRunner
+                && searchResultsView.settingsRunner.count > 0
+                    ? searchResultsView.settingsRunner.modelForRow(0)
                     : null
 
             delegate: Item {
@@ -462,8 +462,8 @@ Item {
             height: 150
 
             text: searchResultsView.searchText.length >= 3
-                && searchResultsView.fileSearchResultsModel
-                && searchResultsView.fileSearchResultsModel.count === 0
+                && searchResultsView.filesResultsModel
+                && searchResultsView.filesResultsModel.count === 0
                     ? searchResultsView.balooNoResultsText
                     : searchResultsView.noResultsText
 
