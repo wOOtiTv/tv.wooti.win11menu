@@ -330,7 +330,7 @@ Item {
                                         return
                                     }
 
-                                    console.log("🦊 ALL APPS CLICK:", model.display, model.favoriteId)
+                                    //console.log("🦊 ALL APPS CLICK:", model.display, model.favoriteId)
                                     Qt.callLater(function() {
                                         appSection.sectionModel.trigger(index, "", null)
                                     })

@@ -473,15 +473,6 @@ PlasmoidItem {
             }
         }
 
-        readonly property int allAppsColumnCount:
-            allAppsListView ? 1 : columnCount
-
-        readonly property int allAppsCellHeight:
-            allAppsListView ? 58 : cellHeight
-
-        readonly property int sectionHeaderHeight: 34
-        readonly property int sectionSpacing: 8
-
         Connections {
             target: rootModel
 
@@ -493,41 +484,11 @@ PlasmoidItem {
             }
         }
 
-        function allAppsContentHeight() {
-            if (!allAppsModel) {
-                return cellHeight * appRows
-            }
-
-            var total = 0
-
-            for (var i = 0; i < allAppsModel.count; ++i) {
-                var groupModel = allAppsModel.modelForRow(i)
-
-                if (!groupModel) {
-                    continue
-                }
-
-                total += sectionHeaderHeight
-                total += Math.ceil(
-                    groupModel.count / allAppsColumnCount
-                ) * allAppsCellHeight
-                total += sectionSpacing
-            }
-
-            return Math.max(total, cellHeight * appRows)
-        }
-
-        // Sichtbare App-Zeilen im Bereich "Alle".
-        // Das Menü wächst zusätzlich automatisch, wenn mehrere
-        // Reihen angehefteter Apps vorhanden sind.
-        readonly property int appRows: 7
-        readonly property int pinnedRows: Math.max(1, Math.ceil((rootModel.favoritesModel ? rootModel.favoritesModel.count : 0) / columnCount))
-
+        // Breite des Launcher-Inhalts.
         readonly property int contentWidth:
             (cellWidth * columnCount) + 64
 
-        // Bewusst kompakte Grundhöhe:
-        // "Alle" bekommt seinen eigenen Scrollbereich.
+        // Maximale sichtbare Höhe des Bereichs "Alle Anwendungen".
         readonly property int allAppsVisibleHeight: 520
 
         // ─────────────────────────────────────────
@@ -1307,296 +1268,33 @@ PlasmoidItem {
             // ALLE ANWENDUNGEN
             // ─────────────────────────────────────────────
 
-            PlasmaComponents.Label {
-                id: allAppsLabel
+            AllAppsView {
+                id: allAppsView
 
-                x: 32
-
+                x: 0
                 y: pinnedApps.y + pinnedApps.height + 25
 
-                text: i18n("All")
-
-                font.pixelSize: 16
-                font.bold: true
-
-                visible: root.searchText.length === 0
-            }
-
-            PlasmaComponents.Label {
-                id: viewLabel
-
-                x: parent.width - 140
-
-                y: allAppsLabel.y
-
-                text: launcher.allAppsListView
-                    ? i18n("View: List  ▾")
-                    : i18n("View: Grid  ▾")
-
-                font.pixelSize: 14
-                opacity: viewToggleMouseArea.containsMouse ? 1.0 : 0.85
-
-                visible: root.searchText.length === 0
-
-                MouseArea {
-                    id: viewToggleMouseArea
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-
-                    onClicked: {
-                        launcher.allAppsListView = !launcher.allAppsListView
-                    }
-                }
-            }
-
-            // ─────────────────────────────────────────
-            // ALLE APPS – ALPHABETISCH
-            // ─────────────────────────────────────────
-
-            Flickable {
-                id: allAppsScroll
-
-                x: 32
-                y: allAppsLabel.y + 40
-
-                width: parent.width - 64
-                height: Math.max(
-                    0,
-                    Math.min(
-                        launcher.allAppsVisibleHeight,
-                        parent.height - y - 100
-                    )
-                )
-
-                clip: true
-
-                contentWidth: width
-                contentHeight: launcher.allAppsContentHeight()
-
-                boundsBehavior: Flickable.StopAtBounds
-
-                // Dezente, dauerhaft sichtbare Scrollbar wie bei KDE/Windows 11.
-                Controls.ScrollBar.vertical: Controls.ScrollBar {
-                    policy: Controls.ScrollBar.AlwaysOn
-
-                    width: 6
-
-                    contentItem: Rectangle {
-                        implicitWidth: 5
-                        radius: width / 2
-                        color: "#555a66"
-                        opacity: parent.pressed ? 0.9 : 0.65
-                    }
-
-                    background: Rectangle {
-                        color: "transparent"
-                    }
-                }
-
-                visible: root.searchText.length === 0
-
-                Column {
-                    id: allAppsColumn
-
-                    width: allAppsScroll.width
-                    spacing: 0
-
-                    Repeater {
-                        model: launcher.allAppsModel
-                            ? launcher.allAppsModel.count
-                            : 0
-
-                        delegate: Item {
-                            id: appSection
-
-                            width: allAppsColumn.width
-
-                            property var sectionModel: launcher.allAppsModel
-                                ? launcher.allAppsModel.modelForRow(index)
-                                : null
-
-                            height: launcher.sectionHeaderHeight +
-                                    (sectionModel
-                                    ? Math.ceil(
-                                        sectionModel.count /
-                                        launcher.allAppsColumnCount
-                                    ) * launcher.allAppsCellHeight
-                                    : 0) +
-                                    launcher.sectionSpacing
-
-                            PlasmaComponents.Label {
-                                id: sectionLabel
-
-                                x: 0
-                                y: 0
-
-                                width: parent.width
-                                height: launcher.sectionHeaderHeight
-
-                                text: appSection.sectionModel
-                                    ? (appSection.sectionModel.description === "0-9"
-                                    ? "#"
-                                    : appSection.sectionModel.description)
-                                    : ""
-
-                                font.pixelSize: 15
-                                font.bold: true
-
-                                verticalAlignment: Text.AlignVCenter
-                            }
-
-                            GridView {
-                                id: sectionGrid
-
-                                x: 0
-                                y: sectionLabel.height
-
-                                width: parent.width
-                                height: appSection.sectionModel
-                                    ? Math.ceil(
-                                        appSection.sectionModel.count /
-                                        launcher.allAppsColumnCount
-                                    ) * launcher.allAppsCellHeight
-                                    : 0
-
-                                cellWidth: width / launcher.allAppsColumnCount
-                                cellHeight: launcher.allAppsCellHeight
-
-                                interactive: false
-                                clip: false
-
-                                model: appSection.sectionModel
-
-                                delegate: Item {
-                                    id: appItem
-
-                                    width: sectionGrid.cellWidth
-                                    height: sectionGrid.cellHeight
-
-                                    Rectangle {
-                                        id: hoverBackground
-
-                                        anchors.fill: parent
-                                        anchors.margins: 2
-
-                                        radius: 12
-
-                                        color: "#30343d"
-
-                                        opacity: mouseArea.containsMouse ? 1 : 0
-
-                                        Behavior on opacity {
-                                            NumberAnimation {
-                                                duration: 120
-                                            }
-                                        }
-                                    }
-
-                                    Kirigami.Icon {
-                                        id: appIcon
-
-                                        width: 36
-                                        height: 36
-
-                                        x: launcher.allAppsListView
-                                            ? 16
-                                            : (parent.width - width) / 2
-
-                                        y: launcher.allAppsListView
-                                            ? (parent.height - height) / 2
-                                            : 8
-
-                                        source: model.decoration
-                                    }
-
-                                    PlasmaComponents.Label {
-                                        x: launcher.allAppsListView
-                                            ? appIcon.x + appIcon.width + 12
-                                            : 4
-
-                                        y: launcher.allAppsListView
-                                            ? (parent.height - height) / 2
-                                            : appIcon.y + appIcon.height + 4
-
-                                        width: launcher.allAppsListView
-                                            ? parent.width - appIcon.x - appIcon.width - 28
-                                            : parent.width - 8
-
-                                        height: launcher.allAppsListView
-                                            ? 28
-                                            : parent.height - appIcon.height - appIcon.y - 4
-
-                                        text: model.display
-
-                                        horizontalAlignment: launcher.allAppsListView
-                                            ? Text.AlignLeft                                        : Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-
-                                        maximumLineCount: 1
-                                        elide: Text.ElideRight
-
-                                        font.pixelSize: 13
-                                    }
-
-                                    Controls.Menu {
-                                        id: appContextMenu
-
-                                        Connections {
-                                            target: root
-
-                                            function onCloseContextMenus() {
-                                                appContextMenu.close()
-                                            }
-                                        }
-
-                                        Controls.MenuItem {
-                                            text: i18n("Pin")
-                                            icon.name: "list-add"
-
-                                            onTriggered: {
-                                                var favoriteId = model.favoriteId
-
-                                                if (favoriteId) {
-                                                    rootModel.favoritesModel.addFavorite(
-                                                        favoriteId
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    MouseArea {
-                                        id: mouseArea
-
-                                        anchors.fill: parent
-
-                                        hoverEnabled: true
-                                        acceptedButtons: Qt.LeftButton | Qt.RightButton
-
-                                        cursorShape: Qt.PointingHandCursor
-
-                                        onClicked: function(mouse) {
-                                            if (mouse.button === Qt.RightButton) {
-                                                appContextMenu.popup(
-                                                    mouseArea,
-                                                    mouse.x,
-                                                    mouse.y
-                                                )
-                                                return
-                                            }
-
-                                            console.log("🦊 ALL APPS CLICK:", model.display, model.favoriteId)
-                                            Qt.callLater(function() {
-                                                appSection.sectionModel.trigger(index, "", null)
-                                            })
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                width: parent.width
+                height: Math.max(0, parent.height - y)
+
+                allAppsModel: launcher.allAppsModel
+                favoritesModel: rootModel.favoritesModel
+                contextMenuController: root
+
+                searchText: root.searchText
+                listView: launcher.allAppsListView
+
+                columnCount: launcher.columnCount
+                gridCellHeight: launcher.cellHeight
+                visibleHeight: launcher.allAppsVisibleHeight
+
+                allText: i18n("All")
+                viewListText: i18n("View: List  ▾")
+                viewGridText: i18n("View: Grid  ▾")
+                pinText: i18n("Pin")
+
+                onListViewToggleRequested: {
+                    launcher.allAppsListView = !launcher.allAppsListView
                 }
             }
 
