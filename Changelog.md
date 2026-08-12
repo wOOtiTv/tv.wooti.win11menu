@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.7] – Stability & KDE Integration
+
+### Fixed
+- restored reliable loading of the alphabetically grouped All Applications view after Plasma model refreshes
+- added pin/unpin support for application search results
+- fixed KDE launcher context actions by using the correct plasmoid interface
+- fixed Pin to Task Manager behavior
+- improved KDE favorites initialization for the launcher instance
+
+### Changed
+- removed Add to Desktop from the context menu because the corresponding KDE/Plasma action can fail independently of this launcher
+
 ## [1.0.6] – Customization & Pinned Groups
 
 ### Added
