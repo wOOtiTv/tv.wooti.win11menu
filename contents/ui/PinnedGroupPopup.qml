@@ -11,8 +11,7 @@ Controls.Popup {
     property var groupController
     property var favoritesModel
     property var launcherController
-
-    property bool launcherOpen: true
+    property var contextMenuController
 
     property string removeFromGroupText: ""
     property string unpinText: ""
@@ -34,20 +33,6 @@ Controls.Popup {
     modal: false
     focus: true
     closePolicy: Controls.Popup.CloseOnEscape | Controls.Popup.CloseOnPressOutside
-
-    // Close explicitly when the window overlay is pressed.
-    // This keeps the popup behaviour reliable inside Plasma as well.
-    Controls.Overlay.onPressed: {
-        if (groupPopup.visible) {
-            groupPopup.close()
-        }
-    }
-
-    onLauncherOpenChanged: {
-        if (!launcherOpen && visible) {
-            close()
-        }
-    }
 
     // Groups are limited to 12 apps (4 columns × 3 rows), so the
     // complete group is shown at once without scrolling.
@@ -128,20 +113,12 @@ Controls.Popup {
         appEntries = entries
     }
 
-    function refreshOrClose() {
-        Qt.callLater(function() {
-            if (!groupController
-                    || groupController.groupIndex(groupId) < 0) {
-                close()
-                return
-            }
+    Connections {
+        target: groupPopup.contextMenuController
 
-            rebuildApps()
-
-            if (appEntries.length === 0) {
-                close()
-            }
-        })
+        function onCloseContextMenus() {
+            groupPopup.close()
+        }
     }
 
     background: Rectangle {
@@ -202,7 +179,6 @@ Controls.Popup {
 
                     delegate: Item {
                         id: groupAppItem
-
                         property var appData: modelData
 
                         width: Math.floor((groupAppsGrid.width - 12) / 4)
@@ -261,12 +237,22 @@ Controls.Popup {
                                         return
                                     }
 
+                                    var wasLastApp = groupPopup.appEntries.length <= 1
+
+                                    if (wasLastApp) {
+                                        groupAppContextMenu.close()
+                                        groupPopup.close()
+                                    }
+
                                     groupPopup.groupController.removeFavoriteFromGroup(
                                         groupAppItem.appData.favoriteId,
                                         groupPopup.groupId
                                     )
 
-                                    groupPopup.refreshOrClose()
+                                    if (!wasLastApp) {
+                                        groupAppContextMenu.close()
+                                        groupPopup.rebuildApps()
+                                    }
                                 }
                             }
 
@@ -280,21 +266,31 @@ Controls.Popup {
                                         return
                                     }
 
+                                    var wasLastApp = groupPopup.appEntries.length <= 1
+
+                                    if (wasLastApp) {
+                                        groupAppContextMenu.close()
+                                        groupPopup.close()
+                                    }
+
                                     groupPopup.groupController.removeFavoriteFromAllGroups(
                                         groupAppItem.appData.favoriteId
                                     )
+
                                     groupPopup.favoritesModel.removeFavorite(
                                         groupAppItem.appData.favoriteId
                                     )
 
-                                    groupPopup.refreshOrClose()
+                                    if (!wasLastApp) {
+                                        groupAppContextMenu.close()
+                                        groupPopup.rebuildApps()
+                                    }
                                 }
                             }
                         }
 
                         MouseArea {
                             id: groupAppMouse
-
                             anchors.fill: parent
                             hoverEnabled: true
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
