@@ -294,9 +294,11 @@ PlasmoidItem {
         readonly property int cellHeight: 88
 
         // Alphabetisch gruppiertes KDE-Modell für "Alle".
-        // modelForRow(0) ist das "Alle Anwendungen"-Modell;
-        // dessen Einträge sind die Buchstabengruppen (#, A, B, C ...).
-        property var allAppsModel: null
+        // modelForRow() erzeugt in QML selbst keine Abhängigkeit. Deshalb
+        // hängt die Bindung bewusst an allAppsModelRow und wird bei jedem
+        // RootModel-Refresh wie im KDE-Kickoff manuell neu ausgewertet.
+        property int allAppsModelRow: 0
+        readonly property var allAppsModel: rootModel.modelForRow(allAppsModelRow)
 
         // Ansicht für "Alle": Raster oder Liste.
         // Standard bleibt das bisherige Raster.
@@ -416,8 +418,8 @@ PlasmoidItem {
         }
 
         // Trigger a native Kicker action directly on the favorite's source row.
-        // We intentionally do NOT read or copy model.actionList here: the
-        // launcher only needs these three well-known application actions.
+        // We intentionally do NOT read or copy model.actionList here; the
+        // launcher only invokes the native actions exposed in this menu.
         function triggerPinnedFavoriteAction(favoriteId, actionId) {
             var proxyRow = favoriteProxyRow(favoriteId)
 
@@ -480,18 +482,14 @@ PlasmoidItem {
         readonly property int sectionHeaderHeight: 34
         readonly property int sectionSpacing: 8
 
-        Timer {
-            id: allAppsModelInitTimer
-            interval: 150
-            repeat: false
-            running: true
-            onTriggered: launcher.refreshAllAppsModel()
-        }
+        Connections {
+            target: rootModel
 
-        function refreshAllAppsModel() {
-            var model = rootModel.modelForRow(0)
-            if (model) {
-                allAppsModel = model
+            function onRefreshed() {
+                // modelForRow() is a method call and therefore does not create
+                // its own QML dependency. Re-emit the dependency signal so the
+                // allAppsModel binding resolves the newly-created KDE child model.
+                launcher.allAppsModelRowChanged()
             }
         }
 
@@ -903,16 +901,6 @@ PlasmoidItem {
                         Controls.MenuSeparator { }
 
                         Controls.MenuItem {
-                            text: i18n("Add to Desktop")
-                            icon.name: "list-add"
-
-                            onTriggered: launcher.triggerPinnedFavoriteAction(
-                                pinnedEntry.entryData.favoriteId,
-                                "addToDesktop"
-                            )
-                        }
-
-                        Controls.MenuItem {
                             text: i18n("Pin to Task Manager")
                             icon.name: "pin"
 
@@ -1247,7 +1235,8 @@ PlasmoidItem {
 
                                 Kirigami.Icon {
                                     id: groupAppIcon
-                                    width: 36
+
+                                      width: 36
                                     height: 36
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     anchors.top: parent.top
@@ -1799,15 +1788,63 @@ PlasmoidItem {
                         font.pixelSize: 13
                     }
 
+                    Controls.Menu {
+                        id: searchAppContextMenu
+
+                        Connections {
+                            target: root
+
+                            function onCloseContextMenus() {
+                                searchAppContextMenu.close()
+                            }
+                        }
+
+                        Controls.MenuItem {
+                            text: rootModel.favoritesModel
+                                && rootModel.favoritesModel.isFavorite(model.favoriteId)
+                                    ? i18n("Unpin")
+                                    : i18n("Pin")
+                            icon.name: rootModel.favoritesModel
+                                && rootModel.favoritesModel.isFavorite(model.favoriteId)
+                                    ? "list-remove"
+                                    : "list-add"
+
+                            onTriggered: {
+                                var favoriteId = String(model.favoriteId || "")
+
+                                if (!favoriteId || !rootModel.favoritesModel) {
+                                    return
+                                }
+
+                                if (rootModel.favoritesModel.isFavorite(favoriteId)) {
+                                    root.removeFavoriteFromAllGroups(favoriteId)
+                                    rootModel.favoritesModel.removeFavorite(favoriteId)
+                                } else {
+                                    rootModel.favoritesModel.addFavorite(favoriteId)
+                                }
+                            }
+                        }
+                    }
+
                     MouseArea {
                         id: searchAppMouseArea
 
                         anchors.fill: parent
 
                         hoverEnabled: true
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
                         cursorShape: Qt.PointingHandCursor
 
-                        onClicked: {
+                        onClicked: function(mouse) {
+                            if (mouse.button === Qt.RightButton) {
+                                searchAppContextMenu.popup(
+                                    searchAppMouseArea,
+                                    mouse.x,
+                                    mouse.y
+                                )
+                                return
+                            }
+
                             appSearchGrid.model.trigger(index, "", null)
                             root.searchText = ""
                             plasmoid.expanded = false
@@ -2445,7 +2482,7 @@ PlasmoidItem {
 
     // ─────────────────────────────────────────────
     // Angeheftete Anwendungen – alphabetische Anzeige
-    // ─────────────────────────────────────────────
+    // ────────────────────────────────────────────
     //
     // Das originale KDE-Favoritenmodell bleibt unverändert.
     // Nur die Darstellung wird alphabetisch nach `display` sortiert.
@@ -2466,7 +2503,7 @@ PlasmoidItem {
     Kicker.RunnerModel {
         id: appRunnerModel
 
-        appletInterface: plasmoid
+        appletInterface: root
 
         favoritesModel: rootModel.favoritesModel
 
@@ -2489,7 +2526,7 @@ PlasmoidItem {
     Kicker.RunnerModel {
         id: fileRunnerModel
 
-        appletInterface: plasmoid
+        appletInterface: root
         favoritesModel: rootModel.favoritesModel
 
         query: root.searchText
@@ -2520,7 +2557,7 @@ PlasmoidItem {
     Kicker.RunnerModel {
         id: settingsRunnerModel
 
-        appletInterface: plasmoid
+        appletInterface: root
 
         favoritesModel: rootModel.favoritesModel
 
@@ -2543,31 +2580,14 @@ PlasmoidItem {
         showRecentApps: false
         showRecentDocs: false
 
-        appletInterface: plasmoid
+        appletInterface: root
 
         Component.onCompleted: {
             if (globalFavorites) {
-                globalFavorites.initForClient("org.kde.plasma.kicker")
+                globalFavorites.initForClient("org.kde.plasma.kicker.favorites.instance-" + Plasmoid.id)
             }
 
-            // Warten, bis fullRepresentation initialisiert wurde
-            Qt.callLater(function() {
-                if (fullRepresentation && fullRepresentation.refreshAllAppsModel) {
-                    fullRepresentation.refreshAllAppsModel()
-                }
-            })
         }
     }
 
-    Connections {
-        target: rootModel
-
-        function onRefreshed() {
-            Qt.callLater(function() {
-                if (fullRepresentation && fullRepresentation.refreshAllAppsModel) {
-                    fullRepresentation.refreshAllAppsModel()
-                }
-            })
-        }
-    }
 }

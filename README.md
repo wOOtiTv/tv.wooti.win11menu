@@ -7,7 +7,7 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 
 - 📌 **Pinned apps** – pin/unpin applications via right-click context menu
 - 🗂️ **Pinned groups** – organize pinned apps into optional named groups with up to 12 apps per group
-- 🧩 **KDE context actions** – add regular pinned apps to the desktop, pin them to the Task Manager or edit their application entry
+- 🧩 **KDE context actions** – pin regular pinned apps to the Task Manager or edit their application entry
 - 🔤 **All applications** – alphabetically grouped applications
 - 📐 **Grid / List view** – switch between a compact grid and a clean list layout
 - 🔍 **Integrated search** – applications, files (via Baloo) and system settings
@@ -59,7 +59,6 @@ Group behavior:
 
 Regular pinned applications also expose selected native KDE actions in their context menu:
 
-- **Add to Desktop**
 - **Pin to Task Manager**
 - **Edit Application**
 
