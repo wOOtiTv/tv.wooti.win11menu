@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] – Custom Widget Icon
+
+### Added
+- added a bundled custom launcher logo for Plasma widget and alternative-menu listings
+
+### Changed
+- updated the Plasma metadata to use the bundled package icon
+
 ## [1.1.0] – Modularization & Context Menu Improvements
 
 ### Added
