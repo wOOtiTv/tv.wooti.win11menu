@@ -3,6 +3,28 @@
 A modern, Windows 11 inspired application launcher menu for KDE Plasma 6.
 Clean dark design, fast search and full KDE integration – built with pure QML.
 
+### 📸 Screenshots
+
+<p align="center">
+  <img src="screens/001.png" width="48%" alt="Windows 11 Start Menu screenshot 1">
+  <img src="screens/002.png" width="48%" alt="Windows 11 Start Menu screenshot 2">
+</p>
+
+<p align="center">
+  <img src="screens/003.png" width="48%" alt="Windows 11 Start Menu screenshot 3">
+  <img src="screens/004.png" width="48%" alt="Windows 11 Start Menu screenshot 4">
+</p>
+
+<p align="center">
+  <img src="screens/005.png" width="48%" alt="Windows 11 Start Menu screenshot 5">
+  <img src="screens/006.png" width="48%" alt="Windows 11 Start Menu screenshot 6">
+</p>
+
+<p align="center">
+  <img src="screens/007.png" width="48%" alt="Windows 11 Start Menu screenshot 7">
+  <img src="screens/008.png" width="48%" alt="Windows 11 Start Menu screenshot 8">
+</p>
+
 ### ✨ Features
 
 - 📌 **Pinned apps** – pin/unpin applications via right-click context menu
