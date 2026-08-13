@@ -17,7 +17,8 @@ import "Translations.js" as Translations
 PlasmoidItem {
     id: root
 
-    Plasmoid.icon: plasmoid.configuration.icon || "start-here"
+    readonly property string bundledDefaultIcon: Qt.resolvedUrl("icons/start-here.svg").toString()
+    Plasmoid.icon: (!plasmoid.configuration.icon || plasmoid.configuration.icon === "start-here") ? bundledDefaultIcon : plasmoid.configuration.icon
     property string searchText: ""
     signal closeContextMenus()
 

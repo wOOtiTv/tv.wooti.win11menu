@@ -1,13 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.1.1] – Custom Widget Icon
+## [1.1.1] – Launcher Icon Improvements
 
 ### Added
-- added a bundled custom launcher logo for Plasma widget and alternative-menu listings
+- added a bundled product icon for the Plasma widget and launcher alternatives view
+- added a bundled `start-here.svg` as the default menu icon to avoid relying on the user's installed icon theme
 
 ### Changed
-- updated the Plasma metadata to use the bundled package icon
+- the default menu icon now always uses the bundled `start-here.svg`
+- custom icons selected in the launcher settings continue to use the KDE icon theme
+- resetting the menu icon restores the bundled default icon
+- updated package metadata for version 1.1.1
 
 ## [1.1.0] – Modularization & Context Menu Improvements
 
