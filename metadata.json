@@ -11,7 +11,7 @@
         "Category": "Application Launchers",
         "Description": "Win11-style application launcher for KDE Plasma.",
         "EnabledByDefault": true,
-        "Icon": "contents/images/logo.png",
+        "Icon": "/images/logo.png",
         "Id": "tv.wooti.win11menu",
         "License": "GPL-2.0-or-later",
         "Name": "Windows 11 Start Menu",
