@@ -13,7 +13,8 @@ Controls.Button {
     implicitHeight: Kirigami.Units.gridUnit * 4
 
     display: Controls.AbstractButton.IconOnly
-    icon.name: value || defaultValue
+    icon.name: (value && value !== defaultValue) ? value : ""
+    icon.source: (!value || value === defaultValue) ? Qt.resolvedUrl("icons/start-here.svg") : ""
     icon.width: Kirigami.Units.iconSizes.large
     icon.height: Kirigami.Units.iconSizes.large
 

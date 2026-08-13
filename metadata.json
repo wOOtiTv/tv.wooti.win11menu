@@ -11,12 +11,12 @@
         "Category": "Application Launchers",
         "Description": "Win11-style application launcher for KDE Plasma.",
         "EnabledByDefault": true,
-        "Icon": "start-here-kde",
+        "Icon": "/images/logo.png",
         "Id": "tv.wooti.win11menu",
         "License": "GPL-2.0-or-later",
         "Name": "Windows 11 Start Menu",
-        "Version": "1.1.0",
-        "Website": "https://wooti.tv"
+        "Version": "1.1.1",
+        "Website": "https://github.com/wOOtiTv/tv.wooti.win11menu"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-Provides": [
