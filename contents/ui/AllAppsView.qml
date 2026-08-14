@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls as Controls
+import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
 
@@ -17,6 +18,10 @@ Item {
     property int gridCellHeight: 88
     property int visibleHeight: 520
     property int appRows: 7
+    readonly property int iconSize: Math.max(
+        24,
+        Math.min(48, Plasmoid.configuration.iconSize || 36)
+    )
 
     property string allText: ""
     property string viewListText: ""
@@ -244,8 +249,8 @@ Item {
                             Kirigami.Icon {
                                 id: appIcon
 
-                                width: 36
-                                height: 36
+                                width: allAppsView.iconSize
+                                height: allAppsView.iconSize
 
                                 x: allAppsView.listView
                                     ? 16
