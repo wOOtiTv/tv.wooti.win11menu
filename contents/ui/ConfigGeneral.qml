@@ -7,8 +7,8 @@ Kirigami.FormLayout {
 
     property string cfg_language: "system"
     property alias cfg_icon: menuIcon.value
-    property alias cfg_menuWidth: menuWidthSpin.value
     property alias cfg_menuHeight: menuHeightSpin.value
+    property alias cfg_menuWidth: menuWidthSpin.value
     property bool cfg_showLockButton: true
     property bool cfg_showLogoutButton: true
     property bool cfg_showRestartButton: true
@@ -68,25 +68,6 @@ Kirigami.FormLayout {
     }
 
     Controls.SpinBox {
-        id: menuWidthSpin
-
-        Kirigami.FormData.label: i18n("Menu width:")
-        from: 800
-        to: 1600
-        stepSize: 16
-        editable: true
-    }
-
-    Controls.Label {
-        text: i18n("Min. 800 px · Max. 1600 px · Default: 1120 px")
-        opacity: 0.7
-    }
-
-    Item {
-        implicitHeight: Kirigami.Units.smallSpacing * 2
-    }
-
-    Controls.SpinBox {
         id: menuHeightSpin
 
         Kirigami.FormData.label: i18n("Menu height:")
@@ -97,7 +78,26 @@ Kirigami.FormLayout {
     }
 
     Controls.Label {
-        text: i18n("Min. 600 px · Max. 1200 px · Default: 891 px")
+        text: i18n("Min. 600 px · Max. 1200 px · Default: 800 px")
+        opacity: 0.7
+    }
+
+    Item {
+        implicitHeight: Kirigami.Units.smallSpacing * 2
+    }
+
+    Controls.SpinBox {
+        id: menuWidthSpin
+
+        Kirigami.FormData.label: i18n("Menu width:")
+        from: 800
+        to: 1600
+        stepSize: 16
+        editable: true
+    }
+
+    Controls.Label {
+        text: i18n("Min. 800 px · Max. 1600 px · Default: 1000 px")
         opacity: 0.7
     }
 
