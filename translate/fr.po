@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wOOti Win11 Menu 1.0.5\n"
+"Project-Id-Version: wOOti Win11 Menu 1.2.0\n"
 "Report-Msgid-Bugs-To: https://github.com/wOOtiTv/tv.wooti.win11menu/issues\n"
-"POT-Creation-Date: 2026-08-10 10:45+0200\n"
-"PO-Revision-Date: 2026-08-10 10:45+0200\n"
+"POT-Creation-Date: 2026-08-14 21:10+0200\n"
+"PO-Revision-Date: 2026-08-14 21:10+0200\n"
 "Last-Translator: wOOtiTv <mail@wooti.tv>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -112,6 +112,29 @@ msgstr "Réinitialiser par défaut"
 msgid "Current icon:"
 msgstr "Icône actuelle:"
 
+#: contents/ui/ConfigGeneral.qml
+msgid "Icon size:"
+msgstr "Taille des icônes :"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Min. 24 px · Max. 48 px · Default: 36 px"
+msgstr "Min. 24 px · Max. 48 px · Par défaut : 36 px"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Menu height:"
+msgstr "Hauteur du menu :"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Min. 600 px · Max. 1200 px · Default: 800 px"
+msgstr "Min. 600 px · Max. 1200 px · Par défaut : 800 px"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Menu width:"
+msgstr "Largeur du menu :"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Min. 800 px · Max. 1600 px · Default: 1000 px"
+msgstr "Min. 800 px · Max. 1600 px · Par défaut : 1000 px"
 
 #: contents/ui/main.qml
 msgid "Lock Screen"
