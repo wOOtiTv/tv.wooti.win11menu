@@ -1,0 +1,54 @@
+name: Publish Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish Plasma package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Verify tag matches metadata version
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(python -c 'import json; print(json.load(open("metadata.json", encoding="utf-8"))["KPlugin"]["Version"])')"
+          EXPECTED_TAG="v${VERSION}"
+
+          echo "Metadata version: ${VERSION}"
+          echo "Release tag:      ${GITHUB_REF_NAME}"
+
+          if [[ "${GITHUB_REF_NAME}" != "${EXPECTED_TAG}" ]]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match metadata version ${VERSION}."
+            exit 1
+          fi
+
+      - name: Build Plasma package
+        run: python tools/build_plasmoid.py
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "${GITHUB_REF_NAME}" \
+            dist/*.plasmoid \
+            dist/*.plasmoid.sha256 \
+            --verify-tag \
+            --title "wOOti Win11 Menu ${GITHUB_REF_NAME}" \
+            --generate-notes
