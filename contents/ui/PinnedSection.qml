@@ -17,7 +17,7 @@ Item {
         24,
         Math.min(48, Plasmoid.configuration.iconSize || 36)
     )
-    readonly property int hoverInset: Math.max(2, 38 - iconSize)
+    readonly property int hoverPadding: 4
 
     readonly property int effectiveColumnCount: Math.max(
         columnCount,
@@ -89,8 +89,28 @@ Item {
                 width: pinnedSection.effectiveCellWidth
 
                 Rectangle {
-                    anchors.fill: parent
-                    anchors.margins: pinnedSection.hoverInset
+                    id: pinnedEntryHover
+
+                    readonly property Item contentIcon:
+                        pinnedEntry.isGroup ? pinnedGroupPreview : pinnedEntryIcon
+                    readonly property Item contentLabel:
+                        pinnedEntry.isGroup ? pinnedGroupLabel : pinnedEntryLabel
+
+                    x: Math.max(2, Math.round((parent.width - width) / 2))
+                    y: Math.max(2, contentIcon.y - pinnedSection.hoverPadding)
+                    width: Math.min(
+                        parent.width - 4,
+                        Math.max(
+                            contentIcon.width,
+                            Math.min(contentLabel.implicitWidth, parent.width - 8)
+                        ) + pinnedSection.hoverPadding * 2
+                    )
+                    height: Math.min(
+                        parent.height - y - 2,
+                        contentLabel.y + contentLabel.implicitHeight
+                            + pinnedSection.hoverPadding - y
+                    )
+
                     radius: 12
                     color: "#30343d"
                     opacity: pinnedEntryMouseArea.containsMouse ? 1 : 0
@@ -141,6 +161,7 @@ Item {
                 }
 
                 PlasmaComponents.Label {
+                    id: pinnedGroupLabel
                     visible: pinnedEntry.isGroup
 
                     anchors.left: parent.left
@@ -178,6 +199,7 @@ Item {
                 }
 
                 PlasmaComponents.Label {
+                    id: pinnedEntryLabel
                     visible: !pinnedEntry.isGroup
 
                     anchors.left: parent.left
