@@ -289,9 +289,12 @@ PlasmoidItem {
         readonly property var appletInterface: Plasmoid
 
         // 8 Spalten wie bei unserem aktuellen Layout.
-        // Die Zellgröße bestimmt die tatsächliche Breite des Menüs.
+        // Die Zellbreite folgt der tatsächlich verfügbaren Popup-Breite.
         readonly property int columnCount: 8
-        readonly property int cellWidth: 132
+        readonly property int cellWidth: Math.max(
+            1,
+            Math.floor((popupWidth - 64) / columnCount)
+        )
         readonly property int cellHeight: 88
 
         // Alphabetisch gruppiertes KDE-Modell für "Alle".
@@ -499,37 +502,29 @@ PlasmoidItem {
             }
         }
 
-        // Breite des Launcher-Inhalts.
-        readonly property int contentWidth:
-            (cellWidth * columnCount) + 64
+        // Breite des Launcher-Inhalts. 1120 px entspricht exakt v1.1.1.
+        readonly property int contentWidth: Math.max(
+            800,
+            Math.min(1600, plasmoid.configuration.menuWidth || 1120)
+        )
 
-        // Maximale sichtbare Höhe des Bereichs "Alle Anwendungen".
-        readonly property int allAppsVisibleHeight: 520
-
-        // ─────────────────────────────────────────
-        // FESTE MENÜHÖHE
-        // ─────────────────────────────────────────
-        //
-        // Diese Höhe entspricht exakt dem aktuellen Layout
-        // mit EINER Pinned-Zeile (8 Apps).
-        //
-        // Wichtig:
-        // pinnedRows wird hier NICHT mehr verwendet.
-        // Eine 9. App darf deshalb niemals die Außenhöhe
-        // des Menüs verändern.
-        readonly property int fixedMenuHeight:
-            24 + 46 + 35 +
-            88 +
-            25 + 35 + 40 +
-            allAppsVisibleHeight +
-            78
+        // Höhe des Launcher-Inhalts. 891 px entspricht exakt v1.1.1.
+        readonly property int contentHeight: Math.max(
+            600,
+            Math.min(1200, plasmoid.configuration.menuHeight || 891)
+        )
 
         readonly property rect screenRect: root.availableScreenRect
 
         readonly property int popupHeight: Math.min(
-            fixedMenuHeight,
+            contentHeight,
             screenRect.height - (Kirigami.Units.gridUnit * 2)
         )
+
+        // "Alle Anwendungen" darf die zusätzlich verfügbare Höhe nutzen.
+        // Die Ansicht begrenzt sich intern weiterhin selbst auf den Platz
+        // zwischen ihrem Kopfbereich und dem Footer.
+        readonly property int allAppsVisibleHeight: popupHeight
 
         readonly property int popupWidth: Math.min(
             contentWidth,

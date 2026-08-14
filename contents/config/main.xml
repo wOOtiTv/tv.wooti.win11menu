@@ -14,6 +14,18 @@
       <default>start-here</default>
     </entry>
 
+    <entry name="iconSize" type="Int">
+      <default>36</default>
+    </entry>
+
+    <entry name="menuHeight" type="Int">
+      <default>800</default>
+    </entry>
+
+    <entry name="menuWidth" type="Int">
+      <default>1000</default>
+    </entry>
+
     <entry name="showLockButton" type="Bool">
       <default>true</default>
     </entry>

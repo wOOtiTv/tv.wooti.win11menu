@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls as Controls
+import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
 
@@ -17,6 +18,11 @@ Item {
     property int gridCellHeight: 88
     property int visibleHeight: 520
     property int appRows: 7
+    readonly property int iconSize: Math.max(
+        24,
+        Math.min(48, Plasmoid.configuration.iconSize || 36)
+    )
+    readonly property int hoverInset: Math.max(2, 38 - iconSize)
 
     property string allText: ""
     property string viewListText: ""
@@ -228,7 +234,9 @@ Item {
                                 id: hoverBackground
 
                                 anchors.fill: parent
-                                anchors.margins: 2
+                                anchors.margins: allAppsView.listView
+                                    ? 2
+                                    : allAppsView.hoverInset
 
                                 radius: 12
                                 color: "#30343d"
@@ -244,8 +252,8 @@ Item {
                             Kirigami.Icon {
                                 id: appIcon
 
-                                width: 36
-                                height: 36
+                                width: allAppsView.iconSize
+                                height: allAppsView.iconSize
 
                                 x: allAppsView.listView
                                     ? 16

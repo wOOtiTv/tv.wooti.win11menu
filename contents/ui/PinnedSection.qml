@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls as Controls
+import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
 
@@ -12,6 +13,21 @@ Item {
     property int columnCount: 8
     property int cellWidth: 132
     property int cellHeight: 88
+    readonly property int iconSize: Math.max(
+        24,
+        Math.min(48, Plasmoid.configuration.iconSize || 36)
+    )
+    readonly property int hoverPadding: 4
+    readonly property int hoverWidth: iconSize + 80
+
+    readonly property int effectiveColumnCount: Math.max(
+        columnCount,
+        Math.floor((width - 64) / 132)
+    )
+    readonly property int effectiveCellWidth: Math.max(
+        1,
+        Math.floor((width - 64) / effectiveColumnCount)
+    )
 
     property bool groupsEnabled: true
 
@@ -54,7 +70,7 @@ Item {
         x: 32
         y: 40
 
-        columns: pinnedSection.columnCount
+        columns: pinnedSection.effectiveColumnCount
         rowSpacing: 0
         columnSpacing: 0
 
@@ -71,11 +87,28 @@ Item {
                     entryData && entryData.entryType === "group"
 
                 height: pinnedSection.cellHeight
-                width: pinnedSection.cellWidth
+                width: pinnedSection.effectiveCellWidth
 
                 Rectangle {
-                    anchors.fill: parent
-                    anchors.margins: 2
+                    id: pinnedEntryHover
+
+                    readonly property Item contentIcon:
+                        pinnedEntry.isGroup ? pinnedGroupPreview : pinnedEntryIcon
+                    readonly property Item contentLabel:
+                        pinnedEntry.isGroup ? pinnedGroupLabel : pinnedEntryLabel
+
+                    width: Math.min(
+                        parent.width - 4,
+                        pinnedSection.hoverWidth
+                    )
+                    x: Math.round((parent.width - width) / 2)
+                    y: Math.max(2, contentIcon.y - pinnedSection.hoverPadding)
+                    height: Math.min(
+                        parent.height - y - 2,
+                        contentLabel.y + contentLabel.implicitHeight
+                            + pinnedSection.hoverPadding - y
+                    )
+
                     radius: 12
                     color: "#30343d"
                     opacity: pinnedEntryMouseArea.containsMouse ? 1 : 0
@@ -89,8 +122,8 @@ Item {
                     id: pinnedGroupPreview
                     visible: pinnedEntry.isGroup
 
-                    width: 46
-                    height: 46
+                    width: pinnedSection.iconSize + 10
+                    height: pinnedSection.iconSize + 10
                     radius: 10
 
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -113,8 +146,8 @@ Item {
                                 : []
 
                             delegate: Item {
-                                width: 18
-                                height: 18
+                                width: Math.max(10, Math.floor(pinnedSection.iconSize / 2))
+                                height: width
 
                                 Kirigami.Icon {
                                     anchors.fill: parent
@@ -126,14 +159,13 @@ Item {
                 }
 
                 PlasmaComponents.Label {
+                    id: pinnedGroupLabel
                     visible: pinnedEntry.isGroup
 
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                    width: Math.max(1, pinnedEntryHover.width - pinnedSection.hoverPadding * 2)
+                    anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: pinnedGroupPreview.bottom
                     anchors.topMargin: 4
-                    anchors.leftMargin: 4
-                    anchors.rightMargin: 4
 
                     text: pinnedEntry.entryData
                         ? String(pinnedEntry.entryData.groupName || "")
@@ -150,8 +182,8 @@ Item {
                     id: pinnedEntryIcon
                     visible: !pinnedEntry.isGroup
 
-                    height: 36
-                    width: 36
+                    height: pinnedSection.iconSize
+                    width: pinnedSection.iconSize
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
@@ -163,14 +195,13 @@ Item {
                 }
 
                 PlasmaComponents.Label {
+                    id: pinnedEntryLabel
                     visible: !pinnedEntry.isGroup
 
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                    width: Math.max(1, pinnedEntryHover.width - pinnedSection.hoverPadding * 2)
+                    anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: pinnedEntryIcon.bottom
                     anchors.topMargin: 4
-                    anchors.leftMargin: 4
-                    anchors.rightMargin: 4
 
                     text: pinnedEntry.entryData
                         ? String(pinnedEntry.entryData.displayName || "")

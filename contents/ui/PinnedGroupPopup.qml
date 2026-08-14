@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls as Controls
+import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
 
@@ -17,6 +18,11 @@ Controls.Popup {
     property string groupId: ""
     property string groupName: ""
     property var appEntries: []
+    readonly property int iconSize: Math.max(
+        24,
+        Math.min(48, Plasmoid.configuration.iconSize || 36)
+    )
+    readonly property int hoverInset: Math.max(0, 36 - iconSize)
 
     parent: popupParent
 
@@ -184,6 +190,7 @@ Controls.Popup {
 
                         Rectangle {
                             anchors.fill: parent
+                            anchors.margins: groupPopup.hoverInset
                             radius: 10
                             color: "#30343d"
                             opacity: groupAppMouse.containsMouse ? 1 : 0
@@ -196,8 +203,8 @@ Controls.Popup {
                         Kirigami.Icon {
                             id: groupAppIcon
 
-                            width: 36
-                            height: 36
+                            width: groupPopup.iconSize
+                            height: groupPopup.iconSize
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.top: parent.top
                             anchors.topMargin: 8

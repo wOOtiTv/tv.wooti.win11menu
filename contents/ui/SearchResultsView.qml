@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls as Controls
+import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
 
@@ -15,6 +16,11 @@ Item {
     property var contextController
 
     property int columnCount: 8
+    readonly property int iconSize: Math.max(
+        24,
+        Math.min(48, Plasmoid.configuration.iconSize || 36)
+    )
+    readonly property int hoverInset: Math.max(2, 38 - iconSize)
 
     property string searchResultsText: ""
     property string appsText: ""
@@ -135,7 +141,7 @@ Item {
                     id: searchAppHover
 
                     anchors.fill: parent
-                    anchors.margins: 2
+                    anchors.margins: searchResultsView.hoverInset
 
                     radius: 12
                     color: "#30343d"
@@ -150,8 +156,8 @@ Item {
                 Kirigami.Icon {
                     id: searchAppIcon
 
-                    width: 36
-                    height: 36
+                    width: searchResultsView.iconSize
+                    height: searchResultsView.iconSize
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
@@ -332,7 +338,7 @@ Item {
                     id: searchFileHover
 
                     anchors.fill: parent
-                    anchors.margins: 2
+                    anchors.margins: searchResultsView.hoverInset
 
                     radius: 12
                     color: "#30343d"
@@ -346,8 +352,8 @@ Item {
                 Kirigami.Icon {
                     id: searchFileIcon
 
-                    width: 36
-                    height: 36
+                    width: searchResultsView.iconSize
+                    height: searchResultsView.iconSize
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
@@ -445,7 +451,7 @@ Item {
                     id: searchSettingsHover
 
                     anchors.fill: parent
-                    anchors.margins: 2
+                    anchors.margins: searchResultsView.hoverInset
 
                     radius: 12
                     color: "#30343d"
@@ -459,8 +465,8 @@ Item {
                 Kirigami.Icon {
                     id: searchSettingsIcon
 
-                    width: 36
-                    height: 36
+                    width: searchResultsView.iconSize
+                    height: searchResultsView.iconSize
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
