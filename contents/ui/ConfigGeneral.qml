@@ -7,7 +7,7 @@ Kirigami.FormLayout {
 
     property string cfg_language: "system"
     property alias cfg_icon: menuIcon.value
-    property alias cfg_menuWidth: menuWidthSpin.value
+    property int cfg_menuWidth: 1120
     property bool cfg_showLockButton: true
     property bool cfg_showLogoutButton: true
     property bool cfg_showRestartButton: true
@@ -69,8 +69,10 @@ Kirigami.FormLayout {
         from: 800
         to: 1600
         stepSize: 16
-        value: 1120
+        value: page.cfg_menuWidth
         editable: true
+
+        onValueModified: page.cfg_menuWidth = value
     }
 
     Controls.CheckBox {
