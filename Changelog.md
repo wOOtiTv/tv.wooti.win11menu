@@ -1,6 +1,21 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] – Flexible Layout & Customization
+
+### Added
+- configurable menu height from 600 px to 1200 px with a default of 800 px
+- configurable menu width from 800 px to 1600 px with a default of 1000 px
+- configurable application icon size from 24 px to 48 px with a default of 36 px
+- min/max/default hints directly below the new layout settings
+
+### Changed
+- the launcher now defaults to a more compact 1000 × 800 px layout
+- wider launcher widths automatically add more pinned-app columns while keeping at least 8 columns
+- application icon sizing now applies consistently to pinned apps, All Applications, search results and pinned-group popups
+- hover areas now adapt more closely to the configured icon size and content layout
+- updated package metadata for version 1.2.0
+
 ## [1.1.1] – Launcher Icon Improvements
 
 ### Added
