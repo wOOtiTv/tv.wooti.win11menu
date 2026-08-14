@@ -18,6 +18,10 @@
       <default>1120</default>
     </entry>
 
+    <entry name="menuHeight" type="Int">
+      <default>891</default>
+    </entry>
+
     <entry name="showLockButton" type="Bool">
       <default>true</default>
     </entry>
