@@ -72,6 +72,11 @@ Kirigami.FormLayout {
         editable: true
     }
 
+    Controls.Label {
+        text: i18n("Min. 800 px · Max. 1600 px · Default: 1120 px")
+        opacity: 0.7
+    }
+
     Controls.CheckBox {
         Kirigami.FormData.label: i18n("Pinned apps:")
         text: i18n("Enable groups")
