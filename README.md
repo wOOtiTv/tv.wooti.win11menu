@@ -35,13 +35,15 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 - 🔍 **Integrated search** – applications, files (via Baloo) and system settings
 - ⌨️ **Quick search** – press `Ctrl+F` to instantly focus the search field
 - 🎨 **Custom menu icon** – choose the launcher icon directly in General settings
+- 📏 **Flexible menu size** – configure menu width and height to fit your screen and preferred layout
+- 🖼️ **Configurable app icons** – adjust application icon size from compact to large
 - 🌍 **Multi-language support** – English, German, French, Italian and Dutch
 - ⚙️ **Language selection** – follow the system language or choose a language manually
 - 🇬🇧 **English fallback** – missing translations fall back to English
 - 👤 **User info** – avatar and full name of the current user
 - 🔐 **Session actions** – Lock Screen, Log Out, Restart and Shut Down
 - 👁️ **Session button visibility** – show or hide each session button individually
-- 🔒 **Fixed popup size** – additional pinned apps do not resize the launcher
+- 🔒 **Stable popup layout** – additional pinned apps do not unexpectedly resize the launcher
 
 ### ⚙️ Customization
 
@@ -53,10 +55,15 @@ Available options include:
 
 - **Language** – use the system language or choose a supported language manually
 - **Menu icon** – choose a different KDE/system icon for the launcher
+- **Icon size** – choose an application icon size from 24 px to 48 px (default: 36 px)
+- **Menu height** – choose a launcher height from 600 px to 1200 px (default: 800 px)
+- **Menu width** – choose a launcher width from 800 px to 1600 px (default: 1000 px)
 - **Pinned apps → Enable groups** – enable or disable pinned application groups
 - **Session buttons** – individually show or hide Lock Screen, Log Out, Restart and Shut Down
 
 Disabling pinned groups does **not** delete existing group assignments. Re-enabling the option restores them.
+
+Wider menu widths automatically provide additional pinned-app columns while keeping the familiar minimum of 8 columns.
 
 ### 🗂️ Pinned application groups
 
