@@ -22,6 +22,7 @@ Item {
         24,
         Math.min(48, Plasmoid.configuration.iconSize || 36)
     )
+    readonly property int hoverInset: Math.max(2, 38 - iconSize)
 
     property string allText: ""
     property string viewListText: ""
@@ -233,7 +234,9 @@ Item {
                                 id: hoverBackground
 
                                 anchors.fill: parent
-                                anchors.margins: 2
+                                anchors.margins: allAppsView.listView
+                                    ? 2
+                                    : allAppsView.hoverInset
 
                                 radius: 12
                                 color: "#30343d"
