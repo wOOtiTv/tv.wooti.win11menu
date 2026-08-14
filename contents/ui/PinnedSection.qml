@@ -17,6 +17,7 @@ Item {
         24,
         Math.min(48, Plasmoid.configuration.iconSize || 36)
     )
+    readonly property int hoverInset: Math.max(2, 38 - iconSize)
 
     readonly property int effectiveColumnCount: Math.max(
         columnCount,
@@ -89,7 +90,7 @@ Item {
 
                 Rectangle {
                     anchors.fill: parent
-                    anchors.margins: 2
+                    anchors.margins: pinnedSection.hoverInset
                     radius: 12
                     color: "#30343d"
                     opacity: pinnedEntryMouseArea.containsMouse ? 1 : 0
