@@ -13,6 +13,15 @@ Item {
     property int cellWidth: 132
     property int cellHeight: 88
 
+    readonly property int effectiveColumnCount: Math.max(
+        columnCount,
+        Math.floor((width - 64) / 132)
+    )
+    readonly property int effectiveCellWidth: Math.max(
+        1,
+        Math.floor((width - 64) / effectiveColumnCount)
+    )
+
     property bool groupsEnabled: true
 
     property var groupController
@@ -54,7 +63,7 @@ Item {
         x: 32
         y: 40
 
-        columns: pinnedSection.columnCount
+        columns: pinnedSection.effectiveColumnCount
         rowSpacing: 0
         columnSpacing: 0
 
@@ -71,7 +80,7 @@ Item {
                     entryData && entryData.entryType === "group"
 
                 height: pinnedSection.cellHeight
-                width: pinnedSection.cellWidth
+                width: pinnedSection.effectiveCellWidth
 
                 Rectangle {
                     anchors.fill: parent
