@@ -62,6 +62,10 @@ Kirigami.FormLayout {
         text: menuIcon.value
     }
 
+    Item {
+        implicitHeight: Kirigami.Units.smallSpacing * 2
+    }
+
     Controls.SpinBox {
         id: menuWidthSpin
 
@@ -75,6 +79,10 @@ Kirigami.FormLayout {
     Controls.Label {
         text: i18n("Min. 800 px · Max. 1600 px · Default: 1120 px")
         opacity: 0.7
+    }
+
+    Item {
+        implicitHeight: Kirigami.Units.smallSpacing * 2
     }
 
     Controls.CheckBox {
