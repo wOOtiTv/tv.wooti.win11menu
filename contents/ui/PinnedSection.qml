@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls as Controls
+import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
 
@@ -12,6 +13,10 @@ Item {
     property int columnCount: 8
     property int cellWidth: 132
     property int cellHeight: 88
+    readonly property int iconSize: Math.max(
+        24,
+        Math.min(48, Plasmoid.configuration.iconSize || 36)
+    )
 
     readonly property int effectiveColumnCount: Math.max(
         columnCount,
@@ -98,8 +103,8 @@ Item {
                     id: pinnedGroupPreview
                     visible: pinnedEntry.isGroup
 
-                    width: 46
-                    height: 46
+                    width: pinnedSection.iconSize + 10
+                    height: pinnedSection.iconSize + 10
                     radius: 10
 
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -122,8 +127,8 @@ Item {
                                 : []
 
                             delegate: Item {
-                                width: 18
-                                height: 18
+                                width: Math.max(10, Math.floor(pinnedSection.iconSize / 2))
+                                height: width
 
                                 Kirigami.Icon {
                                     anchors.fill: parent
@@ -159,8 +164,8 @@ Item {
                     id: pinnedEntryIcon
                     visible: !pinnedEntry.isGroup
 
-                    height: 36
-                    width: 36
+                    height: pinnedSection.iconSize
+                    width: pinnedSection.iconSize
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
