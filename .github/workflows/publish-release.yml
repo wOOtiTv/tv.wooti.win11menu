@@ -40,6 +40,26 @@ jobs:
       - name: Build Plasma package
         run: python tools/build_plasmoid.py
 
+      - name: Prepare release notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          version = json.loads(Path("metadata.json").read_text(encoding="utf-8"))["KPlugin"]["Version"]
+          changelog = Path("Changelog.md").read_text(encoding="utf-8")
+          pattern = rf"^## \[{re.escape(version)}\].*?(?=^## \[|\Z)"
+          match = re.search(pattern, changelog, flags=re.MULTILINE | re.DOTALL)
+
+          if not match:
+              raise SystemExit(f"No changelog section found for version {version}")
+
+          Path("release-notes.md").write_text(match.group(0).strip() + "\n", encoding="utf-8")
+          PY
+
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -51,4 +71,4 @@ jobs:
             dist/*.plasmoid.sha256 \
             --verify-tag \
             --title "wOOti Win11 Menu ${GITHUB_REF_NAME}" \
-            --generate-notes
+            --notes-file release-notes.md
