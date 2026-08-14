@@ -20,6 +20,7 @@ Item {
         24,
         Math.min(48, Plasmoid.configuration.iconSize || 36)
     )
+    readonly property int hoverInset: Math.max(2, 38 - iconSize)
 
     property string searchResultsText: ""
     property string appsText: ""
@@ -140,7 +141,7 @@ Item {
                     id: searchAppHover
 
                     anchors.fill: parent
-                    anchors.margins: 2
+                    anchors.margins: searchResultsView.hoverInset
 
                     radius: 12
                     color: "#30343d"
@@ -337,7 +338,7 @@ Item {
                     id: searchFileHover
 
                     anchors.fill: parent
-                    anchors.margins: 2
+                    anchors.margins: searchResultsView.hoverInset
 
                     radius: 12
                     color: "#30343d"
@@ -450,7 +451,7 @@ Item {
                     id: searchSettingsHover
 
                     anchors.fill: parent
-                    anchors.margins: 2
+                    anchors.margins: searchResultsView.hoverInset
 
                     radius: 12
                     color: "#30343d"
