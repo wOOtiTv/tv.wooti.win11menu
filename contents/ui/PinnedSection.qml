@@ -18,6 +18,7 @@ Item {
         Math.min(48, Plasmoid.configuration.iconSize || 36)
     )
     readonly property int hoverPadding: 4
+    readonly property int hoverWidth: iconSize + 48
 
     readonly property int effectiveColumnCount: Math.max(
         columnCount,
@@ -96,15 +97,12 @@ Item {
                     readonly property Item contentLabel:
                         pinnedEntry.isGroup ? pinnedGroupLabel : pinnedEntryLabel
 
-                    x: Math.max(2, Math.round((parent.width - width) / 2))
-                    y: Math.max(2, contentIcon.y - pinnedSection.hoverPadding)
                     width: Math.min(
                         parent.width - 4,
-                        Math.max(
-                            contentIcon.width,
-                            Math.min(contentLabel.implicitWidth, parent.width - 8)
-                        ) + pinnedSection.hoverPadding * 2
+                        pinnedSection.hoverWidth
                     )
+                    x: Math.round((parent.width - width) / 2)
+                    y: Math.max(2, contentIcon.y - pinnedSection.hoverPadding)
                     height: Math.min(
                         parent.height - y - 2,
                         contentLabel.y + contentLabel.implicitHeight
@@ -164,12 +162,10 @@ Item {
                     id: pinnedGroupLabel
                     visible: pinnedEntry.isGroup
 
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                    width: Math.max(1, pinnedEntryHover.width - pinnedSection.hoverPadding * 2)
+                    anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: pinnedGroupPreview.bottom
                     anchors.topMargin: 4
-                    anchors.leftMargin: 4
-                    anchors.rightMargin: 4
 
                     text: pinnedEntry.entryData
                         ? String(pinnedEntry.entryData.groupName || "")
@@ -202,12 +198,10 @@ Item {
                     id: pinnedEntryLabel
                     visible: !pinnedEntry.isGroup
 
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                    width: Math.max(1, pinnedEntryHover.width - pinnedSection.hoverPadding * 2)
+                    anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: pinnedEntryIcon.bottom
                     anchors.topMargin: 4
-                    anchors.leftMargin: 4
-                    anchors.rightMargin: 4
 
                     text: pinnedEntry.entryData
                         ? String(pinnedEntry.entryData.displayName || "")
