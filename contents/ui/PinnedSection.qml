@@ -18,7 +18,7 @@ Item {
         Math.min(48, Plasmoid.configuration.iconSize || 36)
     )
     readonly property int hoverPadding: 4
-    readonly property int hoverWidth: iconSize + 48
+    readonly property int hoverWidth: iconSize + 64
 
     readonly property int effectiveColumnCount: Math.max(
         columnCount,
