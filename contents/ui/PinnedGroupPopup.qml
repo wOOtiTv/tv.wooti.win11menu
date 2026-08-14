@@ -22,6 +22,7 @@ Controls.Popup {
         24,
         Math.min(48, Plasmoid.configuration.iconSize || 36)
     )
+    readonly property int hoverInset: Math.max(0, 36 - iconSize)
 
     parent: popupParent
 
@@ -189,6 +190,7 @@ Controls.Popup {
 
                         Rectangle {
                             anchors.fill: parent
+                            anchors.margins: groupPopup.hoverInset
                             radius: 10
                             color: "#30343d"
                             opacity: groupAppMouse.containsMouse ? 1 : 0
