@@ -67,7 +67,7 @@ Kirigami.FormLayout {
 
         Kirigami.FormData.label: i18n("Menu width:")
         from: 800
-        to: 1600
+        to: 2000
         stepSize: 16
         editable: true
     }
