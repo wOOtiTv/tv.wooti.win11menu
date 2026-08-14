@@ -7,6 +7,7 @@ Kirigami.FormLayout {
 
     property string cfg_language: "system"
     property alias cfg_icon: menuIcon.value
+    property alias cfg_iconSize: iconSizeSpin.value
     property alias cfg_menuHeight: menuHeightSpin.value
     property alias cfg_menuWidth: menuWidthSpin.value
     property bool cfg_showLockButton: true
@@ -61,6 +62,25 @@ Kirigami.FormLayout {
     Controls.Label {
         Kirigami.FormData.label: i18n("Current icon:")
         text: menuIcon.value
+    }
+
+    Item {
+        implicitHeight: Kirigami.Units.smallSpacing * 2
+    }
+
+    Controls.SpinBox {
+        id: iconSizeSpin
+
+        Kirigami.FormData.label: i18n("Icon size:")
+        from: 24
+        to: 48
+        stepSize: 4
+        editable: true
+    }
+
+    Controls.Label {
+        text: i18n("Min. 24 px · Max. 48 px · Default: 36 px")
+        opacity: 0.7
     }
 
     Item {
