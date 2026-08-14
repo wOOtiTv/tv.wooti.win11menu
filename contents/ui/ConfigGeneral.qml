@@ -7,6 +7,7 @@ Kirigami.FormLayout {
 
     property string cfg_language: "system"
     property alias cfg_icon: menuIcon.value
+    property alias cfg_menuWidth: menuWidthSpin.value
     property bool cfg_showLockButton: true
     property bool cfg_showLogoutButton: true
     property bool cfg_showRestartButton: true
@@ -59,6 +60,17 @@ Kirigami.FormLayout {
     Controls.Label {
         Kirigami.FormData.label: i18n("Current icon:")
         text: menuIcon.value
+    }
+
+    Controls.SpinBox {
+        id: menuWidthSpin
+
+        Kirigami.FormData.label: i18n("Menu width:")
+        from: 800
+        to: 1600
+        stepSize: 16
+        value: 1120
+        editable: true
     }
 
     Controls.CheckBox {

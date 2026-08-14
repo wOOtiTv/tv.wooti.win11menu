@@ -289,9 +289,12 @@ PlasmoidItem {
         readonly property var appletInterface: Plasmoid
 
         // 8 Spalten wie bei unserem aktuellen Layout.
-        // Die Zellgröße bestimmt die tatsächliche Breite des Menüs.
+        // Die Zellbreite folgt der tatsächlich verfügbaren Popup-Breite.
         readonly property int columnCount: 8
-        readonly property int cellWidth: 132
+        readonly property int cellWidth: Math.max(
+            1,
+            Math.floor((popupWidth - 64) / columnCount)
+        )
         readonly property int cellHeight: 88
 
         // Alphabetisch gruppiertes KDE-Modell für "Alle".
@@ -499,9 +502,11 @@ PlasmoidItem {
             }
         }
 
-        // Breite des Launcher-Inhalts.
-        readonly property int contentWidth:
-            (cellWidth * columnCount) + 64
+        // Breite des Launcher-Inhalts. 1120 px entspricht exakt v1.1.1.
+        readonly property int contentWidth: Math.max(
+            800,
+            Math.min(1600, plasmoid.configuration.menuWidth || 1120)
+        )
 
         // Maximale sichtbare Höhe des Bereichs "Alle Anwendungen".
         readonly property int allAppsVisibleHeight: 520
