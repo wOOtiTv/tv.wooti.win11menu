@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls as Controls
+import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
 
@@ -17,6 +18,10 @@ Controls.Popup {
     property string groupId: ""
     property string groupName: ""
     property var appEntries: []
+    readonly property int iconSize: Math.max(
+        24,
+        Math.min(48, Plasmoid.configuration.iconSize || 36)
+    )
 
     parent: popupParent
 
@@ -196,8 +201,8 @@ Controls.Popup {
                         Kirigami.Icon {
                             id: groupAppIcon
 
-                            width: 36
-                            height: 36
+                            width: groupPopup.iconSize
+                            height: groupPopup.iconSize
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.top: parent.top
                             anchors.topMargin: 8
