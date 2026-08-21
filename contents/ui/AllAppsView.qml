@@ -50,10 +50,11 @@ Item {
     }
 
     Connections {
-        target: Plasmoid
+        target: allAppsView.contextMenuController
 
         function onExpandedChanged() {
-            if (!Plasmoid.expanded) {
+            if (allAppsView.contextMenuController
+                    && !allAppsView.contextMenuController.expanded) {
                 allAppsView.resetScrollPosition()
             }
         }
