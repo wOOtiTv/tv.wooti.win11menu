@@ -305,8 +305,8 @@ PlasmoidItem {
         readonly property var allAppsModel: rootModel.modelForRow(allAppsModelRow)
 
         // Ansicht für "Alle": Raster oder Liste.
-        // Standard bleibt das bisherige Raster.
-        property bool allAppsListView: false
+        // Die Auswahl wird pro Plasmoid-Instanz dauerhaft gespeichert.
+        readonly property bool allAppsListView: plasmoid.configuration.allAppsListView
 
         // Gemeinsame alphabetische Anzeige für normale Pins und Gruppen.
         // Die KDE-Favoriten selbst bleiben unverändert; wir bauen lediglich
@@ -750,7 +750,7 @@ PlasmoidItem {
                 editApplicationText: i18n("Edit Application…")
 
                 onListViewToggleRequested: {
-                    launcher.allAppsListView = !launcher.allAppsListView
+                    plasmoid.configuration.allAppsListView = !plasmoid.configuration.allAppsListView
                 }
 
                 onCloseLauncherRequested: {
