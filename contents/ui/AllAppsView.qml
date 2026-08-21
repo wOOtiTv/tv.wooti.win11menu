@@ -45,6 +45,21 @@ Item {
     readonly property int sectionHeaderHeight: 34
     readonly property int sectionSpacing: 8
 
+    function resetScrollPosition() {
+        allAppsScroll.contentY = 0
+    }
+
+    Connections {
+        target: allAppsView.contextMenuController
+
+        function onExpandedChanged() {
+            if (allAppsView.contextMenuController
+                    && !allAppsView.contextMenuController.expanded) {
+                allAppsView.resetScrollPosition()
+            }
+        }
+    }
+
     function contentHeight() {
         if (!allAppsModel) {
             return gridCellHeight * appRows
