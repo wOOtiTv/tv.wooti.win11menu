@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.1] – View State & Scroll Fixes
+
+### Fixed
+- the All Applications Grid/List selection now persists across Plasma sessions and system restarts
+- the All Applications scroll position now resets to the top whenever the launcher is closed, so reopening always starts at the beginning
+
+### Changed
+- updated package metadata for version 1.2.1
+
 ## [1.2.0] – Flexible Layout & Customization
 
 ### Added
