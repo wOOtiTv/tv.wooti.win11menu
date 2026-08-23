@@ -38,7 +38,10 @@ Rectangle {
         anchors.verticalCenter: parent.bottom
         anchors.verticalCenterOffset: -39
 
-        width: 250
+        width: Math.max(
+            120,
+            Math.min(250, sessionActions.x - 40)
+        )
         height: 48
 
         Rectangle {
@@ -117,7 +120,7 @@ Rectangle {
             id: lockButton
 
             visible: footer.showLockButton
-            width: 118
+            width: Math.max(118, lockContent.implicitWidth + 28)
             height: 42
             radius: 12
 
@@ -132,6 +135,8 @@ Rectangle {
             }
 
             Row {
+                id: lockContent
+
                 anchors.centerIn: parent
                 spacing: 8
 
@@ -168,7 +173,7 @@ Rectangle {
             id: logoutButton
 
             visible: footer.showLogoutButton
-            width: 118
+            width: Math.max(118, logoutContent.implicitWidth + 28)
             height: 42
             radius: 12
 
@@ -183,6 +188,8 @@ Rectangle {
             }
 
             Row {
+                id: logoutContent
+
                 anchors.centerIn: parent
                 spacing: 8
 
@@ -218,7 +225,7 @@ Rectangle {
             id: rebootButton
 
             visible: footer.showRestartButton
-            width: 112
+            width: Math.max(112, rebootContent.implicitWidth + 28)
             height: 42
             radius: 12
 
@@ -233,6 +240,8 @@ Rectangle {
             }
 
             Row {
+                id: rebootContent
+
                 anchors.centerIn: parent
                 spacing: 8
 
@@ -268,7 +277,7 @@ Rectangle {
             id: shutdownButton
 
             visible: footer.showShutdownButton
-            width: 108
+            width: Math.max(108, shutdownContent.implicitWidth + 28)
             height: 42
             radius: 12
 
@@ -283,6 +292,8 @@ Rectangle {
             }
 
             Row {
+                id: shutdownContent
+
                 anchors.centerIn: parent
                 spacing: 8
 
