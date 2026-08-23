@@ -131,21 +131,22 @@ Rectangle {
                 ColorAnimation { duration: 120 }
             }
 
-            Kirigami.Icon {
-                width: 20
-                height: 20
-                anchors.left: parent.left
-                anchors.leftMargin: 14
-                anchors.verticalCenter: parent.verticalCenter
-                source: "system-lock-screen"
-            }
+            Row {
+                anchors.centerIn: parent
+                spacing: 8
 
-            PlasmaComponents.Label {
-                anchors.left: parent.left
-                anchors.leftMargin: 42
-                anchors.verticalCenter: parent.verticalCenter
-                text: footer.lockText
-                font.pixelSize: 13
+                Kirigami.Icon {
+                    width: 20
+                    height: 20
+                    source: "system-lock-screen"
+                }
+
+                PlasmaComponents.Label {
+                    height: 20
+                    verticalAlignment: Text.AlignVCenter
+                    text: footer.lockText
+                    font.pixelSize: 13
+                }
             }
 
             MouseArea {
@@ -181,21 +182,22 @@ Rectangle {
                 ColorAnimation { duration: 120 }
             }
 
-            Kirigami.Icon {
-                width: 20
-                height: 20
-                anchors.left: parent.left
-                anchors.leftMargin: 14
-                anchors.verticalCenter: parent.verticalCenter
-                source: "system-log-out"
-            }
+            Row {
+                anchors.centerIn: parent
+                spacing: 8
 
-            PlasmaComponents.Label {
-                anchors.left: parent.left
-                anchors.leftMargin: 42
-                anchors.verticalCenter: parent.verticalCenter
-                text: footer.logoutText
-                font.pixelSize: 13
+                Kirigami.Icon {
+                    width: 20
+                    height: 20
+                    source: "system-log-out"
+                }
+
+                PlasmaComponents.Label {
+                    height: 20
+                    verticalAlignment: Text.AlignVCenter
+                    text: footer.logoutText
+                    font.pixelSize: 13
+                }
             }
 
             MouseArea {
@@ -230,21 +232,22 @@ Rectangle {
                 ColorAnimation { duration: 120 }
             }
 
-            Kirigami.Icon {
-                width: 20
-                height: 20
-                anchors.left: parent.left
-                anchors.leftMargin: 14
-                anchors.verticalCenter: parent.verticalCenter
-                source: "system-reboot"
-            }
+            Row {
+                anchors.centerIn: parent
+                spacing: 8
 
-            PlasmaComponents.Label {
-                anchors.left: parent.left
-                anchors.leftMargin: 42
-                anchors.verticalCenter: parent.verticalCenter
-                text: footer.restartText
-                font.pixelSize: 13
+                Kirigami.Icon {
+                    width: 20
+                    height: 20
+                    source: "system-reboot"
+                }
+
+                PlasmaComponents.Label {
+                    height: 20
+                    verticalAlignment: Text.AlignVCenter
+                    text: footer.restartText
+                    font.pixelSize: 13
+                }
             }
 
             MouseArea {
@@ -279,21 +282,22 @@ Rectangle {
                 ColorAnimation { duration: 120 }
             }
 
-            Kirigami.Icon {
-                width: 20
-                height: 20
-                anchors.left: parent.left
-                anchors.leftMargin: 14
-                anchors.verticalCenter: parent.verticalCenter
-                source: "system-shutdown"
-            }
+            Row {
+                anchors.centerIn: parent
+                spacing: 8
 
-            PlasmaComponents.Label {
-                anchors.left: parent.left
-                anchors.leftMargin: 42
-                anchors.verticalCenter: parent.verticalCenter
-                text: footer.shutdownText
-                font.pixelSize: 13
+                Kirigami.Icon {
+                    width: 20
+                    height: 20
+                    source: "system-shutdown"
+                }
+
+                PlasmaComponents.Label {
+                    height: 20
+                    verticalAlignment: Text.AlignVCenter
+                    text: footer.shutdownText
+                    font.pixelSize: 13
+                }
             }
 
             MouseArea {
