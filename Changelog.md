@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.2] – Footer Alignment Improvements
+
+### Changed
+- centered each session-action icon and label as a single visual unit inside its button for more balanced hover highlighting
+- session-action buttons now adapt their width to longer translated labels while keeping the previous button sizes as minimum widths
+- the user-info area now yields space when needed so longer session labels remain fully visible, with the user name elided cleanly if space becomes tight
+- updated package metadata for version 1.2.2
+
+### Credits
+- footer alignment improvement inspired by PR #12 from Batman123n
+
 ## [1.2.1] – View State & Scroll Fixes
 
 ### Fixed

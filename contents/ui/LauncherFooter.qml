@@ -38,7 +38,10 @@ Rectangle {
         anchors.verticalCenter: parent.bottom
         anchors.verticalCenterOffset: -39
 
-        width: 250
+        width: Math.max(
+            120,
+            Math.min(250, sessionActions.x - 40)
+        )
         height: 48
 
         Rectangle {
@@ -117,7 +120,7 @@ Rectangle {
             id: lockButton
 
             visible: footer.showLockButton
-            width: 118
+            width: Math.max(118, lockContent.implicitWidth + 28)
             height: 42
             radius: 12
 
@@ -131,21 +134,24 @@ Rectangle {
                 ColorAnimation { duration: 120 }
             }
 
-            Kirigami.Icon {
-                width: 20
-                height: 20
-                anchors.left: parent.left
-                anchors.leftMargin: 14
-                anchors.verticalCenter: parent.verticalCenter
-                source: "system-lock-screen"
-            }
+            Row {
+                id: lockContent
 
-            PlasmaComponents.Label {
-                anchors.left: parent.left
-                anchors.leftMargin: 42
-                anchors.verticalCenter: parent.verticalCenter
-                text: footer.lockText
-                font.pixelSize: 13
+                anchors.centerIn: parent
+                spacing: 8
+
+                Kirigami.Icon {
+                    width: 20
+                    height: 20
+                    source: "system-lock-screen"
+                }
+
+                PlasmaComponents.Label {
+                    height: 20
+                    verticalAlignment: Text.AlignVCenter
+                    text: footer.lockText
+                    font.pixelSize: 13
+                }
             }
 
             MouseArea {
@@ -167,7 +173,7 @@ Rectangle {
             id: logoutButton
 
             visible: footer.showLogoutButton
-            width: 118
+            width: Math.max(118, logoutContent.implicitWidth + 28)
             height: 42
             radius: 12
 
@@ -181,21 +187,24 @@ Rectangle {
                 ColorAnimation { duration: 120 }
             }
 
-            Kirigami.Icon {
-                width: 20
-                height: 20
-                anchors.left: parent.left
-                anchors.leftMargin: 14
-                anchors.verticalCenter: parent.verticalCenter
-                source: "system-log-out"
-            }
+            Row {
+                id: logoutContent
 
-            PlasmaComponents.Label {
-                anchors.left: parent.left
-                anchors.leftMargin: 42
-                anchors.verticalCenter: parent.verticalCenter
-                text: footer.logoutText
-                font.pixelSize: 13
+                anchors.centerIn: parent
+                spacing: 8
+
+                Kirigami.Icon {
+                    width: 20
+                    height: 20
+                    source: "system-log-out"
+                }
+
+                PlasmaComponents.Label {
+                    height: 20
+                    verticalAlignment: Text.AlignVCenter
+                    text: footer.logoutText
+                    font.pixelSize: 13
+                }
             }
 
             MouseArea {
@@ -216,7 +225,7 @@ Rectangle {
             id: rebootButton
 
             visible: footer.showRestartButton
-            width: 112
+            width: Math.max(112, rebootContent.implicitWidth + 28)
             height: 42
             radius: 12
 
@@ -230,21 +239,24 @@ Rectangle {
                 ColorAnimation { duration: 120 }
             }
 
-            Kirigami.Icon {
-                width: 20
-                height: 20
-                anchors.left: parent.left
-                anchors.leftMargin: 14
-                anchors.verticalCenter: parent.verticalCenter
-                source: "system-reboot"
-            }
+            Row {
+                id: rebootContent
 
-            PlasmaComponents.Label {
-                anchors.left: parent.left
-                anchors.leftMargin: 42
-                anchors.verticalCenter: parent.verticalCenter
-                text: footer.restartText
-                font.pixelSize: 13
+                anchors.centerIn: parent
+                spacing: 8
+
+                Kirigami.Icon {
+                    width: 20
+                    height: 20
+                    source: "system-reboot"
+                }
+
+                PlasmaComponents.Label {
+                    height: 20
+                    verticalAlignment: Text.AlignVCenter
+                    text: footer.restartText
+                    font.pixelSize: 13
+                }
             }
 
             MouseArea {
@@ -265,7 +277,7 @@ Rectangle {
             id: shutdownButton
 
             visible: footer.showShutdownButton
-            width: 108
+            width: Math.max(108, shutdownContent.implicitWidth + 28)
             height: 42
             radius: 12
 
@@ -279,21 +291,24 @@ Rectangle {
                 ColorAnimation { duration: 120 }
             }
 
-            Kirigami.Icon {
-                width: 20
-                height: 20
-                anchors.left: parent.left
-                anchors.leftMargin: 14
-                anchors.verticalCenter: parent.verticalCenter
-                source: "system-shutdown"
-            }
+            Row {
+                id: shutdownContent
 
-            PlasmaComponents.Label {
-                anchors.left: parent.left
-                anchors.leftMargin: 42
-                anchors.verticalCenter: parent.verticalCenter
-                text: footer.shutdownText
-                font.pixelSize: 13
+                anchors.centerIn: parent
+                spacing: 8
+
+                Kirigami.Icon {
+                    width: 20
+                    height: 20
+                    source: "system-shutdown"
+                }
+
+                PlasmaComponents.Label {
+                    height: 20
+                    verticalAlignment: Text.AlignVCenter
+                    text: footer.shutdownText
+                    font.pixelSize: 13
+                }
             }
 
             MouseArea {
