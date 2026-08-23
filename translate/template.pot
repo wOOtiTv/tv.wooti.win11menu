@@ -73,7 +73,7 @@ msgstr ""
 msgid ""
 "No results found\n"
 "\n"
-"💡 Baloo only searches indexed folders.\n"
+"Baloo only searches indexed folders.\n"
 "Check file search under System Settings → Search → File Search."
 msgstr ""
 

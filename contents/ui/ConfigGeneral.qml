@@ -91,14 +91,14 @@ Kirigami.FormLayout {
         id: menuHeightSpin
 
         Kirigami.FormData.label: i18n("Menu height:")
-        from: 600
+        from: 400
         to: 1200
         stepSize: 16
         editable: true
     }
 
     Controls.Label {
-        text: i18n("Min. 600 px · Max. 1200 px · Default: 800 px")
+        text: i18n("Min. 400 px · Max. 1200 px · Default: 800 px")
         opacity: 0.7
     }
 
@@ -110,14 +110,14 @@ Kirigami.FormLayout {
         id: menuWidthSpin
 
         Kirigami.FormData.label: i18n("Menu width:")
-        from: 800
+        from: 400
         to: 1600
         stepSize: 16
         editable: true
     }
 
     Controls.Label {
-        text: i18n("Min. 800 px · Max. 1600 px · Default: 1000 px")
+        text: i18n("Min. 400 px · Max. 1600 px · Default: 1000 px")
         opacity: 0.7
     }
 

@@ -149,19 +149,96 @@ Item {
         boundsBehavior: Flickable.StopAtBounds
 
         Controls.ScrollBar.vertical: Controls.ScrollBar {
+            id: allAppsScrollBar
+
             policy: Controls.ScrollBar.AlwaysOn
 
-            width: 6
+            // Wider than the visible track so the fade-in already
+            // triggers when the cursor gets close, not only once it
+            // lands exactly on the thin bar.
+            width: 18
 
-            contentItem: Rectangle {
-                implicitWidth: 5
-                radius: width / 2
-                color: "#555a66"
-                opacity: parent.pressed ? 0.9 : 0.65
-            }
+            // Left empty on purpose: Qt keeps re-asserting this item's
+            // height/y to the *true* proportional handle size on every
+            // scroll or resize, which fought any attempt to bind a taller
+            // custom height here. The visible thumb below is a fully
+            // separate sibling so our own size/position math sticks.
+            contentItem: Item {}
 
             background: Rectangle {
+                anchors.fill: parent
                 color: "transparent"
+            }
+
+            opacity: (allAppsScrollBar.hovered
+                || allAppsScrollThumbDrag.pressed
+                || allAppsScroll.moving)
+                ? 1
+                : 0
+
+            Behavior on opacity {
+                NumberAnimation { duration: 150 }
+            }
+
+            Rectangle {
+                id: allAppsScrollThumb
+
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                width: 8
+                radius: width / 2
+                color: "#555a66"
+                opacity: allAppsScrollThumbDrag.pressed ? 0.9 : 0.65
+
+                readonly property real trackLength: allAppsScrollBar.height
+                readonly property real progress: allAppsScrollBar.size >= 1
+                    ? 0
+                    : allAppsScrollBar.position / (1 - allAppsScrollBar.size)
+
+                // Twice the natural proportional length, with a floor so it
+                // never shrinks to an unusable sliver on long app lists.
+                height: Math.min(
+                    trackLength,
+                    Math.max(24, allAppsScrollBar.size * trackLength * 2)
+                )
+                y: progress * (trackLength - height)
+
+                MouseArea {
+                    id: allAppsScrollThumbDrag
+
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    preventStealing: true
+
+                    property real lastGlobalY: 0
+
+                    onPressed: function(mouse) {
+                        lastGlobalY = mapToGlobal(mouse.x, mouse.y).y
+                    }
+
+                    onPositionChanged: function(mouse) {
+                        if (!pressed) {
+                            return
+                        }
+
+                        var g = mapToGlobal(mouse.x, mouse.y)
+                        var deltaY = g.y - lastGlobalY
+                        lastGlobalY = g.y
+
+                        var travel = allAppsScrollThumb.trackLength - allAppsScrollThumb.height
+
+                        if (travel <= 0) {
+                            return
+                        }
+
+                        var newProgress = Math.max(
+                            0,
+                            Math.min(1, allAppsScrollThumb.progress + deltaY / travel)
+                        )
+
+                        allAppsScrollBar.position = newProgress * (1 - allAppsScrollBar.size)
+                    }
+                }
             }
         }
 
@@ -402,7 +479,6 @@ Item {
                                         return
                                     }
 
-                                    //console.log("🦊 ALL APPS CLICK:", model.display, model.favoriteId)
                                     Qt.callLater(function() {
                                         appSection.sectionModel.trigger(index, "", null)
                                     })

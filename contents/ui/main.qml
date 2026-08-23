@@ -36,7 +36,7 @@ PlasmoidItem {
             var parsed = JSON.parse(raw)
             pinnedGroups = Array.isArray(parsed) ? parsed : []
         } catch (error) {
-            console.warn("🦊 Could not load pinned groups:", error)
+            console.warn("Could not load pinned groups:", error)
             pinnedGroups = []
         }
     }
@@ -297,6 +297,36 @@ PlasmoidItem {
         )
         readonly property int cellHeight: 88
 
+        function clampValue(value, min, max) {
+            return Math.max(min, Math.min(max, value))
+        }
+
+        // Resizing height also has to move the popup window itself (it's
+        // pinned just above the panel), which is heavier than a plain
+        // width resize. Writing menuHeight on every raw mouse-move event
+        // let that fall behind and stutter, so drags are throttled to a
+        // steady ~60 updates/sec via heightUpdateThrottle below instead of
+        // firing once per raw input event (mice/touchpads can report move
+        // events far faster than the window can actually keep moving).
+        property real pendingContentHeight: contentHeight
+
+        function queueHeightUpdate(newHeight) {
+            pendingContentHeight = clampValue(newHeight, minContentHeight, maxContentHeight)
+
+            if (!heightUpdateThrottle.running) {
+                heightUpdateThrottle.start()
+            }
+        }
+
+        Timer {
+            id: heightUpdateThrottle
+            interval: 16
+            repeat: false
+            onTriggered: {
+                plasmoid.configuration.menuHeight = launcher.pendingContentHeight
+            }
+        }
+
         // Alphabetisch gruppiertes KDE-Modell für "Alle".
         // modelForRow() erzeugt in QML selbst keine Abhängigkeit. Deshalb
         // hängt die Bindung bewusst an allAppsModelRow und wird bei jedem
@@ -503,15 +533,19 @@ PlasmoidItem {
         }
 
         // Breite des Launcher-Inhalts. 1120 px entspricht exakt v1.1.1.
+        readonly property int minContentWidth: 400
+        readonly property int maxContentWidth: 1600
         readonly property int contentWidth: Math.max(
-            800,
-            Math.min(1600, plasmoid.configuration.menuWidth || 1120)
+            minContentWidth,
+            Math.min(maxContentWidth, plasmoid.configuration.menuWidth || 1120)
         )
 
         // Höhe des Launcher-Inhalts. 891 px entspricht exakt v1.1.1.
+        readonly property int minContentHeight: 400
+        readonly property int maxContentHeight: 1200
         readonly property int contentHeight: Math.max(
-            600,
-            Math.min(1200, plasmoid.configuration.menuHeight || 891)
+            minContentHeight,
+            Math.min(maxContentHeight, plasmoid.configuration.menuHeight || 891)
         )
 
         readonly property rect screenRect: root.availableScreenRect
@@ -795,7 +829,7 @@ PlasmoidItem {
                 noResultsText: i18n("No results found")
 
                 balooNoResultsText: i18n(
-                    "No results found\n\n💡 Baloo only searches indexed folders.\nCheck file search under System Settings → Search → File Search."
+                    "No results found\n\nBaloo only searches indexed folders.\nCheck file search under System Settings → Search → File Search."
                 )
 
                 onRemoveFavoriteFromGroupsRequested: function(favoriteId) {
@@ -831,6 +865,178 @@ PlasmoidItem {
 
                 onCloseLauncherRequested: {
                     plasmoid.expanded = false
+                }
+            }
+        }
+
+        // ─────────────────────────────────────────
+        // Größe per Maus ziehen (Rand & Ecke)
+        // ─────────────────────────────────────────
+
+        MouseArea {
+            id: resizeRightEdge
+
+            width: 6
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+
+            hoverEnabled: true
+            preventStealing: true
+            cursorShape: Qt.SizeHorCursor
+
+            property real lastGlobalX: 0
+
+            onPressed: function(mouse) {
+                lastGlobalX = mapToGlobal(mouse.x, mouse.y).x
+            }
+
+            onPositionChanged: function(mouse) {
+                if (!pressed) {
+                    return
+                }
+
+                var g = mapToGlobal(mouse.x, mouse.y)
+                var delta = g.x - lastGlobalX
+                lastGlobalX = g.x
+
+                plasmoid.configuration.menuWidth = launcher.clampValue(
+                    launcher.contentWidth + delta,
+                    launcher.minContentWidth,
+                    launcher.maxContentWidth
+                )
+            }
+        }
+
+        MouseArea {
+            id: resizeTopEdge
+
+            height: 6
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+
+            hoverEnabled: true
+            preventStealing: true
+            cursorShape: Qt.SizeVerCursor
+
+            property real lastGlobalY: 0
+
+            onPressed: function(mouse) {
+                lastGlobalY = mapToGlobal(mouse.x, mouse.y).y
+                launcher.pendingContentHeight = launcher.contentHeight
+            }
+
+            onPositionChanged: function(mouse) {
+                if (!pressed) {
+                    return
+                }
+
+                var g = mapToGlobal(mouse.x, mouse.y)
+                var delta = g.y - lastGlobalY
+                lastGlobalY = g.y
+
+                launcher.queueHeightUpdate(launcher.pendingContentHeight - delta)
+            }
+        }
+
+        MouseArea {
+            id: resizeBottomEdge
+
+            height: 6
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+
+            hoverEnabled: true
+            preventStealing: true
+            cursorShape: Qt.SizeVerCursor
+
+            property real lastGlobalY: 0
+
+            onPressed: function(mouse) {
+                lastGlobalY = mapToGlobal(mouse.x, mouse.y).y
+                launcher.pendingContentHeight = launcher.contentHeight
+            }
+
+            onPositionChanged: function(mouse) {
+                if (!pressed) {
+                    return
+                }
+
+                var g = mapToGlobal(mouse.x, mouse.y)
+                var delta = g.y - lastGlobalY
+                lastGlobalY = g.y
+
+                launcher.queueHeightUpdate(launcher.pendingContentHeight + delta)
+            }
+        }
+
+        MouseArea {
+            id: resizeCorner
+
+            width: 16
+            height: 16
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+
+            hoverEnabled: true
+            preventStealing: true
+            cursorShape: Qt.SizeFDiagCursor
+
+            property real lastGlobalX: 0
+            property real lastGlobalY: 0
+
+            onPressed: function(mouse) {
+                var g = mapToGlobal(mouse.x, mouse.y)
+                lastGlobalX = g.x
+                lastGlobalY = g.y
+                launcher.pendingContentHeight = launcher.contentHeight
+            }
+
+            onPositionChanged: function(mouse) {
+                if (!pressed) {
+                    return
+                }
+
+                var g = mapToGlobal(mouse.x, mouse.y)
+                var deltaX = g.x - lastGlobalX
+                var deltaY = g.y - lastGlobalY
+                lastGlobalX = g.x
+                lastGlobalY = g.y
+
+                plasmoid.configuration.menuWidth = launcher.clampValue(
+                    launcher.contentWidth + deltaX,
+                    launcher.minContentWidth,
+                    launcher.maxContentWidth
+                )
+
+                launcher.queueHeightUpdate(launcher.pendingContentHeight + deltaY)
+            }
+
+            Item {
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 4
+                width: 8
+                height: 8
+                opacity: resizeCorner.containsMouse || resizeCorner.pressed ? 0.8 : 0.35
+
+                Behavior on opacity {
+                    NumberAnimation { duration: 120 }
+                }
+
+                Repeater {
+                    model: 3
+
+                    Rectangle {
+                        width: 3
+                        height: 3
+                        radius: 1
+                        color: "#ffffff"
+                        x: (2 - index) * 4 + 1
+                        y: index * 4 + 1
+                    }
                 }
             }
         }
@@ -913,7 +1119,7 @@ PlasmoidItem {
         onCountChanged: {
             if (count === 0 && root.searchText.length >= 3) {
                 console.log(
-                    "💡 Keine Dateitreffer: Baloo prüft nur indizierte Ordner. " +
+                    "Keine Dateitreffer: Baloo prüft nur indizierte Ordner. " +
                     "Dateisuche konfigurieren unter Systemeinstellungen → Suche → Dateisuche."
                 )
             }
