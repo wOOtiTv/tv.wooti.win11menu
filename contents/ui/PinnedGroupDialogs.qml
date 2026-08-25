@@ -6,7 +6,7 @@ Item {
 
     property Item popupParent
     property var pinnedGroups: []
-    property int maxGroupApps: 12
+    property int maxGroupApps: 16
 
     property string addToGroupTitle: ""
     property string addToGroupText: ""
