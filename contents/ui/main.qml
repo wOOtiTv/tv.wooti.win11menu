@@ -29,12 +29,57 @@ PlasmoidItem {
     property bool pinnedGroupsEnabled: plasmoid.configuration.enablePinnedGroups
     readonly property int maxPinnedGroupApps: 16
 
+    function sanitizePinnedGroups(groups) {
+        var sourceGroups = Array.isArray(groups) ? groups : []
+        var sanitizedGroups = []
+
+        for (var i = 0; i < sourceGroups.length; ++i) {
+            var group = sourceGroups[i]
+
+            if (!group) {
+                continue
+            }
+
+            var sourceApps = Array.isArray(group.apps) ? group.apps : []
+            var apps = []
+
+            for (var appIndex = 0;
+                    appIndex < sourceApps.length
+                        && apps.length < root.maxPinnedGroupApps;
+                    ++appIndex) {
+                var appId = String(sourceApps[appIndex] || "")
+
+                if (appId && apps.indexOf(appId) < 0) {
+                    apps.push(appId)
+                }
+            }
+
+            sanitizedGroups.push({
+                id: String(group.id || ""),
+                name: String(group.name || ""),
+                apps: apps
+            })
+        }
+
+        return sanitizedGroups
+    }
+
     function loadPinnedGroups() {
         var raw = plasmoid.configuration.pinnedGroups || "[]"
 
         try {
             var parsed = JSON.parse(raw)
-            pinnedGroups = Array.isArray(parsed) ? parsed : []
+            var sourceGroups = Array.isArray(parsed) ? parsed : []
+            var sanitizedGroups = sanitizePinnedGroups(sourceGroups)
+            var sanitizedRaw = JSON.stringify(sanitizedGroups)
+
+            pinnedGroups = sanitizedGroups
+
+            // Repair oversized or otherwise malformed stored groups once when
+            // loading so hidden entries beyond the supported limit cannot remain.
+            if (sanitizedRaw !== JSON.stringify(sourceGroups)) {
+                plasmoid.configuration.pinnedGroups = sanitizedRaw
+            }
         } catch (error) {
             console.warn("🦊 Could not load pinned groups:", error)
             pinnedGroups = []
@@ -42,8 +87,9 @@ PlasmoidItem {
     }
 
     function savePinnedGroups(groups) {
-        pinnedGroups = groups
-        plasmoid.configuration.pinnedGroups = JSON.stringify(groups)
+        var sanitizedGroups = sanitizePinnedGroups(groups)
+        pinnedGroups = sanitizedGroups
+        plasmoid.configuration.pinnedGroups = JSON.stringify(sanitizedGroups)
     }
 
     function copyPinnedGroups() {
@@ -117,7 +163,7 @@ PlasmoidItem {
             return true
         }
 
-        if (targetApps.length >= maxPinnedGroupApps) {
+        if (targetApps.length >= root.maxPinnedGroupApps) {
             return false
         }
 
@@ -146,7 +192,18 @@ PlasmoidItem {
             }
         }
 
-        groups[targetIndex].apps.push(id)
+        if (targetIndex < 0) {
+            return false
+        }
+
+        var currentTargetApps = groups[targetIndex].apps || []
+
+        if (currentTargetApps.length >= root.maxPinnedGroupApps) {
+            return false
+        }
+
+        currentTargetApps.push(id)
+        groups[targetIndex].apps = currentTargetApps
         savePinnedGroups(groups)
         return true
     }
@@ -714,6 +771,7 @@ PlasmoidItem {
                 groupController: root
                 launcherController: launcher
                 contextMenuController: root
+                maxGroupApps: root.maxPinnedGroupApps
 
                 removeFromGroupText: i18n("Remove from group")
             }
