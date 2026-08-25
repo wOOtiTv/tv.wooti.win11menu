@@ -12,6 +12,7 @@ Controls.Popup {
     property var groupController
     property var launcherController
     property var contextMenuController
+    property int maxGroupApps: 16
 
     property string removeFromGroupText: ""
 
@@ -31,13 +32,17 @@ Controls.Popup {
     readonly property int rowSpacing: 4
     readonly property int cellWidth: 142
     readonly property int cellHeight: 86
+    readonly property int displayAppCount: Math.min(
+        maxGroupApps,
+        appEntries.length
+    )
     readonly property int columnCount: Math.min(
         maxColumns,
-        Math.max(1, appEntries.length)
+        Math.max(1, displayAppCount)
     )
     readonly property int visibleRows: Math.min(
         4,
-        Math.max(1, Math.ceil(appEntries.length / columnCount))
+        Math.max(1, Math.ceil(displayAppCount / columnCount))
     )
     readonly property int desiredPopupWidth: Math.max(
         260,
@@ -197,7 +202,7 @@ Controls.Popup {
                 columnSpacing: groupPopup.columnSpacing
 
                 Repeater {
-                    model: groupPopup.appEntries
+                    model: groupPopup.appEntries.slice(0, groupPopup.maxGroupApps)
 
                     delegate: Item {
                         id: groupAppItem
