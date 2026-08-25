@@ -12,17 +12,47 @@ Controls.Popup {
     property var groupController
     property var launcherController
     property var contextMenuController
+    property int maxGroupApps: 16
 
     property string removeFromGroupText: ""
 
     property string groupId: ""
     property string groupName: ""
     property var appEntries: []
+
     readonly property int iconSize: Math.max(
         24,
         Math.min(48, Plasmoid.configuration.iconSize || 36)
     )
-    readonly property int hoverInset: Math.max(0, 36 - iconSize)
+    readonly property int hoverPadding: 4
+    readonly property int hoverWidth: iconSize + 80
+
+    readonly property int maxColumns: 4
+    readonly property int columnSpacing: 4
+    readonly property int rowSpacing: 4
+    readonly property int cellWidth: 142
+    readonly property int cellHeight: 86
+    readonly property int displayAppCount: Math.min(
+        maxGroupApps,
+        appEntries.length
+    )
+    readonly property int columnCount: Math.min(
+        maxColumns,
+        Math.max(1, displayAppCount)
+    )
+    readonly property int visibleRows: Math.min(
+        4,
+        Math.max(1, Math.ceil(displayAppCount / columnCount))
+    )
+    readonly property int desiredPopupWidth: Math.max(
+        260,
+        columnCount * cellWidth
+            + Math.max(0, columnCount - 1) * columnSpacing
+            + padding * 2
+    )
+    readonly property int appsAreaHeight:
+        visibleRows * cellHeight
+            + Math.max(0, visibleRows - 1) * rowSpacing
 
     parent: popupParent
 
@@ -31,22 +61,15 @@ Controls.Popup {
         : 0
     y: 120
     width: popupParent
-        ? Math.min(620, popupParent.width - 80)
-        : 620
+        ? Math.min(desiredPopupWidth, popupParent.width - 80)
+        : desiredPopupWidth
     padding: 18
     modal: false
     focus: true
     closePolicy: Controls.Popup.CloseOnEscape | Controls.Popup.CloseOnPressOutside
 
-    // Groups are limited to 12 apps (4 columns × 3 rows), so the
-    // complete group is shown at once without scrolling.
-    property int visibleRows: Math.min(
-        3,
-        Math.max(1, Math.ceil(appEntries.length / 4))
-    )
-    property int appsAreaHeight:
-        visibleRows * 86 + Math.max(0, visibleRows - 1) * 4
-
+    // Groups can contain up to 16 apps. The popup uses up to four columns
+    // and four rows, and shrinks horizontally for smaller groups.
     height: 28 + 12 + appsAreaHeight + padding * 2
 
     function openFor(anchorItem) {
@@ -174,24 +197,44 @@ Controls.Popup {
             Grid {
                 id: groupAppsGrid
                 width: parent.width
-                columns: 4
-                rowSpacing: 4
-                columnSpacing: 4
+                columns: groupPopup.columnCount
+                rowSpacing: groupPopup.rowSpacing
+                columnSpacing: groupPopup.columnSpacing
 
                 Repeater {
-                    model: groupPopup.appEntries
+                    model: groupPopup.appEntries.slice(0, groupPopup.maxGroupApps)
 
                     delegate: Item {
                         id: groupAppItem
                         property var appData: modelData
 
-                        width: Math.floor((groupAppsGrid.width - 12) / 4)
-                        height: 86
+                        width: Math.floor(
+                            (groupAppsGrid.width
+                                - Math.max(0, groupPopup.columnCount - 1)
+                                    * groupPopup.columnSpacing)
+                                / groupPopup.columnCount
+                        )
+                        height: groupPopup.cellHeight
 
                         Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: groupPopup.hoverInset
-                            radius: 10
+                            id: groupAppHover
+
+                            width: Math.min(
+                                parent.width - 4,
+                                groupPopup.hoverWidth
+                            )
+                            x: Math.round((parent.width - width) / 2)
+                            y: Math.max(
+                                2,
+                                groupAppIcon.y - groupPopup.hoverPadding
+                            )
+                            height: Math.min(
+                                parent.height - y - 2,
+                                groupAppLabel.y + groupAppLabel.implicitHeight
+                                    + groupPopup.hoverPadding - y
+                            )
+
+                            radius: 12
                             color: "#30343d"
                             opacity: groupAppMouse.containsMouse ? 1 : 0
 
@@ -214,12 +257,15 @@ Controls.Popup {
                         }
 
                         PlasmaComponents.Label {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
+                            id: groupAppLabel
+
+                            width: Math.max(
+                                1,
+                                groupAppHover.width - groupPopup.hoverPadding * 2
+                            )
+                            anchors.horizontalCenter: parent.horizontalCenter
                             anchors.top: groupAppIcon.bottom
                             anchors.topMargin: 4
-                            anchors.leftMargin: 4
-                            anchors.rightMargin: 4
                             text: groupAppItem.appData
                                 ? String(groupAppItem.appData.displayName || "")
                                 : ""

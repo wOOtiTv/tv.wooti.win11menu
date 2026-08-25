@@ -27,14 +27,59 @@ PlasmoidItem {
     // how pinned applications are presented inside this launcher.
     property var pinnedGroups: []
     property bool pinnedGroupsEnabled: plasmoid.configuration.enablePinnedGroups
-    readonly property int maxPinnedGroupApps: 12
+    readonly property int maxPinnedGroupApps: 16
+
+    function sanitizePinnedGroups(groups) {
+        var sourceGroups = Array.isArray(groups) ? groups : []
+        var sanitizedGroups = []
+
+        for (var i = 0; i < sourceGroups.length; ++i) {
+            var group = sourceGroups[i]
+
+            if (!group) {
+                continue
+            }
+
+            var sourceApps = Array.isArray(group.apps) ? group.apps : []
+            var apps = []
+
+            for (var appIndex = 0;
+                    appIndex < sourceApps.length
+                        && apps.length < root.maxPinnedGroupApps;
+                    ++appIndex) {
+                var appId = String(sourceApps[appIndex] || "")
+
+                if (appId && apps.indexOf(appId) < 0) {
+                    apps.push(appId)
+                }
+            }
+
+            sanitizedGroups.push({
+                id: String(group.id || ""),
+                name: String(group.name || ""),
+                apps: apps
+            })
+        }
+
+        return sanitizedGroups
+    }
 
     function loadPinnedGroups() {
         var raw = plasmoid.configuration.pinnedGroups || "[]"
 
         try {
             var parsed = JSON.parse(raw)
-            pinnedGroups = Array.isArray(parsed) ? parsed : []
+            var sourceGroups = Array.isArray(parsed) ? parsed : []
+            var sanitizedGroups = sanitizePinnedGroups(sourceGroups)
+            var sanitizedRaw = JSON.stringify(sanitizedGroups)
+
+            pinnedGroups = sanitizedGroups
+
+            // Repair oversized or otherwise malformed stored groups once when
+            // loading so hidden entries beyond the supported limit cannot remain.
+            if (sanitizedRaw !== JSON.stringify(sourceGroups)) {
+                plasmoid.configuration.pinnedGroups = sanitizedRaw
+            }
         } catch (error) {
             console.warn("🦊 Could not load pinned groups:", error)
             pinnedGroups = []
@@ -42,8 +87,9 @@ PlasmoidItem {
     }
 
     function savePinnedGroups(groups) {
-        pinnedGroups = groups
-        plasmoid.configuration.pinnedGroups = JSON.stringify(groups)
+        var sanitizedGroups = sanitizePinnedGroups(groups)
+        pinnedGroups = sanitizedGroups
+        plasmoid.configuration.pinnedGroups = JSON.stringify(sanitizedGroups)
     }
 
     function copyPinnedGroups() {
@@ -117,7 +163,7 @@ PlasmoidItem {
             return true
         }
 
-        if (targetApps.length >= maxPinnedGroupApps) {
+        if (targetApps.length >= root.maxPinnedGroupApps) {
             return false
         }
 
@@ -146,7 +192,18 @@ PlasmoidItem {
             }
         }
 
-        groups[targetIndex].apps.push(id)
+        if (targetIndex < 0) {
+            return false
+        }
+
+        var currentTargetApps = groups[targetIndex].apps || []
+
+        if (currentTargetApps.length >= root.maxPinnedGroupApps) {
+            return false
+        }
+
+        currentTargetApps.push(id)
+        groups[targetIndex].apps = currentTargetApps
         savePinnedGroups(groups)
         return true
     }
@@ -521,11 +578,6 @@ PlasmoidItem {
             screenRect.height - (Kirigami.Units.gridUnit * 2)
         )
 
-        // "Alle Anwendungen" darf die zusätzlich verfügbare Höhe nutzen.
-        // Die Ansicht begrenzt sich intern weiterhin selbst auf den Platz
-        // zwischen ihrem Kopfbereich und dem Footer.
-        readonly property int allAppsVisibleHeight: popupHeight
-
         readonly property int popupWidth: Math.min(
             contentWidth,
             screenRect.width - (Kirigami.Units.gridUnit * 2)
@@ -593,38 +645,128 @@ PlasmoidItem {
             }
 
             // ─────────────────────────────────────────────
-            // ANGEHEFTETE ANWENDUNGEN
+            // NORMALER INHALT – ANGEHEFTET + ALLE APPS
+            // Ein gemeinsamer Scrollbereich wie bei den Suchresultaten.
             // ─────────────────────────────────────────────
-            PinnedSection {
-                id: pinnedSection
+            Flickable {
+                id: normalContentScroll
 
                 x: 0
-                y: 105
+                y: 100
                 width: parent.width
+                height: Math.max(0, parent.height - y - 78)
 
-                searchText: root.searchText
-                entriesModel: launcher.pinnedDisplayEntries
+                contentWidth: width
+                contentHeight: normalContent.height
 
-                columnCount: launcher.columnCount
-                cellWidth: launcher.cellWidth
-                cellHeight: launcher.cellHeight
+                clip: true
+                boundsBehavior: Flickable.StopAtBounds
+                visible: root.searchText.length === 0
 
-                groupsEnabled: root.pinnedGroupsEnabled
+                onContentHeightChanged: {
+                    Qt.callLater(function() {
+                        normalContentScroll.returnToBounds()
+                    })
+                }
 
-                groupController: root
-                favoritesModel: rootModel.favoritesModel
-                launcherController: launcher
-                groupDialogsController: pinnedGroupDialogs
-                groupPopupController: groupPopup
-                contextMenuController: root
+                Controls.ScrollBar.vertical: Controls.ScrollBar {
+                    policy: Controls.ScrollBar.AlwaysOn
 
-                pinnedText: i18n("Pinned")
-                renameGroupText: i18n("Rename group…")
-                dissolveGroupText: i18n("Dissolve group")
-                addToGroupText: i18n("Add to group…")
-                pinToTaskManagerText: i18n("Pin to Task Manager")
-                editApplicationText: i18n("Edit Application…")
-                unpinText: i18n("Unpin")
+                    width: 6
+
+                    contentItem: Rectangle {
+                        implicitWidth: 5
+                        radius: width / 2
+                        color: "#555a66"
+                        opacity: parent.pressed ? 0.9 : 0.65
+                    }
+
+                    background: Rectangle {
+                        color: "transparent"
+                    }
+                }
+
+                Connections {
+                    target: root
+
+                    function onExpandedChanged() {
+                        if (!plasmoid.expanded) {
+                            normalContentScroll.contentY = 0
+                        }
+                    }
+                }
+
+                Item {
+                    id: normalContent
+
+                    width: normalContentScroll.width
+                    height: allAppsView.y + allAppsView.height + 24
+
+                    PinnedSection {
+                        id: pinnedSection
+
+                        x: 0
+                        y: 5
+                        width: parent.width
+
+                        searchText: root.searchText
+                        entriesModel: launcher.pinnedDisplayEntries
+
+                        columnCount: launcher.columnCount
+                        cellWidth: launcher.cellWidth
+                        cellHeight: launcher.cellHeight
+
+                        groupsEnabled: root.pinnedGroupsEnabled
+
+                        groupController: root
+                        favoritesModel: rootModel.favoritesModel
+                        launcherController: launcher
+                        groupDialogsController: pinnedGroupDialogs
+                        groupPopupController: groupPopup
+                        contextMenuController: root
+
+                        pinnedText: i18n("Pinned")
+                        renameGroupText: i18n("Rename group…")
+                        dissolveGroupText: i18n("Dissolve group")
+                        addToGroupText: i18n("Add to group…")
+                        pinToTaskManagerText: i18n("Pin to Task Manager")
+                        editApplicationText: i18n("Edit Application…")
+                        unpinText: i18n("Unpin")
+                    }
+
+                    AllAppsView {
+                        id: allAppsView
+
+                        x: 0
+                        y: pinnedSection.y + pinnedSection.height + 25
+                        width: parent.width
+
+                        allAppsModel: launcher.allAppsModel
+                        favoritesModel: rootModel.favoritesModel
+                        contextMenuController: root
+
+                        searchText: root.searchText
+                        listView: launcher.allAppsListView
+
+                        columnCount: launcher.columnCount
+                        gridCellHeight: launcher.cellHeight
+
+                        allText: i18n("All")
+                        viewListText: i18n("View: List  ▾")
+                        viewGridText: i18n("View: Grid  ▾")
+                        pinText: i18n("Pin")
+                        pinToTaskManagerText: i18n("Pin to Task Manager")
+                        editApplicationText: i18n("Edit Application…")
+
+                        onListViewToggleRequested: {
+                            plasmoid.configuration.allAppsListView = !plasmoid.configuration.allAppsListView
+                        }
+
+                        onCloseLauncherRequested: {
+                            plasmoid.expanded = false
+                        }
+                    }
+                }
             }
 
             // Unsichtbarer Daten-Spiegel des bereits alphabetisch sortierten
@@ -714,48 +856,9 @@ PlasmoidItem {
                 groupController: root
                 launcherController: launcher
                 contextMenuController: root
+                maxGroupApps: root.maxPinnedGroupApps
 
                 removeFromGroupText: i18n("Remove from group")
-            }
-
-            // ─────────────────────────────────────────────
-            // ALLE ANWENDUNGEN
-            // ─────────────────────────────────────────────
-
-            AllAppsView {
-                id: allAppsView
-
-                x: 0
-                y: pinnedSection.y + pinnedSection.height + 25
-
-                width: parent.width
-                height: Math.max(0, parent.height - y)
-
-                allAppsModel: launcher.allAppsModel
-                favoritesModel: rootModel.favoritesModel
-                contextMenuController: root
-
-                searchText: root.searchText
-                listView: launcher.allAppsListView
-
-                columnCount: launcher.columnCount
-                gridCellHeight: launcher.cellHeight
-                visibleHeight: launcher.allAppsVisibleHeight
-
-                allText: i18n("All")
-                viewListText: i18n("View: List  ▾")
-                viewGridText: i18n("View: Grid  ▾")
-                pinText: i18n("Pin")
-                pinToTaskManagerText: i18n("Pin to Task Manager")
-                editApplicationText: i18n("Edit Application…")
-
-                onListViewToggleRequested: {
-                    plasmoid.configuration.allAppsListView = !plasmoid.configuration.allAppsListView
-                }
-
-                onCloseLauncherRequested: {
-                    plasmoid.expanded = false
-                }
             }
 
             // ─────────────────────────────────────────

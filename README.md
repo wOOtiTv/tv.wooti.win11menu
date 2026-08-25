@@ -28,10 +28,11 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 ### ✨ Features
 
 - 📌 **Pinned apps** – pin/unpin applications via right-click context menu
-- 🗂️ **Pinned groups** – organize pinned apps into optional named groups with up to 12 apps per group
+- 🗂️ **Pinned groups** – organize pinned apps into optional named groups with up to 16 apps per group
 - 🧩 **KDE context actions** – pin applications to the Task Manager or edit their application entry from Pinned, All Applications and application search results
 - 🔤 **All applications** – alphabetically grouped applications
 - 📐 **Grid / List view** – switch between a compact grid and a clean list layout
+- 🧭 **Unified content scrolling** – Pinned and All Applications share one scroll area while search and session controls remain fixed
 - 🔍 **Integrated search** – applications, files (via Baloo) and system settings
 - ⌨️ **Quick search** – press `Ctrl+F` to instantly focus the search field
 - 🎨 **Custom menu icon** – choose the launcher icon directly in General settings
@@ -81,8 +82,8 @@ Group behavior:
 - applications inside a group stay alphabetically sorted
 - a group shows a compact preview of the applications it contains
 - clicking a group opens its applications in a compact popup
-- each group can contain up to **12 applications**
-- the popup displays up to **4 columns × 3 rows** without scrolling
+- each group can contain up to **16 applications**
+- the popup displays up to **4 columns × 4 rows** without scrolling and adapts its width for smaller groups
 - right-click a group to rename or dissolve it
 - right-click an application inside a group to remove it from the group
 

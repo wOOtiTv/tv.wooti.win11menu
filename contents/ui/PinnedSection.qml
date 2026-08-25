@@ -46,9 +46,26 @@ Item {
     property string editApplicationText: ""
     property string unpinText: ""
 
+    property bool layoutReady: false
     readonly property real contentBottom: pinnedApps.y + pinnedApps.height
 
     height: contentBottom
+    clip: true
+
+    Behavior on height {
+        enabled: pinnedSection.layoutReady
+
+        NumberAnimation {
+            duration: 170
+            easing.type: Easing.OutCubic
+        }
+    }
+
+    Component.onCompleted: {
+        Qt.callLater(function() {
+            pinnedSection.layoutReady = true
+        })
+    }
 
     PlasmaComponents.Label {
         id: pinnedLabel

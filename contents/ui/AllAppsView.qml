@@ -16,8 +16,6 @@ Item {
 
     property int columnCount: 8
     property int gridCellHeight: 88
-    property int visibleHeight: 520
-    property int appRows: 7
     readonly property int iconSize: Math.max(
         24,
         Math.min(48, Plasmoid.configuration.iconSize || 36)
@@ -33,7 +31,6 @@ Item {
     property string editApplicationText: ""
 
     signal closeLauncherRequested()
-
     signal listViewToggleRequested()
 
     readonly property int allAppsColumnCount:
@@ -45,44 +42,8 @@ Item {
     readonly property int sectionHeaderHeight: 34
     readonly property int sectionSpacing: 8
 
-    function resetScrollPosition() {
-        allAppsScroll.contentY = 0
-    }
-
-    Connections {
-        target: allAppsView.contextMenuController
-
-        function onExpandedChanged() {
-            if (allAppsView.contextMenuController
-                    && !allAppsView.contextMenuController.expanded) {
-                allAppsView.resetScrollPosition()
-            }
-        }
-    }
-
-    function contentHeight() {
-        if (!allAppsModel) {
-            return gridCellHeight * appRows
-        }
-
-        var total = 0
-
-        for (var i = 0; i < allAppsModel.count; ++i) {
-            var groupModel = allAppsModel.modelForRow(i)
-
-            if (!groupModel) {
-                continue
-            }
-
-            total += sectionHeaderHeight
-            total += Math.ceil(
-                groupModel.count / allAppsColumnCount
-            ) * allAppsCellHeight
-            total += sectionSpacing
-        }
-
-        return Math.max(total, gridCellHeight * appRows)
-    }
+    visible: searchText.length === 0
+    height: allAppsColumn.y + allAppsColumn.implicitHeight + 16
 
     PlasmaComponents.Label {
         id: allAppsLabel
@@ -94,8 +55,6 @@ Item {
 
         font.pixelSize: 16
         font.bold: true
-
-        visible: allAppsView.searchText.length === 0
     }
 
     PlasmaComponents.Label {
@@ -111,8 +70,6 @@ Item {
         font.pixelSize: 14
         opacity: viewToggleMouseArea.containsMouse ? 1.0 : 0.85
 
-        visible: allAppsView.searchText.length === 0
-
         MouseArea {
             id: viewToggleMouseArea
 
@@ -126,287 +83,261 @@ Item {
         }
     }
 
-    Flickable {
-        id: allAppsScroll
+    Column {
+        id: allAppsColumn
 
         x: 32
         y: allAppsLabel.y + 40
-
         width: parent.width - 64
-        height: Math.max(
-            0,
-            Math.min(
-                allAppsView.visibleHeight,
-                parent.height - y - 100
-            )
-        )
+        spacing: 0
 
-        clip: true
+        Repeater {
+            model: allAppsView.allAppsModel
+                ? allAppsView.allAppsModel.count
+                : 0
 
-        contentWidth: width
-        contentHeight: allAppsView.contentHeight()
+            delegate: Item {
+                id: appSection
 
-        boundsBehavior: Flickable.StopAtBounds
+                width: allAppsColumn.width
 
-        Controls.ScrollBar.vertical: Controls.ScrollBar {
-            policy: Controls.ScrollBar.AlwaysOn
+                property var sectionModel: allAppsView.allAppsModel
+                    ? allAppsView.allAppsModel.modelForRow(index)
+                    : null
 
-            width: 6
+                height: allAppsView.sectionHeaderHeight +
+                        (sectionModel
+                        ? Math.ceil(
+                            sectionModel.count /
+                            allAppsView.allAppsColumnCount
+                        ) * allAppsView.allAppsCellHeight
+                        : 0) +
+                        allAppsView.sectionSpacing
 
-            contentItem: Rectangle {
-                implicitWidth: 5
-                radius: width / 2
-                color: "#555a66"
-                opacity: parent.pressed ? 0.9 : 0.65
-            }
+                PlasmaComponents.Label {
+                    id: sectionLabel
 
-            background: Rectangle {
-                color: "transparent"
-            }
-        }
+                    x: 0
+                    y: 0
 
-        visible: allAppsView.searchText.length === 0
+                    width: parent.width
+                    height: allAppsView.sectionHeaderHeight
 
-        Column {
-            id: allAppsColumn
+                    text: appSection.sectionModel
+                        ? (appSection.sectionModel.description === "0-9"
+                        ? "#"
+                        : appSection.sectionModel.description)
+                        : ""
 
-            width: allAppsScroll.width
-            spacing: 0
+                    font.pixelSize: 15
+                    font.bold: true
 
-            Repeater {
-                model: allAppsView.allAppsModel
-                    ? allAppsView.allAppsModel.count
-                    : 0
+                    verticalAlignment: Text.AlignVCenter
+                }
 
-                delegate: Item {
-                    id: appSection
+                GridView {
+                    id: sectionGrid
 
-                    width: allAppsColumn.width
+                    x: 0
+                    y: sectionLabel.height
 
-                    property var sectionModel: allAppsView.allAppsModel
-                        ? allAppsView.allAppsModel.modelForRow(index)
-                        : null
+                    width: parent.width
+                    height: appSection.sectionModel
+                        ? Math.ceil(
+                            appSection.sectionModel.count /
+                            allAppsView.allAppsColumnCount
+                        ) * allAppsView.allAppsCellHeight
+                        : 0
 
-                    height: allAppsView.sectionHeaderHeight +
-                            (sectionModel
-                            ? Math.ceil(
-                                sectionModel.count /
-                                allAppsView.allAppsColumnCount
-                            ) * allAppsView.allAppsCellHeight
-                            : 0) +
-                            allAppsView.sectionSpacing
+                    cellWidth: width / allAppsView.allAppsColumnCount
+                    cellHeight: allAppsView.allAppsCellHeight
 
-                    PlasmaComponents.Label {
-                        id: sectionLabel
+                    interactive: false
+                    clip: false
 
-                        x: 0
-                        y: 0
+                    model: appSection.sectionModel
 
-                        width: parent.width
-                        height: allAppsView.sectionHeaderHeight
+                    delegate: Item {
+                        id: appItem
 
-                        text: appSection.sectionModel
-                            ? (appSection.sectionModel.description === "0-9"
-                            ? "#"
-                            : appSection.sectionModel.description)
-                            : ""
+                        width: sectionGrid.cellWidth
+                        height: sectionGrid.cellHeight
 
-                        font.pixelSize: 15
-                        font.bold: true
+                        Rectangle {
+                            id: hoverBackground
 
-                        verticalAlignment: Text.AlignVCenter
-                    }
+                            anchors.fill: parent
+                            anchors.margins: allAppsView.listView
+                                ? 2
+                                : allAppsView.hoverInset
 
-                    GridView {
-                        id: sectionGrid
+                            radius: 12
+                            color: "#30343d"
+                            opacity: mouseArea.containsMouse ? 1 : 0
 
-                        x: 0
-                        y: sectionLabel.height
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: 120
+                                }
+                            }
+                        }
 
-                        width: parent.width
-                        height: appSection.sectionModel
-                            ? Math.ceil(
-                                appSection.sectionModel.count /
-                                allAppsView.allAppsColumnCount
-                            ) * allAppsView.allAppsCellHeight
-                            : 0
+                        Kirigami.Icon {
+                            id: appIcon
 
-                        cellWidth: width / allAppsView.allAppsColumnCount
-                        cellHeight: allAppsView.allAppsCellHeight
+                            width: allAppsView.iconSize
+                            height: allAppsView.iconSize
 
-                        interactive: false
-                        clip: false
+                            x: allAppsView.listView
+                                ? 16
+                                : (parent.width - width) / 2
 
-                        model: appSection.sectionModel
+                            y: allAppsView.listView
+                                ? (parent.height - height) / 2
+                                : 8
 
-                        delegate: Item {
-                            id: appItem
+                            source: model.decoration
+                        }
 
-                            width: sectionGrid.cellWidth
-                            height: sectionGrid.cellHeight
+                        PlasmaComponents.Label {
+                            x: allAppsView.listView
+                                ? appIcon.x + appIcon.width + 12
+                                : 4
 
-                            Rectangle {
-                                id: hoverBackground
+                            y: allAppsView.listView
+                                ? (parent.height - height) / 2
+                                : appIcon.y + appIcon.height + 4
 
-                                anchors.fill: parent
-                                anchors.margins: allAppsView.listView
-                                    ? 2
-                                    : allAppsView.hoverInset
+                            width: allAppsView.listView
+                                ? parent.width - appIcon.x - appIcon.width - 28
+                                : parent.width - 8
 
-                                radius: 12
-                                color: "#30343d"
-                                opacity: mouseArea.containsMouse ? 1 : 0
+                            height: allAppsView.listView
+                                ? 28
+                                : parent.height - appIcon.height - appIcon.y - 4
 
-                                Behavior on opacity {
-                                    NumberAnimation {
-                                        duration: 120
-                                    }
+                            text: model.display
+
+                            horizontalAlignment: allAppsView.listView
+                                ? Text.AlignLeft
+                                : Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+
+                            maximumLineCount: 1
+                            elide: Text.ElideRight
+
+                            font.pixelSize: 13
+                        }
+
+                        Controls.Menu {
+                            id: appContextMenu
+
+                            property bool favoriteAlreadyPinned: false
+
+                            onAboutToShow: {
+                                var favoriteId = String(model.favoriteId || "")
+                                favoriteAlreadyPinned = Boolean(
+                                    favoriteId
+                                    && allAppsView.favoritesModel
+                                    && allAppsView.favoritesModel.isFavorite(favoriteId)
+                                )
+                            }
+
+                            Connections {
+                                target: allAppsView.contextMenuController
+
+                                function onCloseContextMenus() {
+                                    appContextMenu.close()
                                 }
                             }
 
-                            Kirigami.Icon {
-                                id: appIcon
+                            Controls.MenuItem {
+                                visible: !appContextMenu.favoriteAlreadyPinned
+                                text: allAppsView.pinText
+                                icon.name: "list-add"
 
-                                width: allAppsView.iconSize
-                                height: allAppsView.iconSize
+                                onTriggered: {
+                                    var favoriteId = model.favoriteId
 
-                                x: allAppsView.listView
-                                    ? 16
-                                    : (parent.width - width) / 2
-
-                                y: allAppsView.listView
-                                    ? (parent.height - height) / 2
-                                    : 8
-
-                                source: model.decoration
-                            }
-
-                            PlasmaComponents.Label {
-                                x: allAppsView.listView
-                                    ? appIcon.x + appIcon.width + 12
-                                    : 4
-
-                                y: allAppsView.listView
-                                    ? (parent.height - height) / 2
-                                    : appIcon.y + appIcon.height + 4
-
-                                width: allAppsView.listView
-                                    ? parent.width - appIcon.x - appIcon.width - 28
-                                    : parent.width - 8
-
-                                height: allAppsView.listView
-                                    ? 28
-                                    : parent.height - appIcon.height - appIcon.y - 4
-
-                                text: model.display
-
-                                horizontalAlignment: allAppsView.listView
-                                    ? Text.AlignLeft
-                                    : Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-
-                                maximumLineCount: 1
-                                elide: Text.ElideRight
-
-                                font.pixelSize: 13
-                            }
-
-                            Controls.Menu {
-                                id: appContextMenu
-
-                                Connections {
-                                    target: allAppsView.contextMenuController
-
-                                    function onCloseContextMenus() {
-                                        appContextMenu.close()
-                                    }
-                                }
-
-                                Controls.MenuItem {
-                                    text: allAppsView.pinText
-                                    icon.name: "list-add"
-
-                                    onTriggered: {
-                                        var favoriteId = model.favoriteId
-
-                                        if (favoriteId && allAppsView.favoritesModel) {
-                                            allAppsView.favoritesModel.addFavorite(
-                                                favoriteId
-                                            )
-                                        }
-                                    }
-                                }
-
-                                Controls.MenuSeparator { }
-
-                                Controls.MenuItem {
-                                    text: allAppsView.pinToTaskManagerText
-                                    icon.name: "pin"
-
-                                    onTriggered: {
-                                        if (!appSection.sectionModel) {
-                                            return
-                                        }
-
-                                        var closeRequested = appSection.sectionModel.trigger(
-                                            index,
-                                            "addToTaskManager",
-                                            null
+                                    if (favoriteId && allAppsView.favoritesModel) {
+                                        allAppsView.favoritesModel.addFavorite(
+                                            favoriteId
                                         )
-
-                                        if (closeRequested) {
-                                            allAppsView.closeLauncherRequested()
-                                        }
-                                    }
-                                }
-
-                                Controls.MenuItem {
-                                    text: allAppsView.editApplicationText
-                                    icon.name: "kmenuedit"
-
-                                    onTriggered: {
-                                        if (!appSection.sectionModel) {
-                                            return
-                                        }
-
-                                        var closeRequested = appSection.sectionModel.trigger(
-                                            index,
-                                            "editApplication",
-                                            null
-                                        )
-
-                                        if (closeRequested) {
-                                            allAppsView.closeLauncherRequested()
-                                        }
                                     }
                                 }
                             }
 
-                            MouseArea {
-                                id: mouseArea
+                            Controls.MenuSeparator {
+                                visible: !appContextMenu.favoriteAlreadyPinned
+                            }
 
-                                anchors.fill: parent
+                            Controls.MenuItem {
+                                text: allAppsView.pinToTaskManagerText
+                                icon.name: "pin"
 
-                                hoverEnabled: true
-                                acceptedButtons: Qt.LeftButton | Qt.RightButton
-
-                                cursorShape: Qt.PointingHandCursor
-
-                                onClicked: function(mouse) {
-                                    if (mouse.button === Qt.RightButton) {
-                                        appContextMenu.popup(
-                                            mouseArea,
-                                            mouse.x,
-                                            mouse.y
-                                        )
+                                onTriggered: {
+                                    if (!appSection.sectionModel) {
                                         return
                                     }
 
-                                    //console.log("🦊 ALL APPS CLICK:", model.display, model.favoriteId)
-                                    Qt.callLater(function() {
-                                        appSection.sectionModel.trigger(index, "", null)
-                                    })
+                                    var closeRequested = appSection.sectionModel.trigger(
+                                        index,
+                                        "addToTaskManager",
+                                        null
+                                    )
+
+                                    if (closeRequested) {
+                                        allAppsView.closeLauncherRequested()
+                                    }
                                 }
+                            }
+
+                            Controls.MenuItem {
+                                text: allAppsView.editApplicationText
+                                icon.name: "kmenuedit"
+
+                                onTriggered: {
+                                    if (!appSection.sectionModel) {
+                                        return
+                                    }
+
+                                    var closeRequested = appSection.sectionModel.trigger(
+                                        index,
+                                        "editApplication",
+                                        null
+                                    )
+
+                                    if (closeRequested) {
+                                        allAppsView.closeLauncherRequested()
+                                    }
+                                }
+                            }
+                        }
+
+                        MouseArea {
+                            id: mouseArea
+
+                            anchors.fill: parent
+
+                            hoverEnabled: true
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+                            cursorShape: Qt.PointingHandCursor
+
+                            onClicked: function(mouse) {
+                                if (mouse.button === Qt.RightButton) {
+                                    appContextMenu.popup(
+                                        mouseArea,
+                                        mouse.x,
+                                        mouse.y
+                                    )
+                                    return
+                                }
+
+                                //console.log("🦊 ALL APPS CLICK:", model.display, model.favoriteId)
+                                Qt.callLater(function() {
+                                    appSection.sectionModel.trigger(index, "", null)
+                                })
                             }
                         }
                     }
