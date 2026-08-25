@@ -27,7 +27,7 @@ PlasmoidItem {
     // how pinned applications are presented inside this launcher.
     property var pinnedGroups: []
     property bool pinnedGroupsEnabled: plasmoid.configuration.enablePinnedGroups
-    readonly property int maxPinnedGroupApps: 12
+    readonly property int maxPinnedGroupApps: 16
 
     function loadPinnedGroups() {
         var raw = plasmoid.configuration.pinnedGroups || "[]"
