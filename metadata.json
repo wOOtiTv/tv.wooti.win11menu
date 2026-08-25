@@ -15,7 +15,7 @@
         "Id": "tv.wooti.win11menu",
         "License": "GPL-2.0-or-later",
         "Name": "Windows 11 Start Menu",
-        "Version": "1.2.2",
+        "Version": "1.2.3",
         "Website": "https://github.com/wOOtiTv/tv.wooti.win11menu"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
