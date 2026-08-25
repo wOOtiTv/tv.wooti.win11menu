@@ -164,4 +164,4 @@ This project is licensed under **GPL-2.0-or-later**. See [`LICENSE`](LICENSE) fo
 
 ---
 
-Made with 🦊 and lots of QML
+Made with 🦊, tested by 🐈, repaired by Bob 👷‍♀️ and lots of QML
