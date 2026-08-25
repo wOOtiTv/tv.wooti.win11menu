@@ -314,6 +314,17 @@ Item {
                             Controls.Menu {
                                 id: appContextMenu
 
+                                property bool favoriteAlreadyPinned: false
+
+                                onAboutToShow: {
+                                    var favoriteId = String(model.favoriteId || "")
+                                    favoriteAlreadyPinned = Boolean(
+                                        favoriteId
+                                        && allAppsView.favoritesModel
+                                        && allAppsView.favoritesModel.isFavorite(favoriteId)
+                                    )
+                                }
+
                                 Connections {
                                     target: allAppsView.contextMenuController
 
@@ -323,6 +334,7 @@ Item {
                                 }
 
                                 Controls.MenuItem {
+                                    visible: !appContextMenu.favoriteAlreadyPinned
                                     text: allAppsView.pinText
                                     icon.name: "list-add"
 
@@ -337,7 +349,9 @@ Item {
                                     }
                                 }
 
-                                Controls.MenuSeparator { }
+                                Controls.MenuSeparator {
+                                    visible: !appContextMenu.favoriteAlreadyPinned
+                                }
 
                                 Controls.MenuItem {
                                     text: allAppsView.pinToTaskManagerText
