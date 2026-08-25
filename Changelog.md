@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.3] – Pinned Groups & Scrolling Improvements
+
+### Changed
+- pinned-group application hover areas now match the compact hover style used by regular pinned applications
+- pinned groups can now contain up to 16 applications and display them in up to 4 columns × 4 rows
+- group popups now adapt their width to smaller groups instead of always using the full four-column layout
+- Pinned and All Applications now share one continuous scroll area while the search field and footer remain fixed
+- pinned rows expand and collapse with a short smooth animation instead of moving the All Applications section abruptly
+- updated package metadata for version 1.2.3
+
+### Fixed
+- hardened pinned-group limits so oversized or malformed saved groups are automatically normalized to a maximum of 16 unique applications
+- prevented applications beyond the supported group limit from being stored invisibly outside the visible group popup
+- the **Pin** action in All Applications is now hidden when an application is already pinned, including applications currently placed inside a pinned group
+- large pinned sections can no longer push All Applications out of reach because both sections now scroll together
+
 ## [1.2.2] – Footer Alignment Improvements
 
 ### Changed
