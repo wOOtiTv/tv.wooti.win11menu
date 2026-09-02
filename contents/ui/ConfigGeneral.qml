@@ -10,6 +10,7 @@ Kirigami.FormLayout {
     property alias cfg_iconSize: iconSizeSpin.value
     property alias cfg_menuHeight: menuHeightSpin.value
     property alias cfg_menuWidth: menuWidthSpin.value
+    property bool cfg_showUserInfo: true
     property bool cfg_showLockButton: true
     property bool cfg_showLogoutButton: true
     property bool cfg_showRestartButton: true
@@ -123,6 +124,13 @@ Kirigami.FormLayout {
 
     Item {
         implicitHeight: Kirigami.Units.smallSpacing * 2
+    }
+
+    Controls.CheckBox {
+        Kirigami.FormData.label: i18n("User information:")
+        text: i18n("Show name and avatar")
+        checked: page.cfg_showUserInfo
+        onToggled: page.cfg_showUserInfo = checked
     }
 
     Controls.CheckBox {
