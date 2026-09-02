@@ -32,6 +32,8 @@ Rectangle {
     Item {
         id: userInfo
 
+        visible: plasmoid.configuration.showUserInfo
+
         anchors.left: parent.left
         anchors.leftMargin: 24
 
