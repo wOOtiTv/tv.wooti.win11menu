@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: wOOti Win11 Menu 1.2.0\n"
+"Project-Id-Version: wOOti Win11 Menu 1.2.4\n"
 "Report-Msgid-Bugs-To: https://github.com/wOOtiTv/tv.wooti.win11menu/issues\n"
 "POT-Creation-Date: 2026-08-14 21:10+0200\n"
-"PO-Revision-Date: 2026-08-14 21:10+0200\n"
+"PO-Revision-Date: 2026-09-02 09:50+0200\n"
 "Last-Translator: wOOtiTv <mail@wooti.tv>\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -215,3 +215,11 @@ msgstr "Aan taakbeheer vastmaken"
 #: contents/ui/main.qml
 msgid "Edit Application…"
 msgstr "Toepassing bewerken…"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "User information:"
+msgstr "Gebruikersinformatie:"
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show name and avatar"
+msgstr "Naam en avatar tonen"

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: wOOti Win11 Menu 1.2.0\n"
+"Project-Id-Version: wOOti Win11 Menu 1.2.4\n"
 "Report-Msgid-Bugs-To: https://github.com/wOOtiTv/tv.wooti.win11menu/issues\n"
-"POT-Creation-Date: 2026-08-14 21:10+0200\n"
+"POT-Creation-Date: 2026-09-02 09:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -211,4 +211,12 @@ msgstr ""
 
 #: contents/ui/main.qml
 msgid "Edit Application…"
+msgstr ""
+
+#: contents/ui/ConfigGeneral.qml
+msgid "User information:"
+msgstr ""
+
+#: contents/ui/ConfigGeneral.qml
+msgid "Show name and avatar"
 msgstr ""

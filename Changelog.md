@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.4] – Privacy Option
+
+### Added
+- added a privacy setting to hide the user name and avatar from the launcher footer, useful for screen sharing and video conferencing
+- user information remains visible by default to preserve the existing launcher appearance
+
+### Changed
+- updated package metadata for version 1.2.4
+
 ## [1.2.3] – Pinned Groups & Scrolling Improvements
 
 ### Changed
@@ -12,7 +21,7 @@ All notable changes to this project will be documented in this file.
 - updated package metadata for version 1.2.3
 
 ### Fixed
-- hardened pinned-group limits so oversized or malformed saved groups are automatically normalized to a maximum of 16 unique applications
+- hardened pinned-group limits so oversized or otherwise malformed saved groups are automatically normalized to a maximum of 16 unique applications
 - prevented applications beyond the supported group limit from being stored invisibly outside the visible group popup
 - the **Pin** action in All Applications is now hidden when an application is already pinned, including applications currently placed inside a pinned group
 - large pinned sections can no longer push All Applications out of reach because both sections now scroll together

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls as Controls
 import org.kde.kirigami as Kirigami
+import "Translations.js" as Translations
 
 Kirigami.FormLayout {
     id: page
@@ -10,11 +11,20 @@ Kirigami.FormLayout {
     property alias cfg_iconSize: iconSizeSpin.value
     property alias cfg_menuHeight: menuHeightSpin.value
     property alias cfg_menuWidth: menuWidthSpin.value
+    property bool cfg_showUserInfo: true
     property bool cfg_showLockButton: true
     property bool cfg_showLogoutButton: true
     property bool cfg_showRestartButton: true
     property bool cfg_showShutdownButton: true
     property bool cfg_enablePinnedGroups: true
+
+    function translatedText(sourceText) {
+        return Translations.translate(
+            sourceText,
+            page.cfg_language,
+            Qt.locale().name
+        )
+    }
 
     Item {
         implicitHeight: Kirigami.Units.gridUnit
@@ -123,6 +133,13 @@ Kirigami.FormLayout {
 
     Item {
         implicitHeight: Kirigami.Units.smallSpacing * 2
+    }
+
+    Controls.CheckBox {
+        Kirigami.FormData.label: page.translatedText("User information:")
+        text: page.translatedText("Show name and avatar")
+        checked: page.cfg_showUserInfo
+        onToggled: page.cfg_showUserInfo = checked
     }
 
     Controls.CheckBox {
