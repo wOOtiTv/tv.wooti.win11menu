@@ -1,5 +1,6 @@
 import QtQuick
 import Qt5Compat.GraphicalEffects
+import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
 import org.kde.coreaddons as KCoreAddons
@@ -32,7 +33,7 @@ Rectangle {
     Item {
         id: userInfo
 
-        visible: plasmoid.configuration.showUserInfo
+        visible: Plasmoid.configuration.showUserInfo
 
         anchors.left: parent.left
         anchors.leftMargin: 24
