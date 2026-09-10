@@ -286,12 +286,24 @@ Item {
                 height: pinnedSection.cellHeight
                 width: pinnedSection.effectiveCellWidth
 
-                Drag.active: pinnedEntry.dragActive
-                Drag.source: pinnedEntry
-                Drag.keys: ["wooti-pinned-app"]
-                Drag.supportedActions: Qt.MoveAction
-                Drag.hotSpot.x: width / 2
-                Drag.hotSpot.y: height / 2
+                Item {
+                    id: pinnedDragProxy
+
+                    x: 0
+                    y: 0
+                    width: pinnedEntry.width
+                    height: pinnedEntry.height
+                    opacity: 0
+                    z: 1000
+
+                    Drag.active: pinnedEntry.dragActive
+                    Drag.source: pinnedEntry
+                    Drag.keys: ["wooti-pinned-app"]
+                    Drag.supportedActions: Qt.MoveAction
+                    Drag.proposedAction: Qt.MoveAction
+                    Drag.hotSpot.x: width / 2
+                    Drag.hotSpot.y: height / 2
+                }
 
                 DropArea {
                     id: pinnedAppDropArea
@@ -678,7 +690,7 @@ Item {
                 DragHandler {
                     id: pinnedEntryDragHandler
 
-                    target: null
+                    target: pinnedDragProxy
                     enabled: pinnedSection.groupsEnabled
                         && !pinnedEntry.isGroup
                         && pinnedEntry.favoriteId.length > 0
@@ -686,6 +698,8 @@ Item {
 
                     onActiveChanged: {
                         if (active) {
+                            pinnedDragProxy.x = 0
+                            pinnedDragProxy.y = 0
                             pinnedEntry.dragActive = true
                             pinnedEntry.dragWasActive = true
 
@@ -693,8 +707,10 @@ Item {
                                 pinnedSection.contextMenuController.closeContextMenus()
                             }
                         } else if (pinnedEntry.dragActive) {
-                            pinnedEntry.Drag.drop()
+                            pinnedDragProxy.Drag.drop()
                             pinnedEntry.dragActive = false
+                            pinnedDragProxy.x = 0
+                            pinnedDragProxy.y = 0
 
                             Qt.callLater(function() {
                                 pinnedEntry.dragWasActive = false
