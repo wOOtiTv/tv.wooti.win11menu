@@ -318,7 +318,13 @@ Item {
                     y: 0
                     width: pinnedEntry.width
                     height: pinnedEntry.height
-                    opacity: pinnedEntry.dragActive ? 0.92 : 0
+                    opacity: pinnedEntry.dragActive
+                        && pinnedEntry.x + pinnedDragProxy.x + width / 2 >= 0
+                        && pinnedEntry.x + pinnedDragProxy.x + width / 2 <= pinnedApps.width
+                        && pinnedEntry.y + pinnedDragProxy.y + height / 2 >= 0
+                        && pinnedEntry.y + pinnedDragProxy.y + height / 2 <= pinnedApps.height
+                            ? 0.92
+                            : 0
                     z: 1000
 
                     Drag.active: pinnedEntry.dragActive
