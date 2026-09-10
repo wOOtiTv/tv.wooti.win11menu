@@ -278,26 +278,6 @@ Item {
                             }
 
                             Controls.MenuItem {
-                                visible: !appContextMenu.favoriteAlreadyPinned
-                                text: allAppsView.pinText
-                                icon.name: "pin"
-
-                                onTriggered: {
-                                    var favoriteId = model.favoriteId
-
-                                    if (favoriteId && allAppsView.favoritesModel) {
-                                        allAppsView.favoritesModel.addFavorite(
-                                            favoriteId
-                                        )
-                                    }
-                                }
-                            }
-
-                            Controls.MenuSeparator {
-                                visible: !appContextMenu.favoriteAlreadyPinned
-                            }
-
-                            Controls.MenuItem {
                                 text: allAppsView.pinToTaskManagerText
                                 icon.name: "pin"
 
@@ -360,6 +340,26 @@ Item {
 
                                     if (closeRequested) {
                                         allAppsView.closeLauncherRequested()
+                                    }
+                                }
+                            }
+
+                            Controls.MenuSeparator {
+                                visible: !appContextMenu.favoriteAlreadyPinned
+                            }
+
+                            Controls.MenuItem {
+                                visible: !appContextMenu.favoriteAlreadyPinned
+                                text: allAppsView.pinText
+                                icon.name: "pin"
+
+                                onTriggered: {
+                                    var favoriteId = model.favoriteId
+
+                                    if (favoriteId && allAppsView.favoritesModel) {
+                                        allAppsView.favoritesModel.addFavorite(
+                                            favoriteId
+                                        )
                                     }
                                 }
                             }
