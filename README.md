@@ -28,7 +28,7 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 ### ✨ Features
 
 - 📌 **Pinned apps** – pin/unpin applications via right-click context menu
-- 🗂️ **Pinned groups** – organize pinned apps into optional named groups with up to 16 apps per group
+- 🗂️ **Pinned groups** – organize pinned apps into optional named groups with up to 16 apps per group, including Windows-style drag & drop creation and adding
 - 🧩 **KDE context actions** – pin applications to the Task Manager or edit their application entry from Pinned, All Applications and application search results
 - 🔤 **All applications** – alphabetically grouped applications
 - 📐 **Grid / List view** – switch between a compact grid and a clean list layout
@@ -70,11 +70,10 @@ Wider menu widths automatically provide additional pinned-app columns while keep
 
 Pinned groups make it possible to organize related applications without changing the normal KDE favorites list.
 
-To create or use a group:
+Groups can be created and filled in two ways:
 
-1. Right-click a regular pinned application.
-2. Choose **Add to group…**.
-3. Select an existing group or create a new one.
+1. **Drag & drop:** drag one regular pinned application onto another pinned application to create a new group, or drag it onto an existing group to add it there.
+2. **Context menu:** right-click a regular pinned application, choose **Add to group…**, then select an existing group or create a new one.
 
 Group behavior:
 
@@ -83,9 +82,12 @@ Group behavior:
 - a group shows a compact preview of the applications it contains
 - clicking a group opens its applications in a compact popup
 - each group can contain up to **16 applications**
+- full groups are not valid drag & drop targets
+- valid drag targets are highlighted while dragging
+- dropping outside a valid app or group simply cancels the drag without changing anything
 - the popup displays up to **4 columns × 4 rows** without scrolling and adapts its width for smaller groups
 - right-click a group to rename or dissolve it
-- right-click an application inside a group to remove it from the group
+- **removing an application from a group is intentionally done only via right-click → Remove from group; dragging applications out of groups is not supported**
 
 Application entries in **Pinned**, **All Applications** and **application search results** expose selected native KDE actions in their context menu:
 
