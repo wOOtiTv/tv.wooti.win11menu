@@ -293,7 +293,7 @@ Item {
                     y: 0
                     width: pinnedEntry.width
                     height: pinnedEntry.height
-                    opacity: 0
+                    opacity: pinnedEntry.dragActive ? 0.88 : 0
                     z: 1000
 
                     Drag.active: pinnedEntry.dragActive
@@ -303,6 +303,51 @@ Item {
                     Drag.proposedAction: Qt.MoveAction
                     Drag.hotSpot.x: width / 2
                     Drag.hotSpot.y: height / 2
+
+                    Rectangle {
+                        width: Math.min(
+                            parent.width - 4,
+                            pinnedSection.hoverWidth
+                        )
+                        height: Math.min(
+                            parent.height - 4,
+                            pinnedSection.iconSize + 34
+                        )
+                        anchors.centerIn: parent
+                        radius: 12
+                        color: "#3a3f49"
+                        border.width: 1
+                        border.color: Kirigami.Theme.highlightColor
+
+                        Kirigami.Icon {
+                            id: pinnedDragIcon
+                            width: pinnedSection.iconSize
+                            height: pinnedSection.iconSize
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.top: parent.top
+                            anchors.topMargin: 6
+                            source: pinnedEntry.entryData
+                                ? pinnedEntry.entryData.decoration
+                                : ""
+                        }
+
+                        PlasmaComponents.Label {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: pinnedDragIcon.bottom
+                            anchors.topMargin: 3
+                            anchors.leftMargin: 6
+                            anchors.rightMargin: 6
+                            text: pinnedEntry.entryData
+                                ? String(pinnedEntry.entryData.displayName || "")
+                                : ""
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            maximumLineCount: 1
+                            elide: Text.ElideRight
+                            font.pixelSize: 13
+                        }
+                    }
                 }
 
                 DropArea {
