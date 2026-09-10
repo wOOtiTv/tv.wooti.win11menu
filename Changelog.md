@@ -1,6 +1,24 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] – Drag & Drop Pinned Groups
+
+### Added
+- added Windows-style drag & drop for pinned applications
+- dragging one regular pinned application onto another now creates a new pinned group containing both applications
+- dragging a regular pinned application onto an existing group now adds it to that group
+- valid application and group drop targets are highlighted while dragging
+- added a compact floating drag preview that follows the pointer while keeping the original pinned item in place
+
+### Changed
+- drag operations only become active after an actual pointer drag, preventing normal clicks from accidentally launching applications
+- full pinned groups remain limited to **16 applications** and are not accepted as drag & drop targets
+- dropping a dragged application outside a valid target simply cancels the operation without changing group assignments
+- drag previews are kept above other pinned entries and are hidden when dragged outside the Pinned section
+- **removing an application from a group intentionally remains a right-click action via _Remove from group_; dragging applications out of groups is not supported**
+- the existing **Add to group…** context-menu workflow remains available as an alternative to drag & drop
+- updated package metadata for version 1.3.0
+
 ## [1.2.5] – Application Context Menu Improvements
 
 ### Added

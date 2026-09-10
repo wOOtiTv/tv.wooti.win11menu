@@ -145,6 +145,88 @@ Item {
         }
     }
 
+    function defaultDraggedGroupName() {
+        if (groupController && groupController.i18n) {
+            var translatedName = String(
+                groupController.i18n("New group…") || ""
+            ).replace(/…$/, "").trim()
+
+            if (translatedName) {
+                return translatedName
+            }
+        }
+
+        return "New group"
+    }
+
+    function createGroupFromDrop(sourceFavoriteId, targetFavoriteId) {
+        var sourceId = String(sourceFavoriteId || "")
+        var targetId = String(targetFavoriteId || "")
+
+        if (!groupsEnabled
+                || !groupController
+                || !sourceId
+                || !targetId
+                || sourceId === targetId) {
+            return false
+        }
+
+        if (groupController.isFavoriteGrouped
+                && (groupController.isFavoriteGrouped(sourceId)
+                    || groupController.isFavoriteGrouped(targetId))) {
+            return false
+        }
+
+        if (!groupController.copyPinnedGroups
+                || !groupController.savePinnedGroups) {
+            return false
+        }
+
+        var groups = groupController.copyPinnedGroups()
+
+        if (!Array.isArray(groups)) {
+            groups = []
+        }
+
+        var groupId = "group-"
+            + Date.now().toString(36)
+            + "-"
+            + Math.floor(Math.random() * 1000000).toString(36)
+
+        groups.push({
+            id: groupId,
+            name: defaultDraggedGroupName(),
+            apps: [targetId, sourceId]
+        })
+
+        groupController.savePinnedGroups(groups)
+        return true
+    }
+
+    function groupCanAcceptDrop(groupId, favoriteId) {
+        var id = String(groupId || "")
+        var appId = String(favoriteId || "")
+
+        if (!groupsEnabled || !groupController || !id || !appId) {
+            return false
+        }
+
+        if (!groupController.groupIndex || !groupController.pinnedGroups) {
+            return false
+        }
+
+        var index = groupController.groupIndex(id)
+
+        if (index < 0 || index >= groupController.pinnedGroups.length) {
+            return false
+        }
+
+        var apps = groupController.pinnedGroups[index].apps || []
+        var maxApps = Number(groupController.maxPinnedGroupApps || 16)
+
+        return apps.indexOf(appId) < 0 && apps.length < maxApps
+    }
+
     height: contentBottom
     clip: true
 
@@ -218,9 +300,149 @@ Item {
                 property var entryData: modelData
                 property bool isGroup:
                     entryData && entryData.entryType === "group"
+                property string favoriteId: !isGroup && entryData
+                    ? String(entryData.favoriteId || "")
+                    : ""
+                property bool dragActive: false
+                property bool dragWasActive: false
+                property bool validDropHover: false
 
                 height: pinnedSection.cellHeight
                 width: pinnedSection.effectiveCellWidth
+                z: pinnedEntry.dragActive ? 2000 : 0
+
+                Item {
+                    id: pinnedDragProxy
+
+                    x: 0
+                    y: 0
+                    width: pinnedEntry.width
+                    height: pinnedEntry.height
+                    opacity: pinnedEntry.dragActive
+                        && pinnedEntry.x + pinnedDragProxy.x + width / 2 >= 0
+                        && pinnedEntry.x + pinnedDragProxy.x + width / 2 <= pinnedApps.width
+                        && pinnedEntry.y + pinnedDragProxy.y + height / 2 >= 0
+                        && pinnedEntry.y + pinnedDragProxy.y + height / 2 <= pinnedApps.height
+                            ? 0.92
+                            : 0
+                    z: 1000
+
+                    Drag.active: pinnedEntry.dragActive
+                    Drag.source: pinnedEntry
+                    Drag.keys: ["wooti-pinned-app"]
+                    Drag.supportedActions: Qt.MoveAction
+                    Drag.proposedAction: Qt.MoveAction
+                    Drag.hotSpot.x: width / 2
+                    Drag.hotSpot.y: height / 2
+
+                    Rectangle {
+                        width: pinnedSection.iconSize + 18
+                        height: width
+                        anchors.centerIn: parent
+                        radius: 12
+                        color: "#3a3f49"
+                        border.width: 1
+                        border.color: Kirigami.Theme.highlightColor
+
+                        Kirigami.Icon {
+                            width: pinnedSection.iconSize
+                            height: pinnedSection.iconSize
+                            anchors.centerIn: parent
+                            source: pinnedEntry.entryData
+                                ? pinnedEntry.entryData.decoration
+                                : ""
+                        }
+                    }
+                }
+
+                DropArea {
+                    id: pinnedAppDropArea
+
+                    anchors.fill: parent
+                    enabled: pinnedSection.groupsEnabled
+                        && pinnedEntry.entryData
+                        && (pinnedEntry.isGroup
+                            ? String(pinnedEntry.entryData.groupId || "").length > 0
+                            : pinnedEntry.favoriteId.length > 0)
+                    keys: ["wooti-pinned-app"]
+
+                    onEntered: function(drag) {
+                        var source = drag.source
+                        var sourceId = source
+                            ? String(source.favoriteId || "")
+                            : ""
+                        var validTarget = false
+
+                        if (source && source !== pinnedEntry && sourceId) {
+                            if (pinnedEntry.isGroup) {
+                                validTarget = pinnedSection.groupCanAcceptDrop(
+                                    pinnedEntry.entryData.groupId,
+                                    sourceId
+                                )
+                            } else {
+                                validTarget = sourceId !== pinnedEntry.favoriteId
+                            }
+                        }
+
+                        pinnedEntry.validDropHover = validTarget
+
+                        if (!validTarget) {
+                            drag.accepted = false
+                        }
+                    }
+
+                    onExited: {
+                        pinnedEntry.validDropHover = false
+                    }
+
+                    onDropped: function(drop) {
+                        var source = drop.source
+                        var sourceId = source
+                            ? String(source.favoriteId || "")
+                            : ""
+
+                        pinnedEntry.validDropHover = false
+
+                        if (pinnedEntry.isGroup) {
+                            var groupId = String(
+                                pinnedEntry.entryData.groupId || ""
+                            )
+
+                            if (sourceId
+                                    && pinnedSection.groupCanAcceptDrop(
+                                        groupId,
+                                        sourceId
+                                    )
+                                    && pinnedSection.groupController
+                                    && pinnedSection.groupController.addFavoriteToGroup
+                                    && pinnedSection.groupController.addFavoriteToGroup(
+                                        sourceId,
+                                        groupId
+                                    )) {
+                                drop.acceptProposedAction()
+                                return
+                            }
+
+                            drop.accepted = false
+                            return
+                        }
+
+                        var targetId = pinnedEntry.favoriteId
+
+                        if (sourceId
+                                && targetId
+                                && sourceId !== targetId
+                                && pinnedSection.createGroupFromDrop(
+                                    sourceId,
+                                    targetId
+                                )) {
+                            drop.acceptProposedAction()
+                            return
+                        }
+
+                        drop.accepted = false
+                    }
+                }
 
                 Rectangle {
                     id: pinnedEntryHover
@@ -244,7 +466,12 @@ Item {
 
                     radius: 12
                     color: "#30343d"
-                    opacity: pinnedEntryMouseArea.containsMouse ? 1 : 0
+                    opacity: pinnedEntryMouseArea.containsMouse
+                        || pinnedEntry.validDropHover
+                            ? 1
+                            : 0
+                    border.width: pinnedEntry.validDropHover ? 2 : 0
+                    border.color: Kirigami.Theme.highlightColor
 
                     Behavior on opacity {
                         NumberAnimation { duration: 120 }
@@ -544,6 +771,38 @@ Item {
                     }
                 }
 
+                DragHandler {
+                    id: pinnedEntryDragHandler
+
+                    target: pinnedDragProxy
+                    enabled: pinnedSection.groupsEnabled
+                        && !pinnedEntry.isGroup
+                        && pinnedEntry.favoriteId.length > 0
+                    acceptedButtons: Qt.LeftButton
+
+                    onActiveChanged: {
+                        if (active) {
+                            pinnedDragProxy.x = 0
+                            pinnedDragProxy.y = 0
+                            pinnedEntry.dragActive = true
+                            pinnedEntry.dragWasActive = true
+
+                            if (pinnedSection.contextMenuController) {
+                                pinnedSection.contextMenuController.closeContextMenus()
+                            }
+                        } else if (pinnedEntry.dragActive) {
+                            pinnedDragProxy.Drag.drop()
+                            pinnedEntry.dragActive = false
+                            pinnedDragProxy.x = 0
+                            pinnedDragProxy.y = 0
+
+                            Qt.callLater(function() {
+                                pinnedEntry.dragWasActive = false
+                            })
+                        }
+                    }
+                }
+
                 MouseArea {
                     id: pinnedEntryMouseArea
                     anchors.fill: parent
@@ -566,6 +825,10 @@ Item {
                                     mouse.y
                                 )
                             }
+                            return
+                        }
+
+                        if (pinnedEntry.dragWasActive) {
                             return
                         }
 
