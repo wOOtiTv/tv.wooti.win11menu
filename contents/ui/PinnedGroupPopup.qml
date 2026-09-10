@@ -3,6 +3,7 @@ import QtQuick.Controls as Controls
 import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
+import "Translations.js" as Translations
 
 Controls.Popup {
     id: groupPopup
@@ -15,6 +16,11 @@ Controls.Popup {
     property int maxGroupApps: 16
 
     property string removeFromGroupText: ""
+    readonly property string editApplicationText: Translations.translate(
+        "Edit Application…",
+        Plasmoid.configuration.language,
+        Qt.locale().name
+    )
 
     property string groupId: ""
     property string groupName: ""
@@ -286,6 +292,22 @@ Controls.Popup {
                                     groupAppContextMenu.close()
                                 }
                             }
+
+                            Controls.MenuItem {
+                                text: groupPopup.editApplicationText
+                                icon.name: "kmenuedit"
+
+                                onTriggered: {
+                                    if (groupPopup.launcherController) {
+                                        groupPopup.launcherController.triggerPinnedFavoriteAction(
+                                            groupAppItem.appData.favoriteId,
+                                            "editApplication"
+                                        )
+                                    }
+                                }
+                            }
+
+                            Controls.MenuSeparator { }
 
                             Controls.MenuItem {
                                 text: groupPopup.removeFromGroupText
