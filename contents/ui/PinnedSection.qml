@@ -203,6 +203,30 @@ Item {
         return true
     }
 
+    function groupCanAcceptDrop(groupId, favoriteId) {
+        var id = String(groupId || "")
+        var appId = String(favoriteId || "")
+
+        if (!groupsEnabled || !groupController || !id || !appId) {
+            return false
+        }
+
+        if (!groupController.groupIndex || !groupController.pinnedGroups) {
+            return false
+        }
+
+        var index = groupController.groupIndex(id)
+
+        if (index < 0 || index >= groupController.pinnedGroups.length) {
+            return false
+        }
+
+        var apps = groupController.pinnedGroups[index].apps || []
+        var maxApps = Number(groupController.maxPinnedGroupApps || 16)
+
+        return apps.indexOf(appId) < 0 && apps.length < maxApps
+    }
+
     height: contentBottom
     clip: true
 
@@ -330,8 +354,10 @@ Item {
 
                     anchors.fill: parent
                     enabled: pinnedSection.groupsEnabled
-                        && !pinnedEntry.isGroup
-                        && pinnedEntry.favoriteId.length > 0
+                        && pinnedEntry.entryData
+                        && (pinnedEntry.isGroup
+                            ? String(pinnedEntry.entryData.groupId || "").length > 0
+                            : pinnedEntry.favoriteId.length > 0)
                     keys: ["wooti-pinned-app"]
 
                     onEntered: function(drag) {
@@ -339,15 +365,22 @@ Item {
                         var sourceId = source
                             ? String(source.favoriteId || "")
                             : ""
+                        var validTarget = false
 
-                        pinnedEntry.validDropHover = Boolean(
-                            source
-                            && source !== pinnedEntry
-                            && sourceId
-                            && sourceId !== pinnedEntry.favoriteId
-                        )
+                        if (source && source !== pinnedEntry && sourceId) {
+                            if (pinnedEntry.isGroup) {
+                                validTarget = pinnedSection.groupCanAcceptDrop(
+                                    pinnedEntry.entryData.groupId,
+                                    sourceId
+                                )
+                            } else {
+                                validTarget = sourceId !== pinnedEntry.favoriteId
+                            }
+                        }
 
-                        if (!pinnedEntry.validDropHover) {
+                        pinnedEntry.validDropHover = validTarget
+
+                        if (!validTarget) {
                             drag.accepted = false
                         }
                     }
@@ -361,9 +394,34 @@ Item {
                         var sourceId = source
                             ? String(source.favoriteId || "")
                             : ""
-                        var targetId = pinnedEntry.favoriteId
 
                         pinnedEntry.validDropHover = false
+
+                        if (pinnedEntry.isGroup) {
+                            var groupId = String(
+                                pinnedEntry.entryData.groupId || ""
+                            )
+
+                            if (sourceId
+                                    && pinnedSection.groupCanAcceptDrop(
+                                        groupId,
+                                        sourceId
+                                    )
+                                    && pinnedSection.groupController
+                                    && pinnedSection.groupController.addFavoriteToGroup
+                                    && pinnedSection.groupController.addFavoriteToGroup(
+                                        sourceId,
+                                        groupId
+                                    )) {
+                                drop.acceptProposedAction()
+                                return
+                            }
+
+                            drop.accepted = false
+                            return
+                        }
+
+                        var targetId = pinnedEntry.favoriteId
 
                         if (sourceId
                                 && targetId
