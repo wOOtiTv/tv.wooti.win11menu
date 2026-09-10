@@ -297,8 +297,8 @@ Item {
                                 : searchResultsView.pinText
                         icon.name: searchResultsView.favorites
                             && searchResultsView.favorites.isFavorite(model.favoriteId)
-                                ? "list-remove"
-                                : "list-add"
+                                ? "window-unpin"
+                                : "pin"
 
                         onTriggered: {
                             var favoriteId = String(model.favoriteId || "")
