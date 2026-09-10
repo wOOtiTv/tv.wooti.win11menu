@@ -223,3 +223,7 @@ msgstr "User information:"
 #: contents/ui/ConfigGeneral.qml
 msgid "Show name and avatar"
 msgstr "Show name and avatar"
+
+#: contents/ui/AllAppsView.qml contents/ui/PinnedSection.qml contents/ui/SearchResultsView.qml
+msgid "Uninstall or Manage Add-Ons…"
+msgstr "Uninstall or Manage Add-Ons…"
