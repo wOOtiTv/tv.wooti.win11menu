@@ -291,32 +291,6 @@ Item {
                     }
 
                     Controls.MenuItem {
-                        text: searchResultsView.favorites
-                            && searchResultsView.favorites.isFavorite(model.favoriteId)
-                                ? searchResultsView.unpinText
-                                : searchResultsView.pinText
-                        icon.name: searchResultsView.favorites
-                            && searchResultsView.favorites.isFavorite(model.favoriteId)
-                                ? "window-unpin"
-                                : "pin"
-
-                        onTriggered: {
-                            var favoriteId = String(model.favoriteId || "")
-
-                            if (!favoriteId || !searchResultsView.favorites) {
-                                return
-                            }
-
-                            if (searchResultsView.favorites.isFavorite(favoriteId)) {
-                                searchResultsView.removeFavoriteFromGroupsRequested(favoriteId)
-                                searchResultsView.favorites.removeFavorite(favoriteId)
-                            } else {
-                                searchResultsView.favorites.addFavorite(favoriteId)
-                            }
-                        }
-                    }
-
-                    Controls.MenuItem {
                         text: searchResultsView.pinToTaskManagerText
                         icon.name: "pin"
 
@@ -379,6 +353,34 @@ Item {
 
                             if (closeRequested) {
                                 searchResultsView.closeLauncherRequested()
+                            }
+                        }
+                    }
+
+                    Controls.MenuSeparator { }
+
+                    Controls.MenuItem {
+                        text: searchResultsView.favorites
+                            && searchResultsView.favorites.isFavorite(model.favoriteId)
+                                ? searchResultsView.unpinText
+                                : searchResultsView.pinText
+                        icon.name: searchResultsView.favorites
+                            && searchResultsView.favorites.isFavorite(model.favoriteId)
+                                ? "window-unpin"
+                                : "pin"
+
+                        onTriggered: {
+                            var favoriteId = String(model.favoriteId || "")
+
+                            if (!favoriteId || !searchResultsView.favorites) {
+                                return
+                            }
+
+                            if (searchResultsView.favorites.isFavorite(favoriteId)) {
+                                searchResultsView.removeFavoriteFromGroupsRequested(favoriteId)
+                                searchResultsView.favorites.removeFavorite(favoriteId)
+                            } else {
+                                searchResultsView.favorites.addFavorite(favoriteId)
                             }
                         }
                     }
