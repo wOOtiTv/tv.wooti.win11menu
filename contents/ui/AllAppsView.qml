@@ -280,7 +280,7 @@ Item {
                             Controls.MenuItem {
                                 visible: !appContextMenu.favoriteAlreadyPinned
                                 text: allAppsView.pinText
-                                icon.name: "list-add"
+                                icon.name: "pin"
 
                                 onTriggered: {
                                     var favoriteId = model.favoriteId
