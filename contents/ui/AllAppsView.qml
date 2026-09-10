@@ -3,6 +3,7 @@ import QtQuick.Controls as Controls
 import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
+import "Translations.js" as Translations
 
 Item {
     id: allAppsView
@@ -29,6 +30,11 @@ Item {
 
     property string pinToTaskManagerText: ""
     property string editApplicationText: ""
+    readonly property string manageApplicationText: Translations.translate(
+        "Uninstall or Manage Add-Ons…",
+        Plasmoid.configuration.language,
+        Qt.locale().name
+    )
 
     signal closeLauncherRequested()
     signal listViewToggleRequested()
@@ -41,6 +47,22 @@ Item {
 
     readonly property int sectionHeaderHeight: 34
     readonly property int sectionSpacing: 8
+
+    function actionForId(actionList, actionId) {
+        if (!actionList) {
+            return null
+        }
+
+        for (var i = 0; i < actionList.length; ++i) {
+            var action = actionList[i]
+
+            if (action && String(action.actionId || "") === String(actionId || "")) {
+                return action
+            }
+        }
+
+        return null
+    }
 
     visible: searchText.length === 0
     height: allAppsColumn.y + allAppsColumn.implicitHeight + 16
@@ -233,6 +255,10 @@ Item {
                             id: appContextMenu
 
                             property bool favoriteAlreadyPinned: false
+                            property var manageApplicationAction: allAppsView.actionForId(
+                                model.actionList,
+                                "manageApplication"
+                            )
 
                             onAboutToShow: {
                                 var favoriteId = String(model.favoriteId || "")
@@ -304,6 +330,31 @@ Item {
                                     var closeRequested = appSection.sectionModel.trigger(
                                         index,
                                         "editApplication",
+                                        null
+                                    )
+
+                                    if (closeRequested) {
+                                        allAppsView.closeLauncherRequested()
+                                    }
+                                }
+                            }
+
+                            Controls.MenuItem {
+                                visible: Boolean(appContextMenu.manageApplicationAction)
+                                text: allAppsView.manageApplicationText
+                                icon.name: appContextMenu.manageApplicationAction
+                                    && appContextMenu.manageApplicationAction.icon
+                                        ? String(appContextMenu.manageApplicationAction.icon)
+                                        : "plasmadiscover"
+
+                                onTriggered: {
+                                    if (!appSection.sectionModel) {
+                                        return
+                                    }
+
+                                    var closeRequested = appSection.sectionModel.trigger(
+                                        index,
+                                        "manageApplication",
                                         null
                                     )
 
