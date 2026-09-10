@@ -58,6 +58,24 @@ Item {
         return null
     }
 
+    function actionsForId(actionList, actionId) {
+        var actions = []
+
+        if (!actionList) {
+            return actions
+        }
+
+        for (var i = 0; i < actionList.length; ++i) {
+            var action = actionList[i]
+
+            if (action && String(action.actionId || "") === String(actionId || "")) {
+                actions.push(action)
+            }
+        }
+
+        return actions
+    }
+
     visible: searchText.length > 0
 
     Flickable {
@@ -156,6 +174,8 @@ Item {
             delegate: Item {
                 id: searchAppItem
 
+                property int modelIndex: index
+
                 height: appSearchGrid.cellHeight
                 width: appSearchGrid.cellWidth
 
@@ -206,12 +226,61 @@ Item {
                 Controls.Menu {
                     id: searchAppContextMenu
 
+                    property var jumpListActions: searchResultsView.actionsForId(
+                        model.actionList,
+                        "_kicker_jumpListAction"
+                    )
                     property var manageApplicationAction: searchResultsView.actionForId(
                         model.actionList,
                         "manageApplication"
                     )
 
-                    Controls.MenuSeparator { }
+                    Instantiator {
+                        id: searchJumpActionsInstantiator
+                        model: searchAppContextMenu.jumpListActions
+
+                        delegate: Controls.MenuItem {
+                            required property var modelData
+
+                            text: modelData && modelData.text
+                                ? String(modelData.text)
+                                : ""
+                            icon.name: modelData && modelData.icon
+                                ? String(modelData.icon)
+                                : ""
+                            enabled: !modelData || modelData.enabled === undefined
+                                ? true
+                                : Boolean(modelData.enabled)
+
+                            onTriggered: {
+                                if (!appSearchGrid.model) {
+                                    return
+                                }
+
+                                var closeRequested = appSearchGrid.model.trigger(
+                                    searchAppItem.modelIndex,
+                                    modelData.actionId,
+                                    modelData.actionArgument
+                                )
+
+                                if (closeRequested) {
+                                    searchResultsView.closeLauncherRequested()
+                                }
+                            }
+                        }
+
+                        onObjectAdded: function(index, object) {
+                            searchAppContextMenu.insertItem(index, object)
+                        }
+
+                        onObjectRemoved: function(index, object) {
+                            searchAppContextMenu.removeItem(object)
+                        }
+                    }
+
+                    Controls.MenuSeparator {
+                        visible: searchAppContextMenu.jumpListActions.length > 0
+                    }
 
                     Connections {
                         target: searchResultsView.contextController
