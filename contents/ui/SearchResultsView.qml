@@ -3,6 +3,7 @@ import QtQuick.Controls as Controls
 import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
+import "Translations.js" as Translations
 
 Item {
     id: searchResultsView
@@ -29,12 +30,51 @@ Item {
     property string pinText: ""
     property string pinToTaskManagerText: ""
     property string editApplicationText: ""
+    readonly property string manageApplicationText: Translations.translate(
+        "Uninstall or Manage Add-Ons…",
+        Plasmoid.configuration.language,
+        Qt.locale().name
+    )
     property string unpinText: ""
     property string noResultsText: ""
     property string balooNoResultsText: ""
 
     signal closeLauncherRequested()
     signal removeFavoriteFromGroupsRequested(string favoriteId)
+
+    function actionForId(actionList, actionId) {
+        if (!actionList) {
+            return null
+        }
+
+        for (var i = 0; i < actionList.length; ++i) {
+            var action = actionList[i]
+
+            if (action && String(action.actionId || "") === String(actionId || "")) {
+                return action
+            }
+        }
+
+        return null
+    }
+
+    function actionsForId(actionList, actionId) {
+        var actions = []
+
+        if (!actionList) {
+            return actions
+        }
+
+        for (var i = 0; i < actionList.length; ++i) {
+            var action = actionList[i]
+
+            if (action && String(action.actionId || "") === String(actionId || "")) {
+                actions.push(action)
+            }
+        }
+
+        return actions
+    }
 
     visible: searchText.length > 0
 
@@ -134,6 +174,8 @@ Item {
             delegate: Item {
                 id: searchAppItem
 
+                property int modelIndex: index
+
                 height: appSearchGrid.cellHeight
                 width: appSearchGrid.cellWidth
 
@@ -184,39 +226,67 @@ Item {
                 Controls.Menu {
                     id: searchAppContextMenu
 
-                    Controls.MenuSeparator { }
+                    property var jumpListActions: searchResultsView.actionsForId(
+                        model.actionList,
+                        "_kicker_jumpListAction"
+                    )
+                    property var manageApplicationAction: searchResultsView.actionForId(
+                        model.actionList,
+                        "manageApplication"
+                    )
+
+                    Instantiator {
+                        id: searchJumpActionsInstantiator
+                        model: searchAppContextMenu.jumpListActions
+
+                        delegate: Controls.MenuItem {
+                            required property var modelData
+
+                            text: modelData && modelData.text
+                                ? String(modelData.text)
+                                : ""
+                            icon.name: modelData && modelData.icon
+                                ? String(modelData.icon)
+                                : ""
+                            enabled: !modelData || modelData.enabled === undefined
+                                ? true
+                                : Boolean(modelData.enabled)
+
+                            onTriggered: {
+                                if (!appSearchGrid.model) {
+                                    return
+                                }
+
+                                var closeRequested = appSearchGrid.model.trigger(
+                                    searchAppItem.modelIndex,
+                                    modelData.actionId,
+                                    modelData.actionArgument
+                                )
+
+                                if (closeRequested) {
+                                    searchResultsView.closeLauncherRequested()
+                                }
+                            }
+                        }
+
+                        onObjectAdded: function(index, object) {
+                            searchAppContextMenu.insertItem(index, object)
+                        }
+
+                        onObjectRemoved: function(index, object) {
+                            searchAppContextMenu.removeItem(object)
+                        }
+                    }
+
+                    Controls.MenuSeparator {
+                        visible: searchAppContextMenu.jumpListActions.length > 0
+                    }
 
                     Connections {
                         target: searchResultsView.contextController
 
                         function onCloseContextMenus() {
                             searchAppContextMenu.close()
-                        }
-                    }
-
-                    Controls.MenuItem {
-                        text: searchResultsView.favorites
-                            && searchResultsView.favorites.isFavorite(model.favoriteId)
-                                ? searchResultsView.unpinText
-                                : searchResultsView.pinText
-                        icon.name: searchResultsView.favorites
-                            && searchResultsView.favorites.isFavorite(model.favoriteId)
-                                ? "list-remove"
-                                : "list-add"
-
-                        onTriggered: {
-                            var favoriteId = String(model.favoriteId || "")
-
-                            if (!favoriteId || !searchResultsView.favorites) {
-                                return
-                            }
-
-                            if (searchResultsView.favorites.isFavorite(favoriteId)) {
-                                searchResultsView.removeFavoriteFromGroupsRequested(favoriteId)
-                                searchResultsView.favorites.removeFavorite(favoriteId)
-                            } else {
-                                searchResultsView.favorites.addFavorite(favoriteId)
-                            }
                         }
                     }
 
@@ -258,6 +328,59 @@ Item {
 
                             if (closeRequested) {
                                 searchResultsView.closeLauncherRequested()
+                            }
+                        }
+                    }
+
+                    Controls.MenuItem {
+                        visible: Boolean(searchAppContextMenu.manageApplicationAction)
+                        text: searchResultsView.manageApplicationText
+                        icon.name: searchAppContextMenu.manageApplicationAction
+                            && searchAppContextMenu.manageApplicationAction.icon
+                                ? String(searchAppContextMenu.manageApplicationAction.icon)
+                                : "plasmadiscover"
+
+                        onTriggered: {
+                            if (!appSearchGrid.model) {
+                                return
+                            }
+
+                            var closeRequested = appSearchGrid.model.trigger(
+                                index,
+                                "manageApplication",
+                                null
+                            )
+
+                            if (closeRequested) {
+                                searchResultsView.closeLauncherRequested()
+                            }
+                        }
+                    }
+
+                    Controls.MenuSeparator { }
+
+                    Controls.MenuItem {
+                        text: searchResultsView.favorites
+                            && searchResultsView.favorites.isFavorite(model.favoriteId)
+                                ? searchResultsView.unpinText
+                                : searchResultsView.pinText
+                        icon.name: searchResultsView.favorites
+                            && searchResultsView.favorites.isFavorite(model.favoriteId)
+                                ? "window-unpin"
+                                : "pin"
+
+                        onTriggered: {
+                            var favoriteId = String(model.favoriteId || "")
+
+                            if (!favoriteId || !searchResultsView.favorites) {
+                                return
+                            }
+
+                            if (searchResultsView.favorites.isFavorite(favoriteId)) {
+                                searchResultsView.removeFavoriteFromGroupsRequested(favoriteId)
+                                searchResultsView.favorites.removeFavorite(favoriteId)
+                            } else {
+                                searchResultsView.favorites.addFavorite(favoriteId)
                             }
                         }
                     }

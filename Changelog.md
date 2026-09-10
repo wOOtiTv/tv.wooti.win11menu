@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.5] – Application Context Menu Improvements
+
+### Added
+- added KDE's native **Uninstall or Manage Add-Ons…** action to application context menus, following the same AppStream/Discover behavior as the standard Plasma launcher
+- added native application jump-list actions such as new windows, private windows and other app-specific shortcuts to pinned applications, pinned-group applications and application search results
+- added **Edit Application…** to applications inside pinned groups so icons and other launcher properties can be changed there as well
+
+### Changed
+- recent-file entries are intentionally excluded from the app-specific jump-list section to keep context menus compact
+- renamed Start pinning actions to **Pin to Start** / **Unpin from Start** with matching pin and unpin icons
+- moved Start pinning/unpinning to a consistent position at the bottom of application context menus
+- updated the Task Manager pinning label to use taskbar-oriented wording in the supported translations
+- updated package metadata for version 1.2.5
+
 ## [1.2.4] – Privacy Option
 
 ### Added

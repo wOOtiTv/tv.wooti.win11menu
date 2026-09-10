@@ -3,6 +3,7 @@ import QtQuick.Controls as Controls
 import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
+import "Translations.js" as Translations
 
 Item {
     id: pinnedSection
@@ -44,10 +45,105 @@ Item {
     property string addToGroupText: ""
     property string pinToTaskManagerText: ""
     property string editApplicationText: ""
+    readonly property string manageApplicationText: Translations.translate(
+        "Uninstall or Manage Add-Ons…",
+        Plasmoid.configuration.language,
+        Qt.locale().name
+    )
     property string unpinText: ""
 
     property bool layoutReady: false
     readonly property real contentBottom: pinnedApps.y + pinnedApps.height
+
+    function actionForId(actionList, actionId) {
+        if (!actionList) {
+            return null
+        }
+
+        for (var i = 0; i < actionList.length; ++i) {
+            var action = actionList[i]
+
+            if (action && String(action.actionId || "") === String(actionId || "")) {
+                return action
+            }
+        }
+
+        return null
+    }
+
+    function actionsForId(actionList, actionId) {
+        var actions = []
+
+        if (!actionList) {
+            return actions
+        }
+
+        for (var i = 0; i < actionList.length; ++i) {
+            var action = actionList[i]
+
+            if (action && String(action.actionId || "") === String(actionId || "")) {
+                actions.push(action)
+            }
+        }
+
+        return actions
+    }
+
+    function favoriteActionForId(favoriteId, actionId) {
+        var id = String(favoriteId || "")
+
+        for (var i = 0; i < pinnedFavoriteActions.count; ++i) {
+            var favorite = pinnedFavoriteActions.itemAt(i)
+
+            if (favorite && favorite.favoriteIdValue === id) {
+                return actionForId(favorite.actionListValue, actionId)
+            }
+        }
+
+        return null
+    }
+
+    function favoriteActionsForId(favoriteId, actionId) {
+        var id = String(favoriteId || "")
+
+        for (var i = 0; i < pinnedFavoriteActions.count; ++i) {
+            var favorite = pinnedFavoriteActions.itemAt(i)
+
+            if (favorite && favorite.favoriteIdValue === id) {
+                return actionsForId(favorite.actionListValue, actionId)
+            }
+        }
+
+        return []
+    }
+
+    function triggerFavoriteAction(favoriteId, actionId, actionArgument) {
+        var id = String(favoriteId || "")
+
+        if (!favoritesModel || !id) {
+            return
+        }
+
+        for (var i = 0; i < pinnedFavoriteActions.count; ++i) {
+            var favorite = pinnedFavoriteActions.itemAt(i)
+
+            if (!favorite || favorite.favoriteIdValue !== id) {
+                continue
+            }
+
+            var closeRequested = favoritesModel.trigger(
+                favorite.sourceRow,
+                String(actionId || ""),
+                actionArgument === undefined ? null : actionArgument
+            )
+
+            if (closeRequested) {
+                Plasmoid.expanded = false
+            }
+
+            return
+        }
+    }
 
     height: contentBottom
     clip: true
@@ -65,6 +161,26 @@ Item {
         Qt.callLater(function() {
             pinnedSection.layoutReady = true
         })
+    }
+
+    Item {
+        width: 0
+        height: 0
+        visible: false
+
+        Repeater {
+            id: pinnedFavoriteActions
+            model: pinnedSection.favoritesModel
+
+            delegate: Item {
+                width: 0
+                height: 0
+
+                property int sourceRow: index
+                property string favoriteIdValue: String(model.favoriteId || "")
+                property var actionListValue: model.actionList
+            }
+        }
     }
 
     PlasmaComponents.Label {
@@ -281,6 +397,58 @@ Item {
                 Controls.Menu {
                     id: pinnedFavoriteContextMenu
 
+                    property var jumpListActions: pinnedEntry.isGroup
+                        ? []
+                        : pinnedSection.favoriteActionsForId(
+                            pinnedEntry.entryData.favoriteId,
+                            "_kicker_jumpListAction"
+                        )
+                    property var manageApplicationAction: pinnedEntry.isGroup
+                        ? null
+                        : pinnedSection.favoriteActionForId(
+                            pinnedEntry.entryData.favoriteId,
+                            "manageApplication"
+                        )
+
+                    Instantiator {
+                        id: pinnedJumpActionsInstantiator
+                        model: pinnedFavoriteContextMenu.jumpListActions
+
+                        delegate: Controls.MenuItem {
+                            required property var modelData
+
+                            text: modelData && modelData.text
+                                ? String(modelData.text)
+                                : ""
+                            icon.name: modelData && modelData.icon
+                                ? String(modelData.icon)
+                                : ""
+                            enabled: !modelData || modelData.enabled === undefined
+                                ? true
+                                : Boolean(modelData.enabled)
+
+                            onTriggered: {
+                                pinnedSection.triggerFavoriteAction(
+                                    pinnedEntry.entryData.favoriteId,
+                                    modelData.actionId,
+                                    modelData.actionArgument
+                                )
+                            }
+                        }
+
+                        onObjectAdded: function(index, object) {
+                            pinnedFavoriteContextMenu.insertItem(index, object)
+                        }
+
+                        onObjectRemoved: function(index, object) {
+                            pinnedFavoriteContextMenu.removeItem(object)
+                        }
+                    }
+
+                    Controls.MenuSeparator {
+                        visible: pinnedFavoriteContextMenu.jumpListActions.length > 0
+                    }
+
                     Connections {
                         target: pinnedSection.contextMenuController
 
@@ -336,11 +504,29 @@ Item {
                         }
                     }
 
+                    Controls.MenuItem {
+                        visible: Boolean(pinnedFavoriteContextMenu.manageApplicationAction)
+                        text: pinnedSection.manageApplicationText
+                        icon.name: pinnedFavoriteContextMenu.manageApplicationAction
+                            && pinnedFavoriteContextMenu.manageApplicationAction.icon
+                                ? String(pinnedFavoriteContextMenu.manageApplicationAction.icon)
+                                : "plasmadiscover"
+
+                        onTriggered: {
+                            if (pinnedSection.launcherController) {
+                                pinnedSection.launcherController.triggerPinnedFavoriteAction(
+                                    pinnedEntry.entryData.favoriteId,
+                                    "manageApplication"
+                                )
+                            }
+                        }
+                    }
+
                     Controls.MenuSeparator { }
 
                     Controls.MenuItem {
                         text: pinnedSection.unpinText
-                        icon.name: "list-remove"
+                        icon.name: "window-unpin"
 
                         onTriggered: {
                             if (pinnedSection.groupController) {

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: wOOti Win11 Menu 1.2.4\n"
 "Report-Msgid-Bugs-To: https://github.com/wOOtiTv/tv.wooti.win11menu/issues\n"
 "POT-Creation-Date: 2026-08-14 21:10+0200\n"
-"PO-Revision-Date: 2026-09-02 09:50+0200\n"
+"PO-Revision-Date: 2026-09-10 12:08+0200\n"
 "Last-Translator: wOOtiTv <mail@wooti.tv>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -38,7 +38,7 @@ msgstr "Angeheftet"
 
 #: contents/ui/main.qml
 msgid "Unpin"
-msgstr "Von Angeheftet entfernen"
+msgstr "Von „Start“ lösen"
 
 #: contents/ui/main.qml
 msgid "All"
@@ -54,7 +54,7 @@ msgstr "Ansicht: Raster  ▾"
 
 #: contents/ui/main.qml
 msgid "Pin"
-msgstr "Anheften"
+msgstr "An „Start“ anheften"
 
 #: contents/ui/main.qml
 msgid "Search results"
@@ -210,7 +210,7 @@ msgstr "Zur Arbeitsfläche hinzufügen"
 
 #: contents/ui/main.qml
 msgid "Pin to Task Manager"
-msgstr "An Fensterleiste anheften"
+msgstr "An Taskleiste anheften"
 
 #: contents/ui/main.qml
 msgid "Edit Application…"
@@ -223,3 +223,7 @@ msgstr "Benutzerinformationen:"
 #: contents/ui/ConfigGeneral.qml
 msgid "Show name and avatar"
 msgstr "Name und Avatar anzeigen"
+
+#: contents/ui/AllAppsView.qml contents/ui/PinnedSection.qml contents/ui/SearchResultsView.qml
+msgid "Uninstall or Manage Add-Ons…"
+msgstr "Deinstallieren oder Add-ons verwalten…"
