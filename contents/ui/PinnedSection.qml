@@ -71,6 +71,24 @@ Item {
         return null
     }
 
+    function actionsForId(actionList, actionId) {
+        var actions = []
+
+        if (!actionList) {
+            return actions
+        }
+
+        for (var i = 0; i < actionList.length; ++i) {
+            var action = actionList[i]
+
+            if (action && String(action.actionId || "") === String(actionId || "")) {
+                actions.push(action)
+            }
+        }
+
+        return actions
+    }
+
     function favoriteActionForId(favoriteId, actionId) {
         var id = String(favoriteId || "")
 
@@ -83,6 +101,48 @@ Item {
         }
 
         return null
+    }
+
+    function favoriteActionsForId(favoriteId, actionId) {
+        var id = String(favoriteId || "")
+
+        for (var i = 0; i < pinnedFavoriteActions.count; ++i) {
+            var favorite = pinnedFavoriteActions.itemAt(i)
+
+            if (favorite && favorite.favoriteIdValue === id) {
+                return actionsForId(favorite.actionListValue, actionId)
+            }
+        }
+
+        return []
+    }
+
+    function triggerFavoriteAction(favoriteId, actionId, actionArgument) {
+        var id = String(favoriteId || "")
+
+        if (!favoritesModel || !id) {
+            return
+        }
+
+        for (var i = 0; i < pinnedFavoriteActions.count; ++i) {
+            var favorite = pinnedFavoriteActions.itemAt(i)
+
+            if (!favorite || favorite.favoriteIdValue !== id) {
+                continue
+            }
+
+            var closeRequested = favoritesModel.trigger(
+                favorite.sourceRow,
+                String(actionId || ""),
+                actionArgument === undefined ? null : actionArgument
+            )
+
+            if (closeRequested) {
+                Plasmoid.expanded = false
+            }
+
+            return
+        }
     }
 
     height: contentBottom
@@ -116,6 +176,7 @@ Item {
                 width: 0
                 height: 0
 
+                property int sourceRow: index
                 property string favoriteIdValue: String(model.favoriteId || "")
                 property var actionListValue: model.actionList
             }
@@ -336,12 +397,57 @@ Item {
                 Controls.Menu {
                     id: pinnedFavoriteContextMenu
 
+                    property var jumpListActions: pinnedEntry.isGroup
+                        ? []
+                        : pinnedSection.favoriteActionsForId(
+                            pinnedEntry.entryData.favoriteId,
+                            "_kicker_jumpListAction"
+                        )
                     property var manageApplicationAction: pinnedEntry.isGroup
                         ? null
                         : pinnedSection.favoriteActionForId(
                             pinnedEntry.entryData.favoriteId,
                             "manageApplication"
                         )
+
+                    Instantiator {
+                        id: pinnedJumpActionsInstantiator
+                        model: pinnedFavoriteContextMenu.jumpListActions
+
+                        delegate: Controls.MenuItem {
+                            required property var modelData
+
+                            text: modelData && modelData.text
+                                ? String(modelData.text)
+                                : ""
+                            icon.name: modelData && modelData.icon
+                                ? String(modelData.icon)
+                                : ""
+                            enabled: !modelData || modelData.enabled === undefined
+                                ? true
+                                : Boolean(modelData.enabled)
+
+                            onTriggered: {
+                                pinnedSection.triggerFavoriteAction(
+                                    pinnedEntry.entryData.favoriteId,
+                                    modelData.actionId,
+                                    modelData.actionArgument
+                                )
+                            }
+                        }
+
+                        onObjectAdded: function(index, object) {
+                            pinnedFavoriteContextMenu.insertItem(index, object)
+                        }
+
+                        onObjectRemoved: function(index, object) {
+                            pinnedFavoriteContextMenu.removeItem(object)
+                        }
+                    }
+
+                    Controls.MenuSeparator {
+                        visible: pinnedFavoriteContextMenu.jumpListActions.length > 0
+                    }
 
                     Connections {
                         target: pinnedSection.contextMenuController
