@@ -285,6 +285,7 @@ Item {
 
                 height: pinnedSection.cellHeight
                 width: pinnedSection.effectiveCellWidth
+                z: pinnedEntry.dragActive ? 2000 : 0
 
                 Item {
                     id: pinnedDragProxy
