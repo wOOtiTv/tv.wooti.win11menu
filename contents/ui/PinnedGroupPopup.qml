@@ -78,6 +78,75 @@ Controls.Popup {
     // and four rows, and shrinks horizontally for smaller groups.
     height: 28 + 12 + appsAreaHeight + padding * 2
 
+    function actionsForId(actionList, actionId) {
+        var actions = []
+
+        if (!actionList) {
+            return actions
+        }
+
+        for (var i = 0; i < actionList.length; ++i) {
+            var action = actionList[i]
+
+            if (action && String(action.actionId || "") === String(actionId || "")) {
+                actions.push(action)
+            }
+        }
+
+        return actions
+    }
+
+    function favoriteActionsForId(favoriteId, actionId) {
+        var id = String(favoriteId || "")
+
+        for (var i = 0; i < groupFavoriteActions.count; ++i) {
+            var favorite = groupFavoriteActions.itemAt(i)
+
+            if (favorite && favorite.favoriteIdValue === id) {
+                return actionsForId(favorite.actionListValue, actionId)
+            }
+        }
+
+        return []
+    }
+
+    function triggerFavoriteAction(favoriteId, actionId, actionArgument) {
+        var id = String(favoriteId || "")
+        var proxyModel = favoriteDataSource ? favoriteDataSource.model : null
+
+        if (!proxyModel || !proxyModel.sourceModel || !id) {
+            return
+        }
+
+        for (var i = 0; i < groupFavoriteActions.count; ++i) {
+            var favorite = groupFavoriteActions.itemAt(i)
+
+            if (!favorite || favorite.favoriteIdValue !== id) {
+                continue
+            }
+
+            var sourceIndex = proxyModel.mapToSource(
+                proxyModel.index(favorite.proxyRow, 0)
+            )
+
+            if (!sourceIndex.valid) {
+                return
+            }
+
+            var closeRequested = proxyModel.sourceModel.trigger(
+                sourceIndex.row,
+                String(actionId || ""),
+                actionArgument === undefined ? null : actionArgument
+            )
+
+            if (closeRequested) {
+                Plasmoid.expanded = false
+            }
+
+            return
+        }
+    }
+
     function openFor(anchorItem) {
         if (!popupParent || !anchorItem) {
             return
@@ -144,6 +213,28 @@ Controls.Popup {
         }
 
         appEntries = entries
+    }
+
+    Item {
+        width: 0
+        height: 0
+        visible: false
+
+        Repeater {
+            id: groupFavoriteActions
+            model: groupPopup.favoriteDataSource
+                ? groupPopup.favoriteDataSource.model
+                : null
+
+            delegate: Item {
+                width: 0
+                height: 0
+
+                property int proxyRow: index
+                property string favoriteIdValue: String(model.favoriteId || "")
+                property var actionListValue: model.actionList
+            }
+        }
     }
 
     Connections {
@@ -284,6 +375,50 @@ Controls.Popup {
 
                         Controls.Menu {
                             id: groupAppContextMenu
+
+                            property var jumpListActions: groupPopup.favoriteActionsForId(
+                                groupAppItem.appData.favoriteId,
+                                "_kicker_jumpListAction"
+                            )
+
+                            Instantiator {
+                                id: groupJumpActionsInstantiator
+                                model: groupAppContextMenu.jumpListActions
+
+                                delegate: Controls.MenuItem {
+                                    required property var modelData
+
+                                    text: modelData && modelData.text
+                                        ? String(modelData.text)
+                                        : ""
+                                    icon.name: modelData && modelData.icon
+                                        ? String(modelData.icon)
+                                        : ""
+                                    enabled: !modelData || modelData.enabled === undefined
+                                        ? true
+                                        : Boolean(modelData.enabled)
+
+                                    onTriggered: {
+                                        groupPopup.triggerFavoriteAction(
+                                            groupAppItem.appData.favoriteId,
+                                            modelData.actionId,
+                                            modelData.actionArgument
+                                        )
+                                    }
+                                }
+
+                                onObjectAdded: function(index, object) {
+                                    groupAppContextMenu.insertItem(index, object)
+                                }
+
+                                onObjectRemoved: function(index, object) {
+                                    groupAppContextMenu.removeItem(object)
+                                }
+                            }
+
+                            Controls.MenuSeparator {
+                                visible: groupAppContextMenu.jumpListActions.length > 0
+                            }
 
                             Connections {
                                 target: groupPopup.contextMenuController
