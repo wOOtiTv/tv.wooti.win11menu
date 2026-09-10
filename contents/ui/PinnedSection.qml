@@ -526,7 +526,7 @@ Item {
 
                     Controls.MenuItem {
                         text: pinnedSection.unpinText
-                        icon.name: "list-remove"
+                        icon.name: "window-unpin"
 
                         onTriggered: {
                             if (pinnedSection.groupController) {
