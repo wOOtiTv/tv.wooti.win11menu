@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: wOOti Win11 Menu 1.2.4\n"
 "Report-Msgid-Bugs-To: https://github.com/wOOtiTv/tv.wooti.win11menu/issues\n"
 "POT-Creation-Date: 2026-08-14 21:10+0200\n"
-"PO-Revision-Date: 2026-09-02 09:50+0200\n"
+"PO-Revision-Date: 2026-09-10 12:08+0200\n"
 "Last-Translator: wOOtiTv <mail@wooti.tv>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -38,7 +38,7 @@ msgstr "Épinglé"
 
 #: contents/ui/main.qml
 msgid "Unpin"
-msgstr "Désépingler"
+msgstr "Détacher de « Démarrer »"
 
 #: contents/ui/main.qml
 msgid "All"
@@ -54,7 +54,7 @@ msgstr "Affichage : Grille  ▾"
 
 #: contents/ui/main.qml
 msgid "Pin"
-msgstr "Épingler"
+msgstr "Épingler à « Démarrer »"
 
 #: contents/ui/main.qml
 msgid "Search results"
@@ -210,7 +210,7 @@ msgstr "Ajouter au bureau"
 
 #: contents/ui/main.qml
 msgid "Pin to Task Manager"
-msgstr "Épingler au gestionnaire de tâches"
+msgstr "Épingler à la barre des tâches"
 
 #: contents/ui/main.qml
 msgid "Edit Application…"
