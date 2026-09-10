@@ -3,6 +3,7 @@ import QtQuick.Controls as Controls
 import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
+import "Translations.js" as Translations
 
 Item {
     id: pinnedSection
@@ -44,10 +45,45 @@ Item {
     property string addToGroupText: ""
     property string pinToTaskManagerText: ""
     property string editApplicationText: ""
+    readonly property string manageApplicationText: Translations.translate(
+        "Uninstall or Manage Add-Ons…",
+        Plasmoid.configuration.language,
+        Qt.locale().name
+    )
     property string unpinText: ""
 
     property bool layoutReady: false
     readonly property real contentBottom: pinnedApps.y + pinnedApps.height
+
+    function actionForId(actionList, actionId) {
+        if (!actionList) {
+            return null
+        }
+
+        for (var i = 0; i < actionList.length; ++i) {
+            var action = actionList[i]
+
+            if (action && String(action.actionId || "") === String(actionId || "")) {
+                return action
+            }
+        }
+
+        return null
+    }
+
+    function favoriteActionForId(favoriteId, actionId) {
+        var id = String(favoriteId || "")
+
+        for (var i = 0; i < pinnedFavoriteActions.count; ++i) {
+            var favorite = pinnedFavoriteActions.itemAt(i)
+
+            if (favorite && favorite.favoriteIdValue === id) {
+                return actionForId(favorite.actionListValue, actionId)
+            }
+        }
+
+        return null
+    }
 
     height: contentBottom
     clip: true
@@ -65,6 +101,25 @@ Item {
         Qt.callLater(function() {
             pinnedSection.layoutReady = true
         })
+    }
+
+    Item {
+        width: 0
+        height: 0
+        visible: false
+
+        Repeater {
+            id: pinnedFavoriteActions
+            model: pinnedSection.favoritesModel
+
+            delegate: Item {
+                width: 0
+                height: 0
+
+                property string favoriteIdValue: String(model.favoriteId || "")
+                property var actionListValue: model.actionList
+            }
+        }
     }
 
     PlasmaComponents.Label {
@@ -281,6 +336,13 @@ Item {
                 Controls.Menu {
                     id: pinnedFavoriteContextMenu
 
+                    property var manageApplicationAction: pinnedEntry.isGroup
+                        ? null
+                        : pinnedSection.favoriteActionForId(
+                            pinnedEntry.entryData.favoriteId,
+                            "manageApplication"
+                        )
+
                     Connections {
                         target: pinnedSection.contextMenuController
 
@@ -331,6 +393,24 @@ Item {
                                 pinnedSection.launcherController.triggerPinnedFavoriteAction(
                                     pinnedEntry.entryData.favoriteId,
                                     "editApplication"
+                                )
+                            }
+                        }
+                    }
+
+                    Controls.MenuItem {
+                        visible: Boolean(pinnedFavoriteContextMenu.manageApplicationAction)
+                        text: pinnedSection.manageApplicationText
+                        icon.name: pinnedFavoriteContextMenu.manageApplicationAction
+                            && pinnedFavoriteContextMenu.manageApplicationAction.icon
+                                ? String(pinnedFavoriteContextMenu.manageApplicationAction.icon)
+                                : "plasmadiscover"
+
+                        onTriggered: {
+                            if (pinnedSection.launcherController) {
+                                pinnedSection.launcherController.triggerPinnedFavoriteAction(
+                                    pinnedEntry.entryData.favoriteId,
+                                    "manageApplication"
                                 )
                             }
                         }
