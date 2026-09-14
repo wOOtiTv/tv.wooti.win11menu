@@ -1,6 +1,29 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] – Pinned Ordering & Footer Customization
+
+### Added
+- added custom drag & drop ordering for regular pinned applications and pinned groups
+- added visual insertion markers for moving pinned entries to the first position, between existing entries or to the final position
+- pinned groups can now be reordered together with regular pinned applications while group nesting remains intentionally unsupported
+- added a setting to show or hide session-button labels for a compact icon-only footer
+- added configurable session-button alignment with **Left**, **Center** and **Right** positions
+
+### Changed
+- pinned applications and groups remain alphabetically ordered until the user performs the first manual reorder; the resulting custom order is then saved and restored
+- drag & drop now keeps group creation/addition and pinned reordering separate: center drops keep the existing grouping behavior while insertion areas are used for ordering
+- choosing the **Left** session-button position automatically hides and disables the user name/avatar option to avoid overlapping footer content; the option becomes available again for **Center** and **Right**
+- updated runtime translations for the new session-button settings
+- updated package metadata for version 1.3.1
+
+### Fixed
+- refined reorder feedback so each insertion position displays only one consistently aligned marker, including positions next to groups and the final pinned entry
+- fixed footer layout state when switching session buttons between centered and right-aligned positions
+
+### Credits
+- custom pinned ordering and session-button customization were inspired by feedback in issue #19
+
 ## [1.3.0] – Drag & Drop Pinned Groups
 
 ### Added
