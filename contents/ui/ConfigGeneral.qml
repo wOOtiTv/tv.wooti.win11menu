@@ -47,6 +47,10 @@ Kirigami.FormLayout {
         if (index >= 0 && sessionButtonPositionCombo.currentIndex !== index) {
             sessionButtonPositionCombo.currentIndex = index
         }
+
+        if (cfg_sessionButtonAlignment === "left" && cfg_showUserInfo) {
+            cfg_showUserInfo = false
+        }
     }
 
     Controls.ComboBox {
@@ -151,6 +155,7 @@ Kirigami.FormLayout {
         Kirigami.FormData.label: page.translatedText("User information:")
         text: page.translatedText("Show name and avatar")
         checked: page.cfg_showUserInfo
+        enabled: page.cfg_sessionButtonAlignment !== "left"
         onToggled: page.cfg_showUserInfo = checked
     }
 
@@ -174,8 +179,9 @@ Kirigami.FormLayout {
         Kirigami.FormData.label: page.translatedText("Button position:")
 
         model: [
-            { text: page.translatedText("Right"), value: "right" },
-            { text: page.translatedText("Center"), value: "center" }
+            { text: page.translatedText("Left"), value: "left" },
+            { text: page.translatedText("Center"), value: "center" },
+            { text: page.translatedText("Right"), value: "right" }
         ]
 
         textRole: "text"
@@ -183,7 +189,7 @@ Kirigami.FormLayout {
 
         Component.onCompleted: {
             const index = indexOfValue(page.cfg_sessionButtonAlignment)
-            currentIndex = index >= 0 ? index : 0
+            currentIndex = index >= 0 ? index : 2
         }
 
         onActivated: page.cfg_sessionButtonAlignment = currentValue
