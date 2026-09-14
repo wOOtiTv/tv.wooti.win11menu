@@ -12,6 +12,7 @@ Kirigami.FormLayout {
     property alias cfg_menuHeight: menuHeightSpin.value
     property alias cfg_menuWidth: menuWidthSpin.value
     property bool cfg_showUserInfo: true
+    property bool cfg_showSessionButtonLabels: true
     property bool cfg_showLockButton: true
     property bool cfg_showLogoutButton: true
     property bool cfg_showRestartButton: true
@@ -150,26 +151,32 @@ Kirigami.FormLayout {
     }
 
     Controls.CheckBox {
-        Kirigami.FormData.label: i18n("Session buttons:")
-        text: i18n("Show Lock Screen")
+        Kirigami.FormData.label: page.translatedText("Session buttons:")
+        text: page.translatedText("Show button labels")
+        checked: page.cfg_showSessionButtonLabels
+        onToggled: page.cfg_showSessionButtonLabels = checked
+    }
+
+    Controls.CheckBox {
+        text: page.translatedText("Show Lock Screen")
         checked: page.cfg_showLockButton
         onToggled: page.cfg_showLockButton = checked
     }
 
     Controls.CheckBox {
-        text: i18n("Show Log Out")
+        text: page.translatedText("Show Log Out")
         checked: page.cfg_showLogoutButton
         onToggled: page.cfg_showLogoutButton = checked
     }
 
     Controls.CheckBox {
-        text: i18n("Show Restart")
+        text: page.translatedText("Show Restart")
         checked: page.cfg_showRestartButton
         onToggled: page.cfg_showRestartButton = checked
     }
 
     Controls.CheckBox {
-        text: i18n("Show Shut Down")
+        text: page.translatedText("Show Shut Down")
         checked: page.cfg_showShutdownButton
         onToggled: page.cfg_showShutdownButton = checked
     }
