@@ -145,6 +145,10 @@ msgid "Session buttons:"
 msgstr "Sessieknoppen:"
 
 #: contents/ui/ConfigGeneral.qml
+msgid "Show button labels"
+msgstr "Knoplabels tonen"
+
+#: contents/ui/ConfigGeneral.qml
 msgid "Show Lock Screen"
 msgstr "Vergrendelen tonen"
 
