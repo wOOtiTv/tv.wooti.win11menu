@@ -616,6 +616,20 @@ Item {
                     }
 
                     if (localX > pinnedEntry.width - edgeWidth) {
+                        var entryCount = pinnedSection.visualEntries
+                            ? pinnedSection.visualEntries.length
+                            : 0
+                        var hasTrailingEndZone = entryCount > 0
+                            && entryCount % pinnedSection.effectiveColumnCount > 0
+                        var isLastEntry = index === entryCount - 1
+
+                        // When a trailing empty grid area exists, that dedicated
+                        // drop zone owns the final position. Avoid showing a
+                        // second marker on the last app at the same time.
+                        if (hasTrailingEndZone && isLastEntry) {
+                            return ""
+                        }
+
                         return "after"
                     }
 
