@@ -27,8 +27,8 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 
 ### ✨ Features
 
-- 📌 **Pinned apps** – pin/unpin applications via right-click context menu
-- 🗂️ **Pinned groups** – organize pinned apps into optional named groups with up to 16 apps per group, including Windows-style drag & drop creation and adding
+- 📌 **Pinned apps** – pin/unpin applications via right-click and freely reorder pinned entries with drag & drop
+- 🗂️ **Pinned groups** – organize pinned apps into optional named groups with up to 16 apps per group, including Windows-style drag & drop creation, adding and reordering
 - 🧩 **KDE context actions** – pin applications to the Task Manager or edit their application entry from Pinned, All Applications and application search results
 - 🔤 **All applications** – alphabetically grouped applications
 - 📐 **Grid / List view** – switch between a compact grid and a clean list layout
@@ -41,9 +41,9 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 - 🌍 **Multi-language support** – English, German, French, Italian and Dutch
 - ⚙️ **Language selection** – follow the system language or choose a language manually
 - 🇬🇧 **English fallback** – missing translations fall back to English
-- 👤 **User info** – avatar and full name of the current user
+- 👤 **User info** – avatar and full name of the current user, with an optional privacy toggle
 - 🔐 **Session actions** – Lock Screen, Log Out, Restart and Shut Down
-- 👁️ **Session button visibility** – show or hide each session button individually
+- 👁️ **Session button customization** – show/hide individual buttons, hide their labels and position the button row on the left, center or right
 - 🔒 **Stable popup layout** – additional pinned apps do not unexpectedly resize the launcher
 
 ### ⚙️ Customization
@@ -60,13 +60,18 @@ Available options include:
 - **Menu height** – choose a launcher height from 600 px to 1200 px (default: 800 px)
 - **Menu width** – choose a launcher width from 800 px to 1600 px (default: 1000 px)
 - **Pinned apps → Enable groups** – enable or disable pinned application groups
+- **User information** – show or hide the user name and avatar
 - **Session buttons** – individually show or hide Lock Screen, Log Out, Restart and Shut Down
+- **Session button labels** – show the normal button labels or use compact icon-only buttons
+- **Session button position** – place the session buttons on the **Left**, **Center** or **Right** side of the footer
+
+Choosing the **Left** session-button position automatically hides the user name and avatar because both elements would otherwise occupy the same footer area. The user-information option becomes available again after switching the buttons back to **Center** or **Right**.
 
 Disabling pinned groups does **not** delete existing group assignments. Re-enabling the option restores them.
 
 Wider menu widths automatically provide additional pinned-app columns while keeping the familiar minimum of 8 columns.
 
-### 🗂️ Pinned application groups
+### 🗂️ Pinned applications and groups
 
 Pinned groups make it possible to organize related applications without changing the normal KDE favorites list.
 
@@ -75,16 +80,19 @@ Groups can be created and filled in two ways:
 1. **Drag & drop:** drag one regular pinned application onto another pinned application to create a new group, or drag it onto an existing group to add it there.
 2. **Context menu:** right-click a regular pinned application, choose **Add to group…**, then select an existing group or create a new one.
 
-Group behavior:
+Pinned ordering and group behavior:
 
-- groups and regular pinned applications stay alphabetically sorted
+- regular pinned applications and groups start in alphabetical order
+- dragging an application or a group to an insertion marker creates and saves a custom pinned order
+- applications and groups can be moved to the first position, between other entries or to the final position
+- dragged groups are reordered only; groups cannot be nested inside other groups
 - applications inside a group stay alphabetically sorted
 - a group shows a compact preview of the applications it contains
 - clicking a group opens its applications in a compact popup
 - each group can contain up to **16 applications**
 - full groups are not valid drag & drop targets
-- valid drag targets are highlighted while dragging
-- dropping outside a valid app or group simply cancels the drag without changing anything
+- valid group targets and reorder insertion positions are highlighted while dragging
+- dropping outside a valid target simply cancels the drag without changing anything
 - the popup displays up to **4 columns × 4 rows** without scrolling and adapts its width for smaller groups
 - right-click a group to rename or dissolve it
 - **removing an application from a group is intentionally done only via right-click → Remove from group; dragging applications out of groups is not supported**
