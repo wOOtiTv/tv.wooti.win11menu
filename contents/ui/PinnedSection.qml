@@ -54,6 +54,7 @@ Item {
     property string unpinText: ""
 
     property bool layoutReady: false
+    property bool endDropHover: false
     readonly property real contentBottom: pinnedApps.y + pinnedApps.height
 
     function entryOrderKey(entry) {
@@ -656,6 +657,7 @@ Item {
                 function updateDropFeedback(drag) {
                     var mode = calculateDropMode(drag)
 
+                    pinnedSection.endDropHover = false
                     pinnedSection.clearOtherReorderFeedback(pinnedEntry)
                     pinnedEntry.validDropHover = mode === "group"
                     pinnedEntry.reorderDropSide = mode === "before"
@@ -881,12 +883,17 @@ Item {
 
                 Rectangle {
                     visible: pinnedEntry.reorderDropSide !== 0
+                        || (pinnedSection.endDropHover
+                            && index === pinnedEntriesRepeater.count - 1)
                     width: 3
                     height: pinnedEntryHover.height
                     y: pinnedEntryHover.y
-                    x: pinnedEntry.reorderDropSide < 0
-                        ? -width / 2
-                        : parent.width - width / 2
+                    x: pinnedSection.endDropHover
+                            && index === pinnedEntriesRepeater.count - 1
+                        ? parent.width - width / 2
+                        : (pinnedEntry.reorderDropSide < 0
+                            ? -width / 2
+                            : parent.width - width / 2)
                     radius: width / 2
                     color: Kirigami.Theme.highlightColor
                     z: 1500
@@ -1209,6 +1216,7 @@ Item {
                             pinnedEntry.dragActive = false
                             pinnedDragProxy.x = 0
                             pinnedDragProxy.y = 0
+                            pinnedSection.endDropHover = false
                             pinnedSection.clearOtherReorderFeedback(null)
 
                             Qt.callLater(function() {
@@ -1281,9 +1289,6 @@ Item {
             pinnedSection.visualEntries ? pinnedSection.visualEntries.length : 0
         readonly property int remainder:
             entryCount % pinnedSection.effectiveColumnCount
-        readonly property Item lastEntryItem: entryCount > 0
-            ? pinnedEntriesRepeater.itemAt(entryCount - 1)
-            : null
         property bool validDropHover: false
 
         x: pinnedApps.x
@@ -1306,11 +1311,13 @@ Item {
             var sourceKey = source ? String(source.entryKey || "") : ""
 
             pinnedSection.clearOtherReorderFeedback(null)
-            pinnedEndDropArea.validDropHover = Boolean(sourceKey)
+            pinnedSection.endDropHover = Boolean(sourceKey)
+            pinnedEndDropArea.validDropHover = pinnedSection.endDropHover
             drag.accepted = pinnedEndDropArea.validDropHover
         }
 
         onExited: {
+            pinnedSection.endDropHover = false
             pinnedEndDropArea.validDropHover = false
         }
 
@@ -1318,6 +1325,7 @@ Item {
             var source = drop.source
             var sourceKey = source ? String(source.entryKey || "") : ""
 
+            pinnedSection.endDropHover = false
             pinnedEndDropArea.validDropHover = false
 
             if (sourceKey
@@ -1328,31 +1336,5 @@ Item {
 
             drop.accepted = false
         }
-    }
-
-    Rectangle {
-        readonly property point markerPoint:
-            pinnedEndDropArea.lastEntryItem
-                ? pinnedEndDropArea.lastEntryItem.mapToItem(
-                    pinnedSection,
-                    pinnedEndDropArea.lastEntryItem.width,
-                    pinnedEndDropArea.lastEntryItem.reorderMarkerY
-                )
-                : Qt.point(pinnedEndDropArea.x, pinnedEndDropArea.y)
-
-        visible: pinnedEndDropArea.visible
-            && pinnedEndDropArea.validDropHover
-        width: 3
-        height: pinnedEndDropArea.lastEntryItem
-            ? pinnedEndDropArea.lastEntryItem.reorderMarkerHeight
-            : Math.min(
-                pinnedSection.cellHeight - 8,
-                pinnedSection.iconSize + 24
-            )
-        x: markerPoint.x - width / 2
-        y: markerPoint.y
-        radius: width / 2
-        color: Kirigami.Theme.highlightColor
-        z: 1500
     }
 }
