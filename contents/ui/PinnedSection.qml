@@ -787,8 +787,8 @@ Item {
                 Rectangle {
                     visible: pinnedEntry.reorderDropSide !== 0
                     width: 3
-                    height: Math.min(64, parent.height - 12)
-                    y: Math.round((parent.height - height) / 2)
+                    height: pinnedEntryHover.height
+                    y: pinnedEntryHover.y
                     x: pinnedEntry.reorderDropSide < 0
                         ? 1
                         : parent.width - width - 1
