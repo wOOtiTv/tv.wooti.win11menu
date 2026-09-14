@@ -118,11 +118,9 @@ Rectangle {
     Row {
         id: sessionActions
 
-        anchors.right: footer.centerSessionButtons ? undefined : parent.right
-        anchors.rightMargin: footer.centerSessionButtons ? 0 : 24
-        anchors.horizontalCenter: footer.centerSessionButtons
-            ? parent.horizontalCenter
-            : undefined
+        x: footer.centerSessionButtons
+            ? Math.round((parent.width - width) / 2)
+            : parent.width - width - 24
         anchors.verticalCenter: parent.bottom
         anchors.verticalCenterOffset: -39
 
