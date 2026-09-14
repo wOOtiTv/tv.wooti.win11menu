@@ -18,6 +18,8 @@ Rectangle {
         Plasmoid.configuration.showSessionButtonLabels !== false
     readonly property string sessionButtonAlignment:
         String(Plasmoid.configuration.sessionButtonAlignment || "right")
+    readonly property bool leftSessionButtons:
+        sessionButtonAlignment === "left"
     readonly property bool centerSessionButtons:
         sessionButtonAlignment === "center"
 
@@ -40,6 +42,7 @@ Rectangle {
         id: userInfo
 
         visible: Plasmoid.configuration.showUserInfo
+            && !footer.leftSessionButtons
 
         anchors.left: parent.left
         anchors.leftMargin: 24
@@ -118,9 +121,11 @@ Rectangle {
     Row {
         id: sessionActions
 
-        x: footer.centerSessionButtons
-            ? Math.round((parent.width - width) / 2)
-            : parent.width - width - 24
+        x: footer.leftSessionButtons
+            ? 24
+            : (footer.centerSessionButtons
+                ? Math.round((parent.width - width) / 2)
+                : parent.width - width - 24)
         anchors.verticalCenter: parent.bottom
         anchors.verticalCenterOffset: -39
 
