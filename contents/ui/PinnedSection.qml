@@ -70,6 +70,16 @@ Item {
         return favoriteId ? "app:" + favoriteId : ""
     }
 
+    function clearOtherReorderFeedback(currentEntry) {
+        for (var i = 0; i < pinnedEntriesRepeater.count; ++i) {
+            var item = pinnedEntriesRepeater.itemAt(i)
+
+            if (item && item !== currentEntry) {
+                item.reorderDropSide = 0
+            }
+        }
+    }
+
     function loadPinnedOrder() {
         var raw = String(Plasmoid.configuration.pinnedOrder || "[]")
 
@@ -564,6 +574,7 @@ Item {
         visible: pinnedSection.searchText.length === 0
 
         Repeater {
+            id: pinnedEntriesRepeater
             model: pinnedSection.visualEntries
 
             delegate: Item {
@@ -580,16 +591,24 @@ Item {
                 property bool dragWasActive: false
                 property bool validDropHover: false
                 property int reorderDropSide: 0
+                readonly property real reorderMarkerY: pinnedEntryHover.y
+                readonly property real reorderMarkerHeight: pinnedEntryHover.height
 
                 function calculateDropMode(drag) {
                     var source = drag ? drag.source : null
                     var sourceId = source
                         ? String(source.favoriteId || "")
                         : ""
+                    var sourceKey = source
+                        ? String(source.entryKey || "")
+                        : ""
+                    var sourceIsGroup = source
+                        ? Boolean(source.isGroup)
+                        : false
 
                     if (!source
                             || source === pinnedEntry
-                            || !sourceId
+                            || !sourceKey
                             || !pinnedEntry.entryKey) {
                         return ""
                     }
@@ -625,12 +644,18 @@ Item {
 
                         // When a trailing empty grid area exists, that dedicated
                         // drop zone owns the final position. Avoid showing a
-                        // second marker on the last app at the same time.
+                        // second marker on the last entry at the same time.
                         if (hasTrailingEndZone && isLastEntry) {
                             return ""
                         }
 
                         return "after"
+                    }
+
+                    // Groups themselves can be reordered, but dropping a group
+                    // onto the center of another entry does not create nesting.
+                    if (sourceIsGroup) {
+                        return ""
                     }
 
                     if (pinnedEntry.isGroup) {
@@ -646,6 +671,7 @@ Item {
                 function updateDropFeedback(drag) {
                     var mode = calculateDropMode(drag)
 
+                    pinnedSection.clearOtherReorderFeedback(pinnedEntry)
                     pinnedEntry.validDropHover = mode === "group"
                     pinnedEntry.reorderDropSide = mode === "before"
                         ? -1
@@ -654,9 +680,10 @@ Item {
                     if (drag) {
                         var source = drag.source
                         drag.accepted = Boolean(
-                            source
+                            mode
+                            && source
                             && source !== pinnedEntry
-                            && String(source.favoriteId || "").length > 0
+                            && String(source.entryKey || "").length > 0
                         )
                     }
                 }
@@ -704,12 +731,39 @@ Item {
                         border.color: Kirigami.Theme.highlightColor
 
                         Kirigami.Icon {
+                            visible: !pinnedEntry.isGroup
                             width: pinnedSection.iconSize
                             height: pinnedSection.iconSize
                             anchors.centerIn: parent
                             source: pinnedEntry.entryData
                                 ? pinnedEntry.entryData.decoration
                                 : ""
+                        }
+
+                        Grid {
+                            visible: pinnedEntry.isGroup
+                            anchors.centerIn: parent
+                            columns: 2
+                            spacing: 2
+
+                            Repeater {
+                                model: pinnedEntry.entryData
+                                    ? (pinnedEntry.entryData.previewIcons || [])
+                                    : []
+
+                                delegate: Item {
+                                    width: Math.max(
+                                        10,
+                                        Math.floor(pinnedSection.iconSize / 2)
+                                    )
+                                    height: width
+
+                                    Kirigami.Icon {
+                                        anchors.fill: parent
+                                        source: modelData
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -1152,8 +1206,7 @@ Item {
                     id: pinnedEntryDragHandler
 
                     target: pinnedDragProxy
-                    enabled: !pinnedEntry.isGroup
-                        && pinnedEntry.favoriteId.length > 0
+                    enabled: pinnedEntry.entryKey.length > 0
                     acceptedButtons: Qt.LeftButton
 
                     onActiveChanged: {
@@ -1171,6 +1224,7 @@ Item {
                             pinnedEntry.dragActive = false
                             pinnedDragProxy.x = 0
                             pinnedDragProxy.y = 0
+                            pinnedSection.clearOtherReorderFeedback(null)
 
                             Qt.callLater(function() {
                                 pinnedEntry.dragWasActive = false
@@ -1242,6 +1296,9 @@ Item {
             pinnedSection.visualEntries ? pinnedSection.visualEntries.length : 0
         readonly property int remainder:
             entryCount % pinnedSection.effectiveColumnCount
+        readonly property Item lastEntryItem: entryCount > 0
+            ? pinnedEntriesRepeater.itemAt(entryCount - 1)
+            : null
         property bool validDropHover: false
 
         x: pinnedApps.x
@@ -1263,6 +1320,7 @@ Item {
             var source = drag.source
             var sourceKey = source ? String(source.entryKey || "") : ""
 
+            pinnedSection.clearOtherReorderFeedback(null)
             pinnedEndDropArea.validDropHover = Boolean(sourceKey)
             drag.accepted = pinnedEndDropArea.validDropHover
         }
@@ -1291,13 +1349,19 @@ Item {
         visible: pinnedEndDropArea.visible
             && pinnedEndDropArea.validDropHover
         width: 3
-        height: Math.min(
-            pinnedSection.cellHeight - 8,
-            pinnedSection.iconSize + 24
-        )
+        height: pinnedEndDropArea.lastEntryItem
+            ? pinnedEndDropArea.lastEntryItem.reorderMarkerHeight
+            : Math.min(
+                pinnedSection.cellHeight - 8,
+                pinnedSection.iconSize + 24
+            )
         x: pinnedEndDropArea.x - width / 2
-        y: pinnedEndDropArea.y
-            + Math.round((pinnedEndDropArea.height - height) / 2)
+        y: pinnedEndDropArea.lastEntryItem
+            ? pinnedApps.y
+                + pinnedEndDropArea.lastEntryItem.y
+                + pinnedEndDropArea.lastEntryItem.reorderMarkerY
+            : pinnedEndDropArea.y
+                + Math.round((pinnedEndDropArea.height - height) / 2)
         radius: width / 2
         color: Kirigami.Theme.highlightColor
         z: 1500
