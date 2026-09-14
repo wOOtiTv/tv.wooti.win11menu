@@ -13,6 +13,7 @@ Kirigami.FormLayout {
     property alias cfg_menuWidth: menuWidthSpin.value
     property bool cfg_showUserInfo: true
     property bool cfg_showSessionButtonLabels: true
+    property string cfg_sessionButtonAlignment: "right"
     property bool cfg_showLockButton: true
     property bool cfg_showLogoutButton: true
     property bool cfg_showRestartButton: true
@@ -35,6 +36,16 @@ Kirigami.FormLayout {
         const index = languageCombo.indexOfValue(cfg_language)
         if (index >= 0 && languageCombo.currentIndex !== index) {
             languageCombo.currentIndex = index
+        }
+    }
+
+    onCfg_sessionButtonAlignmentChanged: {
+        const index = sessionButtonPositionCombo.indexOfValue(
+            cfg_sessionButtonAlignment
+        )
+
+        if (index >= 0 && sessionButtonPositionCombo.currentIndex !== index) {
+            sessionButtonPositionCombo.currentIndex = index
         }
     }
 
@@ -155,6 +166,27 @@ Kirigami.FormLayout {
         text: page.translatedText("Show button labels")
         checked: page.cfg_showSessionButtonLabels
         onToggled: page.cfg_showSessionButtonLabels = checked
+    }
+
+    Controls.ComboBox {
+        id: sessionButtonPositionCombo
+
+        Kirigami.FormData.label: page.translatedText("Button position:")
+
+        model: [
+            { text: page.translatedText("Right"), value: "right" },
+            { text: page.translatedText("Center"), value: "center" }
+        ]
+
+        textRole: "text"
+        valueRole: "value"
+
+        Component.onCompleted: {
+            const index = indexOfValue(page.cfg_sessionButtonAlignment)
+            currentIndex = index >= 0 ? index : 0
+        }
+
+        onActivated: page.cfg_sessionButtonAlignment = currentValue
     }
 
     Controls.CheckBox {
