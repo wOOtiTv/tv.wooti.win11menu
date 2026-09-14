@@ -217,6 +217,48 @@ Item {
         return true
     }
 
+    function movePinnedEntryToEnd(sourceKey) {
+        var source = String(sourceKey || "")
+
+        if (!source) {
+            return false
+        }
+
+        var order = Plasmoid.configuration.pinnedOrderCustomized
+            ? loadPinnedOrder()
+            : []
+
+        if (!Plasmoid.configuration.pinnedOrderCustomized) {
+            for (var visibleIndex = 0;
+                    visibleIndex < pinnedSection.visualEntries.length;
+                    ++visibleIndex) {
+                var initialKey = entryOrderKey(
+                    pinnedSection.visualEntries[visibleIndex]
+                )
+
+                if (initialKey && order.indexOf(initialKey) < 0) {
+                    order.push(initialKey)
+                }
+            }
+        }
+
+        var sourceIndex = order.indexOf(source)
+
+        if (sourceIndex >= 0) {
+            order.splice(sourceIndex, 1)
+        }
+
+        order.push(source)
+        Plasmoid.configuration.pinnedOrderCustomized = true
+        savePinnedOrder(order)
+
+        Qt.callLater(function() {
+            pinnedSection.rebuildVisualEntries()
+        })
+
+        return true
+    }
+
     function removePinnedOrderKey(key) {
         if (!Plasmoid.configuration.pinnedOrderCustomized) {
             return
@@ -1177,5 +1219,73 @@ Item {
                 }
             }
         }
+    }
+
+    DropArea {
+        id: pinnedEndDropArea
+
+        readonly property int entryCount:
+            pinnedSection.visualEntries ? pinnedSection.visualEntries.length : 0
+        readonly property int remainder:
+            entryCount % pinnedSection.effectiveColumnCount
+        property bool validDropHover: false
+
+        x: pinnedApps.x
+            + remainder * pinnedSection.effectiveCellWidth
+        y: pinnedApps.y
+            + Math.floor(entryCount / pinnedSection.effectiveColumnCount)
+                * pinnedSection.cellHeight
+        width: (pinnedSection.effectiveColumnCount - remainder)
+            * pinnedSection.effectiveCellWidth
+        height: pinnedSection.cellHeight
+
+        visible: pinnedSection.searchText.length === 0
+            && entryCount > 0
+            && remainder > 0
+        enabled: visible
+        keys: ["wooti-pinned-app"]
+
+        onEntered: function(drag) {
+            var source = drag.source
+            var sourceKey = source ? String(source.entryKey || "") : ""
+
+            pinnedEndDropArea.validDropHover = Boolean(sourceKey)
+            drag.accepted = pinnedEndDropArea.validDropHover
+        }
+
+        onExited: {
+            pinnedEndDropArea.validDropHover = false
+        }
+
+        onDropped: function(drop) {
+            var source = drop.source
+            var sourceKey = source ? String(source.entryKey || "") : ""
+
+            pinnedEndDropArea.validDropHover = false
+
+            if (sourceKey
+                    && pinnedSection.movePinnedEntryToEnd(sourceKey)) {
+                drop.acceptProposedAction()
+                return
+            }
+
+            drop.accepted = false
+        }
+    }
+
+    Rectangle {
+        visible: pinnedEndDropArea.visible
+            && pinnedEndDropArea.validDropHover
+        width: 3
+        height: Math.min(
+            pinnedSection.cellHeight - 8,
+            pinnedSection.iconSize + 24
+        )
+        x: pinnedEndDropArea.x + 1
+        y: pinnedEndDropArea.y
+            + Math.round((pinnedEndDropArea.height - height) / 2)
+        radius: width / 2
+        color: Kirigami.Theme.highlightColor
+        z: 1500
     }
 }
