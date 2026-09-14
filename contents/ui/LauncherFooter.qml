@@ -15,7 +15,7 @@ Rectangle {
     property bool showRestartButton: true
     property bool showShutdownButton: true
     readonly property bool showSessionButtonLabels:
-        Plasmoid.configuration.showSessionButtonLabels
+        Plasmoid.configuration.showSessionButtonLabels !== false
 
     property string lockText: ""
     property string logoutText: ""
