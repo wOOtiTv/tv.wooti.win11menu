@@ -14,6 +14,8 @@ Rectangle {
     property bool showLogoutButton: true
     property bool showRestartButton: true
     property bool showShutdownButton: true
+    readonly property bool showSessionButtonLabels:
+        Plasmoid.configuration.showSessionButtonLabels
 
     property string lockText: ""
     property string logoutText: ""
@@ -112,8 +114,11 @@ Rectangle {
     Row {
         id: sessionActions
 
-        anchors.right: parent.right
-        anchors.rightMargin: 24
+        anchors.right: footer.showSessionButtonLabels ? parent.right : undefined
+        anchors.rightMargin: footer.showSessionButtonLabels ? 24 : 0
+        anchors.horizontalCenter: footer.showSessionButtonLabels
+            ? undefined
+            : parent.horizontalCenter
         anchors.verticalCenter: parent.bottom
         anchors.verticalCenterOffset: -39
 
@@ -123,8 +128,10 @@ Rectangle {
             id: lockButton
 
             visible: footer.showLockButton
-            width: Math.max(118, lockContent.implicitWidth + 28)
-            height: 42
+            width: footer.showSessionButtonLabels
+                ? Math.max(118, lockContent.implicitWidth + 28)
+                : 54
+            height: footer.showSessionButtonLabels ? 42 : 50
             radius: 12
 
             color: lockMouse.containsMouse
@@ -141,15 +148,16 @@ Rectangle {
                 id: lockContent
 
                 anchors.centerIn: parent
-                spacing: 8
+                spacing: footer.showSessionButtonLabels ? 8 : 0
 
                 Kirigami.Icon {
-                    width: 20
-                    height: 20
+                    width: footer.showSessionButtonLabels ? 20 : 30
+                    height: width
                     source: "system-lock-screen"
                 }
 
                 PlasmaComponents.Label {
+                    visible: footer.showSessionButtonLabels
                     height: 20
                     verticalAlignment: Text.AlignVCenter
                     text: footer.lockText
@@ -176,8 +184,10 @@ Rectangle {
             id: logoutButton
 
             visible: footer.showLogoutButton
-            width: Math.max(118, logoutContent.implicitWidth + 28)
-            height: 42
+            width: footer.showSessionButtonLabels
+                ? Math.max(118, logoutContent.implicitWidth + 28)
+                : 54
+            height: footer.showSessionButtonLabels ? 42 : 50
             radius: 12
 
             color: logoutMouse.containsMouse
@@ -194,15 +204,16 @@ Rectangle {
                 id: logoutContent
 
                 anchors.centerIn: parent
-                spacing: 8
+                spacing: footer.showSessionButtonLabels ? 8 : 0
 
                 Kirigami.Icon {
-                    width: 20
-                    height: 20
+                    width: footer.showSessionButtonLabels ? 20 : 30
+                    height: width
                     source: "system-log-out"
                 }
 
                 PlasmaComponents.Label {
+                    visible: footer.showSessionButtonLabels
                     height: 20
                     verticalAlignment: Text.AlignVCenter
                     text: footer.logoutText
@@ -228,8 +239,10 @@ Rectangle {
             id: rebootButton
 
             visible: footer.showRestartButton
-            width: Math.max(112, rebootContent.implicitWidth + 28)
-            height: 42
+            width: footer.showSessionButtonLabels
+                ? Math.max(112, rebootContent.implicitWidth + 28)
+                : 54
+            height: footer.showSessionButtonLabels ? 42 : 50
             radius: 12
 
             color: rebootMouse.containsMouse
@@ -246,15 +259,16 @@ Rectangle {
                 id: rebootContent
 
                 anchors.centerIn: parent
-                spacing: 8
+                spacing: footer.showSessionButtonLabels ? 8 : 0
 
                 Kirigami.Icon {
-                    width: 20
-                    height: 20
+                    width: footer.showSessionButtonLabels ? 20 : 30
+                    height: width
                     source: "system-reboot"
                 }
 
                 PlasmaComponents.Label {
+                    visible: footer.showSessionButtonLabels
                     height: 20
                     verticalAlignment: Text.AlignVCenter
                     text: footer.restartText
@@ -280,8 +294,10 @@ Rectangle {
             id: shutdownButton
 
             visible: footer.showShutdownButton
-            width: Math.max(108, shutdownContent.implicitWidth + 28)
-            height: 42
+            width: footer.showSessionButtonLabels
+                ? Math.max(108, shutdownContent.implicitWidth + 28)
+                : 54
+            height: footer.showSessionButtonLabels ? 42 : 50
             radius: 12
 
             color: shutdownMouse.containsMouse
@@ -298,15 +314,16 @@ Rectangle {
                 id: shutdownContent
 
                 anchors.centerIn: parent
-                spacing: 8
+                spacing: footer.showSessionButtonLabels ? 8 : 0
 
                 Kirigami.Icon {
-                    width: 20
-                    height: 20
+                    width: footer.showSessionButtonLabels ? 20 : 30
+                    height: width
                     source: "system-shutdown"
                 }
 
                 PlasmaComponents.Label {
+                    visible: footer.showSessionButtonLabels
                     height: 20
                     verticalAlignment: Text.AlignVCenter
                     text: footer.shutdownText
