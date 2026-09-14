@@ -143,9 +143,6 @@ Item {
             }
         }
 
-        // Newly pinned or newly ungrouped applications are appended to the
-        // current custom order. Hidden/stale keys intentionally stay stored so
-        // disabling and re-enabling groups does not destroy group positions.
         for (var sourceIndex = 0; sourceIndex < source.length; ++sourceIndex) {
             var sourceEntry = source[sourceIndex]
             var sourceKey = entryOrderKey(sourceEntry)
@@ -182,8 +179,6 @@ Item {
             ? loadPinnedOrder()
             : []
 
-        // The first manual reorder starts from exactly what the user currently
-        // sees, preserving the previous alphabetical default until that moment.
         if (!Plasmoid.configuration.pinnedOrderCustomized) {
             for (var visibleIndex = 0;
                     visibleIndex < pinnedSection.visualEntries.length;
@@ -301,8 +296,6 @@ Item {
 
         var insertIndex = 0
 
-        // Count the entries that were before the target while ignoring the
-        // items that are about to be replaced by the new group.
         for (var beforeIndex = 0; beforeIndex < targetIndex; ++beforeIndex) {
             var beforeKey = order[beforeIndex]
 
@@ -619,15 +612,12 @@ Item {
                         localX = pinnedEntry.width / 2
                     }
 
-                    // Without groups, the whole target is available for sorting.
                     if (!pinnedSection.groupsEnabled) {
                         return localX < pinnedEntry.width / 2
                             ? "before"
                             : "after"
                     }
 
-                    // With groups enabled, the outer quarters sort while the
-                    // center keeps the Windows-style drop-to-group behavior.
                     var edgeWidth = pinnedEntry.width * 0.25
 
                     if (localX < edgeWidth) {
@@ -642,9 +632,6 @@ Item {
                             && entryCount % pinnedSection.effectiveColumnCount > 0
                         var isLastEntry = index === entryCount - 1
 
-                        // When a trailing empty grid area exists, that dedicated
-                        // drop zone owns the final position. Avoid showing a
-                        // second marker on the last entry at the same time.
                         if (hasTrailingEndZone && isLastEntry) {
                             return ""
                         }
@@ -652,8 +639,6 @@ Item {
                         return "after"
                     }
 
-                    // Groups themselves can be reordered, but dropping a group
-                    // onto the center of another entry does not create nesting.
                     if (sourceIsGroup) {
                         return ""
                     }
@@ -1346,6 +1331,15 @@ Item {
     }
 
     Rectangle {
+        readonly property point markerPoint:
+            pinnedEndDropArea.lastEntryItem
+                ? pinnedEndDropArea.lastEntryItem.mapToItem(
+                    pinnedSection,
+                    pinnedEndDropArea.lastEntryItem.width,
+                    pinnedEndDropArea.lastEntryItem.reorderMarkerY
+                )
+                : Qt.point(pinnedEndDropArea.x, pinnedEndDropArea.y)
+
         visible: pinnedEndDropArea.visible
             && pinnedEndDropArea.validDropHover
         width: 3
@@ -1355,13 +1349,8 @@ Item {
                 pinnedSection.cellHeight - 8,
                 pinnedSection.iconSize + 24
             )
-        x: pinnedEndDropArea.x - width / 2
-        y: pinnedEndDropArea.lastEntryItem
-            ? pinnedApps.y
-                + pinnedEndDropArea.lastEntryItem.y
-                + pinnedEndDropArea.lastEntryItem.reorderMarkerY
-            : pinnedEndDropArea.y
-                + Math.round((pinnedEndDropArea.height - height) / 2)
+        x: markerPoint.x - width / 2
+        y: markerPoint.y
         radius: width / 2
         color: Kirigami.Theme.highlightColor
         z: 1500
