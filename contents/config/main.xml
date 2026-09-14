@@ -34,6 +34,14 @@
       <default>true</default>
     </entry>
 
+    <entry name="showSessionButtonLabels" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <entry name="sessionButtonAlignment" type="String">
+      <default>right</default>
+    </entry>
+
     <entry name="showLockButton" type="Bool">
       <default>true</default>
     </entry>
@@ -55,6 +63,14 @@
     </entry>
 
     <entry name="pinnedGroups" type="String">
+      <default>[]</default>
+    </entry>
+
+    <entry name="pinnedOrderCustomized" type="Bool">
+      <default>false</default>
+    </entry>
+
+    <entry name="pinnedOrder" type="String">
       <default>[]</default>
     </entry>
   </group>

@@ -145,6 +145,10 @@ msgid "Session buttons:"
 msgstr "Pulsanti di sessione:"
 
 #: contents/ui/ConfigGeneral.qml
+msgid "Show button labels"
+msgstr "Mostra etichette pulsanti"
+
+#: contents/ui/ConfigGeneral.qml
 msgid "Show Lock Screen"
 msgstr "Mostra Blocca schermo"
 

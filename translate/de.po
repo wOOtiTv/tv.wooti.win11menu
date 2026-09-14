@@ -145,6 +145,10 @@ msgid "Session buttons:"
 msgstr "Sitzungsbuttons:"
 
 #: contents/ui/ConfigGeneral.qml
+msgid "Show button labels"
+msgstr "Beschriftungen anzeigen"
+
+#: contents/ui/ConfigGeneral.qml
 msgid "Show Lock Screen"
 msgstr "Sperren anzeigen"
 

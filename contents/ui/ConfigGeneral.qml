@@ -12,6 +12,8 @@ Kirigami.FormLayout {
     property alias cfg_menuHeight: menuHeightSpin.value
     property alias cfg_menuWidth: menuWidthSpin.value
     property bool cfg_showUserInfo: true
+    property bool cfg_showSessionButtonLabels: true
+    property string cfg_sessionButtonAlignment: "right"
     property bool cfg_showLockButton: true
     property bool cfg_showLogoutButton: true
     property bool cfg_showRestartButton: true
@@ -34,6 +36,20 @@ Kirigami.FormLayout {
         const index = languageCombo.indexOfValue(cfg_language)
         if (index >= 0 && languageCombo.currentIndex !== index) {
             languageCombo.currentIndex = index
+        }
+    }
+
+    onCfg_sessionButtonAlignmentChanged: {
+        const index = sessionButtonPositionCombo.indexOfValue(
+            cfg_sessionButtonAlignment
+        )
+
+        if (index >= 0 && sessionButtonPositionCombo.currentIndex !== index) {
+            sessionButtonPositionCombo.currentIndex = index
+        }
+
+        if (cfg_sessionButtonAlignment === "left" && cfg_showUserInfo) {
+            cfg_showUserInfo = false
         }
     }
 
@@ -139,6 +155,7 @@ Kirigami.FormLayout {
         Kirigami.FormData.label: page.translatedText("User information:")
         text: page.translatedText("Show name and avatar")
         checked: page.cfg_showUserInfo
+        enabled: page.cfg_sessionButtonAlignment !== "left"
         onToggled: page.cfg_showUserInfo = checked
     }
 
@@ -150,26 +167,54 @@ Kirigami.FormLayout {
     }
 
     Controls.CheckBox {
-        Kirigami.FormData.label: i18n("Session buttons:")
-        text: i18n("Show Lock Screen")
+        Kirigami.FormData.label: page.translatedText("Session buttons:")
+        text: page.translatedText("Show button labels")
+        checked: page.cfg_showSessionButtonLabels
+        onToggled: page.cfg_showSessionButtonLabels = checked
+    }
+
+    Controls.ComboBox {
+        id: sessionButtonPositionCombo
+
+        Kirigami.FormData.label: page.translatedText("Button position:")
+
+        model: [
+            { text: page.translatedText("Left"), value: "left" },
+            { text: page.translatedText("Center"), value: "center" },
+            { text: page.translatedText("Right"), value: "right" }
+        ]
+
+        textRole: "text"
+        valueRole: "value"
+
+        Component.onCompleted: {
+            const index = indexOfValue(page.cfg_sessionButtonAlignment)
+            currentIndex = index >= 0 ? index : 2
+        }
+
+        onActivated: page.cfg_sessionButtonAlignment = currentValue
+    }
+
+    Controls.CheckBox {
+        text: page.translatedText("Show Lock Screen")
         checked: page.cfg_showLockButton
         onToggled: page.cfg_showLockButton = checked
     }
 
     Controls.CheckBox {
-        text: i18n("Show Log Out")
+        text: page.translatedText("Show Log Out")
         checked: page.cfg_showLogoutButton
         onToggled: page.cfg_showLogoutButton = checked
     }
 
     Controls.CheckBox {
-        text: i18n("Show Restart")
+        text: page.translatedText("Show Restart")
         checked: page.cfg_showRestartButton
         onToggled: page.cfg_showRestartButton = checked
     }
 
     Controls.CheckBox {
-        text: i18n("Show Shut Down")
+        text: page.translatedText("Show Shut Down")
         checked: page.cfg_showShutdownButton
         onToggled: page.cfg_showShutdownButton = checked
     }
