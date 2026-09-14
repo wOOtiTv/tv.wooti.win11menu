@@ -145,6 +145,10 @@ msgid "Session buttons:"
 msgstr "Boutons de session :"
 
 #: contents/ui/ConfigGeneral.qml
+msgid "Show button labels"
+msgstr "Afficher les libellés"
+
+#: contents/ui/ConfigGeneral.qml
 msgid "Show Lock Screen"
 msgstr "Afficher le verrouillage"
 
