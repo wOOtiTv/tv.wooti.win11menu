@@ -16,6 +16,10 @@ Rectangle {
     property bool showShutdownButton: true
     readonly property bool showSessionButtonLabels:
         Plasmoid.configuration.showSessionButtonLabels !== false
+    readonly property string sessionButtonAlignment:
+        String(Plasmoid.configuration.sessionButtonAlignment || "right")
+    readonly property bool centerSessionButtons:
+        sessionButtonAlignment === "center"
 
     property string lockText: ""
     property string logoutText: ""
@@ -114,11 +118,11 @@ Rectangle {
     Row {
         id: sessionActions
 
-        anchors.right: footer.showSessionButtonLabels ? parent.right : undefined
-        anchors.rightMargin: footer.showSessionButtonLabels ? 24 : 0
-        anchors.horizontalCenter: footer.showSessionButtonLabels
-            ? undefined
-            : parent.horizontalCenter
+        anchors.right: footer.centerSessionButtons ? undefined : parent.right
+        anchors.rightMargin: footer.centerSessionButtons ? 0 : 24
+        anchors.horizontalCenter: footer.centerSessionButtons
+            ? parent.horizontalCenter
+            : undefined
         anchors.verticalCenter: parent.bottom
         anchors.verticalCenterOffset: -39
 
