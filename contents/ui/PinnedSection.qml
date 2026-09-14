@@ -613,16 +613,20 @@ Item {
                         localX = pinnedEntry.width / 2
                     }
 
+                    var isRowStart = index % pinnedSection.effectiveColumnCount === 0
+
                     if (!pinnedSection.groupsEnabled) {
-                        return localX < pinnedEntry.width / 2
-                            ? "before"
-                            : "after"
+                        if (localX < pinnedEntry.width / 2) {
+                            return isRowStart ? "before" : ""
+                        }
+
+                        return "after"
                     }
 
                     var edgeWidth = pinnedEntry.width * 0.25
 
                     if (localX < edgeWidth) {
-                        return "before"
+                        return isRowStart ? "before" : ""
                     }
 
                     if (localX > pinnedEntry.width - edgeWidth) {
