@@ -846,8 +846,8 @@ Item {
                     height: pinnedEntryHover.height
                     y: pinnedEntryHover.y
                     x: pinnedEntry.reorderDropSide < 0
-                        ? 1
-                        : parent.width - width - 1
+                        ? -width / 2
+                        : parent.width - width / 2
                     radius: width / 2
                     color: Kirigami.Theme.highlightColor
                     z: 1500
@@ -1295,7 +1295,7 @@ Item {
             pinnedSection.cellHeight - 8,
             pinnedSection.iconSize + 24
         )
-        x: pinnedEndDropArea.x + 1
+        x: pinnedEndDropArea.x - width / 2
         y: pinnedEndDropArea.y
             + Math.round((pinnedEndDropArea.height - height) / 2)
         radius: width / 2
