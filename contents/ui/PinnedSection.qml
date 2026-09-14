@@ -10,6 +10,7 @@ Item {
 
     property string searchText: ""
     property var entriesModel: []
+    property var visualEntries: []
 
     property int columnCount: 8
     property int cellWidth: 132
@@ -54,6 +55,229 @@ Item {
 
     property bool layoutReady: false
     readonly property real contentBottom: pinnedApps.y + pinnedApps.height
+
+    function entryOrderKey(entry) {
+        if (!entry) {
+            return ""
+        }
+
+        if (entry.entryType === "group") {
+            var groupId = String(entry.groupId || "")
+            return groupId ? "group:" + groupId : ""
+        }
+
+        var favoriteId = String(entry.favoriteId || "")
+        return favoriteId ? "app:" + favoriteId : ""
+    }
+
+    function loadPinnedOrder() {
+        var raw = String(Plasmoid.configuration.pinnedOrder || "[]")
+
+        try {
+            var parsed = JSON.parse(raw)
+            return Array.isArray(parsed) ? parsed : []
+        } catch (error) {
+            console.warn("🦊 Could not load pinned order:", error)
+            return []
+        }
+    }
+
+    function savePinnedOrder(order) {
+        var source = Array.isArray(order) ? order : []
+        var sanitized = []
+
+        for (var i = 0; i < source.length; ++i) {
+            var key = String(source[i] || "")
+
+            if (key && sanitized.indexOf(key) < 0) {
+                sanitized.push(key)
+            }
+        }
+
+        Plasmoid.configuration.pinnedOrder = JSON.stringify(sanitized)
+    }
+
+    function rebuildVisualEntries() {
+        var source = []
+        var model = pinnedSection.entriesModel || []
+
+        for (var i = 0; i < model.length; ++i) {
+            source.push(model[i])
+        }
+
+        if (!Plasmoid.configuration.pinnedOrderCustomized) {
+            pinnedSection.visualEntries = source
+            return
+        }
+
+        var order = loadPinnedOrder()
+        var result = []
+        var usedKeys = []
+        var orderChanged = false
+
+        for (var orderIndex = 0; orderIndex < order.length; ++orderIndex) {
+            var orderedKey = String(order[orderIndex] || "")
+
+            if (!orderedKey || usedKeys.indexOf(orderedKey) >= 0) {
+                continue
+            }
+
+            for (var entryIndex = 0; entryIndex < source.length; ++entryIndex) {
+                var orderedEntry = source[entryIndex]
+
+                if (entryOrderKey(orderedEntry) === orderedKey) {
+                    result.push(orderedEntry)
+                    usedKeys.push(orderedKey)
+                    break
+                }
+            }
+        }
+
+        // Newly pinned or newly ungrouped applications are appended to the
+        // current custom order. Hidden/stale keys intentionally stay stored so
+        // disabling and re-enabling groups does not destroy group positions.
+        for (var sourceIndex = 0; sourceIndex < source.length; ++sourceIndex) {
+            var sourceEntry = source[sourceIndex]
+            var sourceKey = entryOrderKey(sourceEntry)
+
+            if (!sourceKey || usedKeys.indexOf(sourceKey) >= 0) {
+                continue
+            }
+
+            result.push(sourceEntry)
+            usedKeys.push(sourceKey)
+
+            if (order.indexOf(sourceKey) < 0) {
+                order.push(sourceKey)
+                orderChanged = true
+            }
+        }
+
+        if (orderChanged) {
+            savePinnedOrder(order)
+        }
+
+        pinnedSection.visualEntries = result
+    }
+
+    function movePinnedEntry(sourceKey, targetKey, insertAfter) {
+        var source = String(sourceKey || "")
+        var target = String(targetKey || "")
+
+        if (!source || !target || source === target) {
+            return false
+        }
+
+        var order = Plasmoid.configuration.pinnedOrderCustomized
+            ? loadPinnedOrder()
+            : []
+
+        // The first manual reorder starts from exactly what the user currently
+        // sees, preserving the previous alphabetical default until that moment.
+        if (!Plasmoid.configuration.pinnedOrderCustomized) {
+            for (var visibleIndex = 0;
+                    visibleIndex < pinnedSection.visualEntries.length;
+                    ++visibleIndex) {
+                var initialKey = entryOrderKey(
+                    pinnedSection.visualEntries[visibleIndex]
+                )
+
+                if (initialKey && order.indexOf(initialKey) < 0) {
+                    order.push(initialKey)
+                }
+            }
+        }
+
+        if (order.indexOf(source) < 0) {
+            order.push(source)
+        }
+
+        if (order.indexOf(target) < 0) {
+            order.push(target)
+        }
+
+        var sourceIndex = order.indexOf(source)
+        order.splice(sourceIndex, 1)
+
+        var targetIndex = order.indexOf(target)
+
+        if (targetIndex < 0) {
+            return false
+        }
+
+        order.splice(targetIndex + (insertAfter ? 1 : 0), 0, source)
+
+        Plasmoid.configuration.pinnedOrderCustomized = true
+        savePinnedOrder(order)
+
+        Qt.callLater(function() {
+            pinnedSection.rebuildVisualEntries()
+        })
+
+        return true
+    }
+
+    function removePinnedOrderKey(key) {
+        if (!Plasmoid.configuration.pinnedOrderCustomized) {
+            return
+        }
+
+        var cleanKey = String(key || "")
+        var order = loadPinnedOrder()
+        var index = order.indexOf(cleanKey)
+
+        if (index >= 0) {
+            order.splice(index, 1)
+            savePinnedOrder(order)
+        }
+    }
+
+    function replaceAppsWithGroupOrder(sourceFavoriteId, targetFavoriteId, groupId) {
+        if (!Plasmoid.configuration.pinnedOrderCustomized) {
+            return
+        }
+
+        var sourceKey = "app:" + String(sourceFavoriteId || "")
+        var targetKey = "app:" + String(targetFavoriteId || "")
+        var groupKey = "group:" + String(groupId || "")
+        var order = loadPinnedOrder()
+        var targetIndex = order.indexOf(targetKey)
+
+        if (targetIndex < 0) {
+            targetIndex = order.length
+        }
+
+        var insertIndex = 0
+
+        // Count the entries that were before the target while ignoring the
+        // items that are about to be replaced by the new group.
+        for (var beforeIndex = 0; beforeIndex < targetIndex; ++beforeIndex) {
+            var beforeKey = order[beforeIndex]
+
+            if (beforeKey !== sourceKey
+                    && beforeKey !== targetKey
+                    && beforeKey !== groupKey) {
+                ++insertIndex
+            }
+        }
+
+        var cleanedOrder = []
+
+        for (var orderIndex = 0; orderIndex < order.length; ++orderIndex) {
+            var key = order[orderIndex]
+
+            if (key !== sourceKey && key !== targetKey && key !== groupKey) {
+                cleanedOrder.push(key)
+            }
+        }
+
+        cleanedOrder.splice(
+            Math.min(insertIndex, cleanedOrder.length),
+            0,
+            groupKey
+        )
+        savePinnedOrder(cleanedOrder)
+    }
 
     function actionForId(actionList, actionId) {
         if (!actionList) {
@@ -199,6 +423,7 @@ Item {
             apps: [targetId, sourceId]
         })
 
+        replaceAppsWithGroupOrder(sourceId, targetId, groupId)
         groupController.savePinnedGroups(groups)
         return true
     }
@@ -227,6 +452,9 @@ Item {
         return apps.indexOf(appId) < 0 && apps.length < maxApps
     }
 
+    onEntriesModelChanged: rebuildVisualEntries()
+    onGroupsEnabledChanged: rebuildVisualEntries()
+
     height: contentBottom
     clip: true
 
@@ -240,6 +468,8 @@ Item {
     }
 
     Component.onCompleted: {
+        rebuildVisualEntries()
+
         Qt.callLater(function() {
             pinnedSection.layoutReady = true
         })
@@ -292,7 +522,7 @@ Item {
         visible: pinnedSection.searchText.length === 0
 
         Repeater {
-            model: pinnedSection.entriesModel
+            model: pinnedSection.visualEntries
 
             delegate: Item {
                 id: pinnedEntry
@@ -303,9 +533,82 @@ Item {
                 property string favoriteId: !isGroup && entryData
                     ? String(entryData.favoriteId || "")
                     : ""
+                property string entryKey: pinnedSection.entryOrderKey(entryData)
                 property bool dragActive: false
                 property bool dragWasActive: false
                 property bool validDropHover: false
+                property int reorderDropSide: 0
+
+                function calculateDropMode(drag) {
+                    var source = drag ? drag.source : null
+                    var sourceId = source
+                        ? String(source.favoriteId || "")
+                        : ""
+
+                    if (!source
+                            || source === pinnedEntry
+                            || !sourceId
+                            || !pinnedEntry.entryKey) {
+                        return ""
+                    }
+
+                    var localX = drag.x
+
+                    if (isNaN(localX)) {
+                        localX = pinnedEntry.width / 2
+                    }
+
+                    // Without groups, the whole target is available for sorting.
+                    if (!pinnedSection.groupsEnabled) {
+                        return localX < pinnedEntry.width / 2
+                            ? "before"
+                            : "after"
+                    }
+
+                    // With groups enabled, the outer quarters sort while the
+                    // center keeps the Windows-style drop-to-group behavior.
+                    var edgeWidth = pinnedEntry.width * 0.25
+
+                    if (localX < edgeWidth) {
+                        return "before"
+                    }
+
+                    if (localX > pinnedEntry.width - edgeWidth) {
+                        return "after"
+                    }
+
+                    if (pinnedEntry.isGroup) {
+                        return pinnedSection.groupCanAcceptDrop(
+                            pinnedEntry.entryData.groupId,
+                            sourceId
+                        ) ? "group" : ""
+                    }
+
+                    return sourceId !== pinnedEntry.favoriteId ? "group" : ""
+                }
+
+                function updateDropFeedback(drag) {
+                    var mode = calculateDropMode(drag)
+
+                    pinnedEntry.validDropHover = mode === "group"
+                    pinnedEntry.reorderDropSide = mode === "before"
+                        ? -1
+                        : (mode === "after" ? 1 : 0)
+
+                    if (drag) {
+                        var source = drag.source
+                        drag.accepted = Boolean(
+                            source
+                            && source !== pinnedEntry
+                            && String(source.favoriteId || "").length > 0
+                        )
+                    }
+                }
+
+                function clearDropFeedback() {
+                    pinnedEntry.validDropHover = false
+                    pinnedEntry.reorderDropSide = 0
+                }
 
                 height: pinnedSection.cellHeight
                 width: pinnedSection.effectiveCellWidth
@@ -359,40 +662,22 @@ Item {
                     id: pinnedAppDropArea
 
                     anchors.fill: parent
-                    enabled: pinnedSection.groupsEnabled
-                        && pinnedEntry.entryData
+                    enabled: pinnedEntry.entryData
                         && (pinnedEntry.isGroup
                             ? String(pinnedEntry.entryData.groupId || "").length > 0
                             : pinnedEntry.favoriteId.length > 0)
                     keys: ["wooti-pinned-app"]
 
                     onEntered: function(drag) {
-                        var source = drag.source
-                        var sourceId = source
-                            ? String(source.favoriteId || "")
-                            : ""
-                        var validTarget = false
+                        pinnedEntry.updateDropFeedback(drag)
+                    }
 
-                        if (source && source !== pinnedEntry && sourceId) {
-                            if (pinnedEntry.isGroup) {
-                                validTarget = pinnedSection.groupCanAcceptDrop(
-                                    pinnedEntry.entryData.groupId,
-                                    sourceId
-                                )
-                            } else {
-                                validTarget = sourceId !== pinnedEntry.favoriteId
-                            }
-                        }
-
-                        pinnedEntry.validDropHover = validTarget
-
-                        if (!validTarget) {
-                            drag.accepted = false
-                        }
+                    onPositionChanged: function(drag) {
+                        pinnedEntry.updateDropFeedback(drag)
                     }
 
                     onExited: {
-                        pinnedEntry.validDropHover = false
+                        pinnedEntry.clearDropFeedback()
                     }
 
                     onDropped: function(drop) {
@@ -400,8 +685,28 @@ Item {
                         var sourceId = source
                             ? String(source.favoriteId || "")
                             : ""
+                        var sourceKey = source
+                            ? String(source.entryKey || "")
+                            : ""
+                        var dropMode = pinnedEntry.calculateDropMode(drop)
 
-                        pinnedEntry.validDropHover = false
+                        pinnedEntry.clearDropFeedback()
+
+                        if ((dropMode === "before" || dropMode === "after")
+                                && sourceKey
+                                && pinnedSection.movePinnedEntry(
+                                    sourceKey,
+                                    pinnedEntry.entryKey,
+                                    dropMode === "after"
+                                )) {
+                            drop.acceptProposedAction()
+                            return
+                        }
+
+                        if (dropMode !== "group") {
+                            drop.accepted = false
+                            return
+                        }
 
                         if (pinnedEntry.isGroup) {
                             var groupId = String(
@@ -419,6 +724,7 @@ Item {
                                         sourceId,
                                         groupId
                                     )) {
+                                pinnedSection.removePinnedOrderKey(sourceKey)
                                 drop.acceptProposedAction()
                                 return
                             }
@@ -476,6 +782,19 @@ Item {
                     Behavior on opacity {
                         NumberAnimation { duration: 120 }
                     }
+                }
+
+                Rectangle {
+                    visible: pinnedEntry.reorderDropSide !== 0
+                    width: 3
+                    height: Math.min(64, parent.height - 12)
+                    y: Math.round((parent.height - height) / 2)
+                    x: pinnedEntry.reorderDropSide < 0
+                        ? 1
+                        : parent.width - width - 1
+                    radius: width / 2
+                    color: Kirigami.Theme.highlightColor
+                    z: 1500
                 }
 
                 Rectangle {
@@ -762,6 +1081,8 @@ Item {
                                 )
                             }
 
+                            pinnedSection.removePinnedOrderKey(pinnedEntry.entryKey)
+
                             if (pinnedSection.favoritesModel) {
                                 pinnedSection.favoritesModel.removeFavorite(
                                     pinnedEntry.entryData.favoriteId
@@ -775,8 +1096,7 @@ Item {
                     id: pinnedEntryDragHandler
 
                     target: pinnedDragProxy
-                    enabled: pinnedSection.groupsEnabled
-                        && !pinnedEntry.isGroup
+                    enabled: !pinnedEntry.isGroup
                         && pinnedEntry.favoriteId.length > 0
                     acceptedButtons: Qt.LeftButton
 
