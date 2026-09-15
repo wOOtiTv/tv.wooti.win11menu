@@ -83,6 +83,21 @@ Item {
 
             if (item && item !== currentEntry) {
                 item.reorderDropSide = 0
+                item.validDropHover = false
+            }
+        }
+    }
+
+    function clearAllDropFeedback() {
+        pinnedSection.endDropHover = false
+        pinnedEndDropArea.validDropHover = false
+
+        for (var i = 0; i < pinnedEntriesRepeater.count; ++i) {
+            var item = pinnedEntriesRepeater.itemAt(i)
+
+            if (item) {
+                item.reorderDropSide = 0
+                item.validDropHover = false
             }
         }
     }
@@ -504,8 +519,15 @@ Item {
         return apps.indexOf(appId) < 0 && apps.length < maxApps
     }
 
-    onEntriesModelChanged: rebuildVisualEntries()
-    onGroupsEnabledChanged: rebuildVisualEntries()
+    onEntriesModelChanged: {
+        clearAllDropFeedback()
+        rebuildVisualEntries()
+    }
+
+    onGroupsEnabledChanged: {
+        clearAllDropFeedback()
+        rebuildVisualEntries()
+    }
 
     height: contentBottom
     clip: true
