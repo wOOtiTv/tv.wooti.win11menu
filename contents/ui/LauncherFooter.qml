@@ -22,6 +22,10 @@ Rectangle {
         sessionButtonAlignment === "left"
     readonly property bool centerSessionButtons:
         sessionButtonAlignment === "center"
+    readonly property int sessionIconSize:
+        showSessionButtonLabels ? 24 : 46
+    readonly property int compactButtonWidth: 62
+    readonly property int compactButtonHeight: 58
 
     property string lockText: ""
     property string logoutText: ""
@@ -137,8 +141,10 @@ Rectangle {
             visible: footer.showLockButton
             width: footer.showSessionButtonLabels
                 ? Math.max(118, lockContent.implicitWidth + 28)
-                : 54
-            height: footer.showSessionButtonLabels ? 42 : 50
+                : footer.compactButtonWidth
+            height: footer.showSessionButtonLabels
+                ? 42
+                : footer.compactButtonHeight
             radius: 12
 
             color: lockMouse.containsMouse
@@ -158,7 +164,7 @@ Rectangle {
                 spacing: footer.showSessionButtonLabels ? 8 : 0
 
                 Kirigami.Icon {
-                    width: footer.showSessionButtonLabels ? 20 : 30
+                    width: footer.sessionIconSize
                     height: width
                     source: "system-lock-screen"
                 }
@@ -193,8 +199,10 @@ Rectangle {
             visible: footer.showLogoutButton
             width: footer.showSessionButtonLabels
                 ? Math.max(118, logoutContent.implicitWidth + 28)
-                : 54
-            height: footer.showSessionButtonLabels ? 42 : 50
+                : footer.compactButtonWidth
+            height: footer.showSessionButtonLabels
+                ? 42
+                : footer.compactButtonHeight
             radius: 12
 
             color: logoutMouse.containsMouse
@@ -214,7 +222,7 @@ Rectangle {
                 spacing: footer.showSessionButtonLabels ? 8 : 0
 
                 Kirigami.Icon {
-                    width: footer.showSessionButtonLabels ? 20 : 30
+                    width: footer.sessionIconSize
                     height: width
                     source: "system-log-out"
                 }
@@ -248,8 +256,10 @@ Rectangle {
             visible: footer.showRestartButton
             width: footer.showSessionButtonLabels
                 ? Math.max(112, rebootContent.implicitWidth + 28)
-                : 54
-            height: footer.showSessionButtonLabels ? 42 : 50
+                : footer.compactButtonWidth
+            height: footer.showSessionButtonLabels
+                ? 42
+                : footer.compactButtonHeight
             radius: 12
 
             color: rebootMouse.containsMouse
@@ -269,7 +279,7 @@ Rectangle {
                 spacing: footer.showSessionButtonLabels ? 8 : 0
 
                 Kirigami.Icon {
-                    width: footer.showSessionButtonLabels ? 20 : 30
+                    width: footer.sessionIconSize
                     height: width
                     source: "system-reboot"
                 }
@@ -303,8 +313,10 @@ Rectangle {
             visible: footer.showShutdownButton
             width: footer.showSessionButtonLabels
                 ? Math.max(108, shutdownContent.implicitWidth + 28)
-                : 54
-            height: footer.showSessionButtonLabels ? 42 : 50
+                : footer.compactButtonWidth
+            height: footer.showSessionButtonLabels
+                ? 42
+                : footer.compactButtonHeight
             radius: 12
 
             color: shutdownMouse.containsMouse
@@ -324,7 +336,7 @@ Rectangle {
                 spacing: footer.showSessionButtonLabels ? 8 : 0
 
                 Kirigami.Icon {
-                    width: footer.showSessionButtonLabels ? 20 : 30
+                    width: footer.sessionIconSize
                     height: width
                     source: "system-shutdown"
                 }
