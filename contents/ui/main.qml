@@ -29,6 +29,23 @@ PlasmoidItem {
     property bool pinnedGroupsEnabled: plasmoid.configuration.enablePinnedGroups
     readonly property int maxPinnedGroupApps: 16
 
+    readonly property string allAppsViewMode: {
+        var configuredMode = String(
+            plasmoid.configuration.allAppsViewMode || "legacy"
+        )
+
+        if (configuredMode === "grid"
+                || configuredMode === "list"
+                || configuredMode === "pinned") {
+            return configuredMode
+        }
+
+        return plasmoid.configuration.allAppsListView ? "list" : "grid"
+    }
+
+    readonly property bool showSectionTitles:
+        plasmoid.configuration.showSectionTitles !== false
+
     function sanitizePinnedGroups(groups) {
         var sourceGroups = Array.isArray(groups) ? groups : []
         var sanitizedGroups = []
@@ -352,18 +369,27 @@ PlasmoidItem {
             1,
             Math.floor((popupWidth - 64) / columnCount)
         )
-        readonly property int cellHeight: 88
+        readonly property int appIconSize: Math.max(
+            24,
+            Math.min(64, plasmoid.configuration.iconSize || 36)
+        )
+        readonly property int cellHeight: Math.max(88, appIconSize + 48)
 
-        // Alphabetisch gruppiertes KDE-Modell für "Alle".
-        // modelForRow() erzeugt in QML selbst keine Abhängigkeit. Deshalb
-        // hängt die Bindung bewusst an allAppsModelRow und wird bei jedem
-        // RootModel-Refresh wie im KDE-Kickoff manuell neu ausgewertet.
+        // KDE model for All Applications. In the new "Pinned style" view,
+        // RootModel exposes the same applications as one flat model instead
+        // of alphabetically categorized child models.
         property int allAppsModelRow: 0
         readonly property var allAppsModel: rootModel.modelForRow(allAppsModelRow)
+        readonly property string allAppsViewMode: root.allAppsViewMode
 
-        // Ansicht für "Alle": Raster oder Liste.
-        // Die Auswahl wird pro Plasmoid-Instanz dauerhaft gespeichert.
-        readonly property bool allAppsListView: plasmoid.configuration.allAppsListView
+        function cycleAllAppsViewMode() {
+            var nextMode = allAppsViewMode === "grid"
+                ? "list"
+                : (allAppsViewMode === "list" ? "pinned" : "grid")
+
+            plasmoid.configuration.allAppsViewMode = nextMode
+            plasmoid.configuration.allAppsListView = nextMode === "list"
+        }
 
         // Gemeinsame alphabetische Anzeige für normale Pins und Gruppen.
         // Die KDE-Favoriten selbst bleiben unverändert; wir bauen lediglich
@@ -738,7 +764,9 @@ PlasmoidItem {
                         id: allAppsView
 
                         x: 0
-                        y: pinnedSection.y + pinnedSection.height + 25
+                        y: pinnedSection.y
+                            + pinnedSection.height
+                            + (root.showSectionTitles ? 25 : 8)
                         width: parent.width
 
                         allAppsModel: launcher.allAppsModel
@@ -746,7 +774,8 @@ PlasmoidItem {
                         contextMenuController: root
 
                         searchText: root.searchText
-                        listView: launcher.allAppsListView
+                        viewMode: launcher.allAppsViewMode
+                        showSectionTitles: root.showSectionTitles
 
                         columnCount: launcher.columnCount
                         gridCellHeight: launcher.cellHeight
@@ -754,13 +783,12 @@ PlasmoidItem {
                         allText: i18n("All")
                         viewListText: i18n("View: List  ▾")
                         viewGridText: i18n("View: Grid  ▾")
+                        viewPinnedText: i18n("View: Pinned style  ▾")
                         pinText: i18n("Pin")
                         pinToTaskManagerText: i18n("Pin to Task Manager")
                         editApplicationText: i18n("Edit Application…")
 
-                        onListViewToggleRequested: {
-                            plasmoid.configuration.allAppsListView = !plasmoid.configuration.allAppsListView
-                        }
+                        onViewToggleRequested: launcher.cycleAllAppsViewMode()
 
                         onCloseLauncherRequested: {
                             plasmoid.expanded = false
@@ -1050,7 +1078,7 @@ PlasmoidItem {
         id: rootModel
 
         showAllApps: true
-        showAllAppsCategorized: true
+        showAllAppsCategorized: root.allAppsViewMode !== "pinned"
         showRecentApps: false
         showRecentDocs: false
 
