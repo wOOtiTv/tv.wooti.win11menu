@@ -30,14 +30,15 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 - 📌 **Pinned apps** – pin/unpin applications via right-click and freely reorder pinned entries with drag & drop
 - 🗂️ **Pinned groups** – organize pinned apps into optional named groups with up to 16 apps per group, including Windows-style drag & drop creation, adding and reordering
 - 🧩 **KDE context actions** – pin applications to the Task Manager or edit their application entry from Pinned, All Applications and application search results
-- 🔤 **All applications** – alphabetically grouped applications
-- 📐 **Grid / List view** – switch between a compact grid and a clean list layout
+- 🔤 **All applications** – browse applications in Grid, List or Pinned-style layouts
+- 📐 **Flexible application views** – switch All Applications between a compact grid, clean list or the same visual style as pinned apps
 - 🧭 **Unified content scrolling** – Pinned and All Applications share one scroll area while search and session controls remain fixed
 - 🔍 **Integrated search** – applications, files (via Baloo) and system settings
 - ⌨️ **Quick search** – press `Ctrl+F` to instantly focus the search field
 - 🎨 **Custom menu icon** – choose the launcher icon directly in General settings
 - 📏 **Flexible menu size** – configure menu width and height to fit your screen and preferred layout
-- 🖼️ **Configurable app icons** – adjust application icon size from compact to large
+- 🖼️ **Configurable app icons** – adjust application icon size from 24 px to 64 px
+- 🧹 **Layout reset** – remove pinned groups and custom ordering without unpinning applications
 - 🌍 **Multi-language support** – English, German, French, Italian and Dutch
 - ⚙️ **Language selection** – follow the system language or choose a language manually
 - 🇬🇧 **English fallback** – missing translations fall back to English
@@ -48,26 +49,32 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 
 ### ⚙️ Customization
 
-Open:
+Open **Configure Windows 11 Start Menu**. Settings are organized into dedicated pages:
 
-**Configure Windows 11 Start Menu → General**
+- **General** – language, menu icon and user information
+- **Menu** – application icon size, menu height/width, section headings and All Applications view style
+- **Pinned Apps** – enable groups or reset groups/custom ordering back to the alphabetical default
+- **Session Buttons** – button labels, position and individual Lock/Log Out/Restart/Shut Down visibility
+- **Keyboard Shortcuts**
+- **About**
 
-Available options include:
+Important options include:
 
-- **Language** – use the system language or choose a supported language manually
-- **Menu icon** – choose a different KDE/system icon for the launcher
-- **Icon size** – choose an application icon size from 24 px to 48 px (default: 36 px)
+- **Icon size** – choose an application icon size from 24 px to 64 px (default: 36 px)
 - **Menu height** – choose a launcher height from 600 px to 1200 px (default: 800 px)
 - **Menu width** – choose a launcher width from 800 px to 1600 px (default: 1000 px)
+- **Sections** – show the normal **Pinned** / **All** headings or hide them and use a simple divider
+- **All Applications view** – choose **Grid**, **List** or **Pinned style**
 - **Pinned apps → Enable groups** – enable or disable pinned application groups
+- **Pinned apps → Reset to default** – remove all groups and custom ordering while keeping every pinned application
 - **User information** – show or hide the user name and avatar
 - **Session buttons** – individually show or hide Lock Screen, Log Out, Restart and Shut Down
-- **Session button labels** – show the normal button labels or use compact icon-only buttons
+- **Session button labels** – show the normal button labels or use larger icon-only buttons
 - **Session button position** – place the session buttons on the **Left**, **Center** or **Right** side of the footer
 
 Choosing the **Left** session-button position automatically hides the user name and avatar because both elements would otherwise occupy the same footer area. The user-information option becomes available again after switching the buttons back to **Center** or **Right**.
 
-Disabling pinned groups does **not** delete existing group assignments. Re-enabling the option restores them.
+Disabling pinned groups does **not** delete existing group assignments. Re-enabling the option restores them. Use **Reset to default** if you intentionally want to remove all groups and return to alphabetical pinned ordering.
 
 Wider menu widths automatically provide additional pinned-app columns while keeping the familiar minimum of 8 columns.
 
@@ -96,6 +103,7 @@ Pinned ordering and group behavior:
 - the popup displays up to **4 columns × 4 rows** without scrolling and adapts its width for smaller groups
 - right-click a group to rename or dissolve it
 - **removing an application from a group is intentionally done only via right-click → Remove from group; dragging applications out of groups is not supported**
+- when a custom pinned order is active, a removed group application is placed directly after its former group; if it was the last app, it takes over the group’s previous position
 
 Application entries in **Pinned**, **All Applications** and **application search results** expose selected native KDE actions in their context menu:
 
