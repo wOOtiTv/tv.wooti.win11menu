@@ -17,10 +17,16 @@ Item {
     property int cellHeight: 88
     readonly property int iconSize: Math.max(
         24,
-        Math.min(48, Plasmoid.configuration.iconSize || 36)
+        Math.min(64, Plasmoid.configuration.iconSize || 36)
+    )
+    readonly property int effectiveCellHeight: Math.max(
+        cellHeight,
+        iconSize + 48
     )
     readonly property int hoverPadding: 4
     readonly property int hoverWidth: iconSize + 80
+    readonly property bool showSectionTitles:
+        Plasmoid.configuration.showSectionTitles !== false
 
     readonly property int effectiveColumnCount: Math.max(
         columnCount,
@@ -77,7 +83,61 @@ Item {
 
             if (item && item !== currentEntry) {
                 item.reorderDropSide = 0
+                item.validDropHover = false
             }
+        }
+    }
+
+    function clearAllDropFeedback() {
+        pinnedSection.endDropHover = false
+        pinnedEndDropArea.validDropHover = false
+
+        for (var i = 0; i < pinnedEntriesRepeater.count; ++i) {
+            var item = pinnedEntriesRepeater.itemAt(i)
+
+            if (item) {
+                item.reorderDropSide = 0
+                item.validDropHover = false
+            }
+        }
+    }
+
+    function showInsertionFeedback(slotIndex) {
+        clearAllDropFeedback()
+
+        var count = pinnedSection.visualEntries
+            ? pinnedSection.visualEntries.length
+            : 0
+        var slot = Number(slotIndex)
+
+        if (slot < 0 || slot >= count) {
+            return
+        }
+
+        var rowStart = slot % pinnedSection.effectiveColumnCount === 0
+        var markerIndex = rowStart ? slot : slot - 1
+        var markerEntry = pinnedEntriesRepeater.itemAt(markerIndex)
+
+        if (markerEntry) {
+            markerEntry.reorderDropSide = rowStart ? -1 : 1
+        }
+    }
+
+    function removeDraggedAppFromSourceGroup(source) {
+        if (!source
+                || !pinnedSection.groupController
+                || !pinnedSection.groupController.removeFavoriteFromGroup) {
+            return
+        }
+
+        var sourceId = String(source.favoriteId || "")
+        var sourceGroupId = String(source.sourceGroupId || "")
+
+        if (sourceId && sourceGroupId) {
+            pinnedSection.groupController.removeFavoriteFromGroup(
+                sourceId,
+                sourceGroupId
+            )
         }
     }
 
@@ -498,8 +558,15 @@ Item {
         return apps.indexOf(appId) < 0 && apps.length < maxApps
     }
 
-    onEntriesModelChanged: rebuildVisualEntries()
-    onGroupsEnabledChanged: rebuildVisualEntries()
+    onEntriesModelChanged: {
+        clearAllDropFeedback()
+        rebuildVisualEntries()
+    }
+
+    onGroupsEnabledChanged: {
+        clearAllDropFeedback()
+        rebuildVisualEntries()
+    }
 
     height: contentBottom
     clip: true
@@ -553,13 +620,14 @@ Item {
         font.bold: true
 
         visible: pinnedSection.searchText.length === 0
+            && pinnedSection.showSectionTitles
     }
 
     Grid {
         id: pinnedApps
 
         x: 32
-        y: 40
+        y: pinnedSection.showSectionTitles ? 40 : 8
 
         columns: pinnedSection.effectiveColumnCount
         rowSpacing: 0
@@ -607,44 +675,7 @@ Item {
                         return ""
                     }
 
-                    var localX = drag.x
-
-                    if (isNaN(localX)) {
-                        localX = pinnedEntry.width / 2
-                    }
-
-                    var isRowStart = index % pinnedSection.effectiveColumnCount === 0
-
-                    if (!pinnedSection.groupsEnabled) {
-                        if (localX < pinnedEntry.width / 2) {
-                            return isRowStart ? "before" : ""
-                        }
-
-                        return "after"
-                    }
-
-                    var edgeWidth = pinnedEntry.width * 0.25
-
-                    if (localX < edgeWidth) {
-                        return isRowStart ? "before" : ""
-                    }
-
-                    if (localX > pinnedEntry.width - edgeWidth) {
-                        var entryCount = pinnedSection.visualEntries
-                            ? pinnedSection.visualEntries.length
-                            : 0
-                        var hasTrailingEndZone = entryCount > 0
-                            && entryCount % pinnedSection.effectiveColumnCount > 0
-                        var isLastEntry = index === entryCount - 1
-
-                        if (hasTrailingEndZone && isLastEntry) {
-                            return ""
-                        }
-
-                        return "after"
-                    }
-
-                    if (sourceIsGroup) {
+                    if (!pinnedSection.groupsEnabled || sourceIsGroup) {
                         return ""
                     }
 
@@ -664,9 +695,7 @@ Item {
                     pinnedSection.endDropHover = false
                     pinnedSection.clearOtherReorderFeedback(pinnedEntry)
                     pinnedEntry.validDropHover = mode === "group"
-                    pinnedEntry.reorderDropSide = mode === "before"
-                        ? -1
-                        : (mode === "after" ? 1 : 0)
+                    pinnedEntry.reorderDropSide = 0
 
                     if (drag) {
                         var source = drag.source
@@ -684,7 +713,7 @@ Item {
                     pinnedEntry.reorderDropSide = 0
                 }
 
-                height: pinnedSection.cellHeight
+                height: pinnedSection.effectiveCellHeight
                 width: pinnedSection.effectiveCellWidth
                 z: pinnedEntry.dragActive ? 2000 : 0
 
@@ -792,17 +821,6 @@ Item {
                         var dropMode = pinnedEntry.calculateDropMode(drop)
 
                         pinnedEntry.clearDropFeedback()
-
-                        if ((dropMode === "before" || dropMode === "after")
-                                && sourceKey
-                                && pinnedSection.movePinnedEntry(
-                                    sourceKey,
-                                    pinnedEntry.entryKey,
-                                    dropMode === "after"
-                                )) {
-                            drop.acceptProposedAction()
-                            return
-                        }
 
                         if (dropMode !== "group") {
                             drop.accepted = false
@@ -1220,8 +1238,7 @@ Item {
                             pinnedEntry.dragActive = false
                             pinnedDragProxy.x = 0
                             pinnedDragProxy.y = 0
-                            pinnedSection.endDropHover = false
-                            pinnedSection.clearOtherReorderFeedback(null)
+                            pinnedSection.clearAllDropFeedback()
 
                             Qt.callLater(function() {
                                 pinnedEntry.dragWasActive = false
@@ -1286,6 +1303,108 @@ Item {
         }
     }
 
+    // Explicit insertion slots sit directly on the boundaries between entries.
+    // They make reordering deterministic and avoid having to hit a narrow
+    // quarter of one neighboring app.
+    Repeater {
+        id: insertionDropRepeater
+        model: pinnedSection.visualEntries
+            ? pinnedSection.visualEntries.length
+            : 0
+
+        delegate: DropArea {
+            id: insertionDropArea
+
+            readonly property int slotIndex: index
+            readonly property int slotColumn:
+                slotIndex % pinnedSection.effectiveColumnCount
+            readonly property int slotRow:
+                Math.floor(slotIndex / pinnedSection.effectiveColumnCount)
+
+            width: Math.min(44, pinnedSection.effectiveCellWidth * 0.4)
+            height: pinnedSection.effectiveCellHeight
+            x: pinnedApps.x
+                + slotColumn * pinnedSection.effectiveCellWidth
+                - width / 2
+            y: pinnedApps.y
+                + slotRow * pinnedSection.effectiveCellHeight
+            z: 2500
+
+            visible: pinnedSection.searchText.length === 0
+            enabled: visible
+            keys: ["wooti-pinned-app"]
+
+            onEntered: function(drag) {
+                var source = drag.source
+                var sourceKey = source
+                    ? String(source.entryKey || "")
+                    : ""
+
+                if (!sourceKey) {
+                    drag.accepted = false
+                    return
+                }
+
+                pinnedSection.showInsertionFeedback(slotIndex)
+                drag.accepted = true
+            }
+
+            onPositionChanged: function(drag) {
+                var source = drag.source
+                var sourceKey = source
+                    ? String(source.entryKey || "")
+                    : ""
+
+                if (!sourceKey) {
+                    drag.accepted = false
+                    return
+                }
+
+                pinnedSection.showInsertionFeedback(slotIndex)
+                drag.accepted = true
+            }
+
+            onExited: {
+                pinnedSection.clearAllDropFeedback()
+            }
+
+            onDropped: function(drop) {
+                var source = drop.source
+                var sourceKey = source
+                    ? String(source.entryKey || "")
+                    : ""
+                var targetEntry = pinnedSection.visualEntries
+                    && slotIndex < pinnedSection.visualEntries.length
+                        ? pinnedSection.visualEntries[slotIndex]
+                        : null
+                var targetKey = pinnedSection.entryOrderKey(targetEntry)
+
+                pinnedSection.clearAllDropFeedback()
+
+                if (!sourceKey || !targetKey) {
+                    drop.accepted = false
+                    return
+                }
+
+                var moved = sourceKey === targetKey
+                    ? true
+                    : pinnedSection.movePinnedEntry(
+                        sourceKey,
+                        targetKey,
+                        false
+                    )
+
+                if (!moved) {
+                    drop.accepted = false
+                    return
+                }
+
+                pinnedSection.removeDraggedAppFromSourceGroup(source)
+                drop.acceptProposedAction()
+            }
+        }
+    }
+
     DropArea {
         id: pinnedEndDropArea
 
@@ -1299,10 +1418,10 @@ Item {
             + remainder * pinnedSection.effectiveCellWidth
         y: pinnedApps.y
             + Math.floor(entryCount / pinnedSection.effectiveColumnCount)
-                * pinnedSection.cellHeight
+                * pinnedSection.effectiveCellHeight
         width: (pinnedSection.effectiveColumnCount - remainder)
             * pinnedSection.effectiveCellWidth
-        height: pinnedSection.cellHeight
+        height: pinnedSection.effectiveCellHeight
 
         visible: pinnedSection.searchText.length === 0
             && entryCount > 0
@@ -1334,6 +1453,7 @@ Item {
 
             if (sourceKey
                     && pinnedSection.movePinnedEntryToEnd(sourceKey)) {
+                pinnedSection.removeDraggedAppFromSourceGroup(source)
                 drop.acceptProposedAction()
                 return
             }

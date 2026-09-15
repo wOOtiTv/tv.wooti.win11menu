@@ -100,11 +100,7 @@ msgstr "Beenden"
 msgid "Menu icon:"
 msgstr "Menüsymbol:"
 
-#: contents/ui/ConfigIcon.qml
-msgid "Choose..."
-msgstr "Auswählen..."
-
-#: contents/ui/ConfigIcon.qml
+#: contents/ui/ConfigIcon.qml contents/ui/ConfigPinnedApps.qml
 msgid "Reset to default"
 msgstr "Auf Standard zurücksetzen"
 
@@ -200,11 +196,11 @@ msgstr "Gruppe umbenennen"
 msgid "Remove from group"
 msgstr "Aus Gruppe entfernen"
 
-#: contents/ui/ConfigGeneral.qml
+#: contents/ui/ConfigGeneral.qml contents/ui/ConfigPinnedApps.qml
 msgid "Pinned apps:"
 msgstr "Angeheftete Apps:"
 
-#: contents/ui/ConfigGeneral.qml
+#: contents/ui/ConfigGeneral.qml contents/ui/ConfigPinnedApps.qml
 msgid "Enable groups"
 msgstr "Gruppen aktivieren"
 
@@ -231,3 +227,15 @@ msgstr "Name und Avatar anzeigen"
 #: contents/ui/AllAppsView.qml contents/ui/PinnedSection.qml contents/ui/SearchResultsView.qml
 msgid "Uninstall or Manage Add-Ons…"
 msgstr "Deinstallieren oder Add-ons verwalten…"
+
+#: contents/ui/ConfigPinnedApps.qml
+msgid "Removes all groups and restores the default alphabetical order. Pinned apps are kept."
+msgstr "Entfernt alle Gruppen und stellt die alphabetische Standardsortierung wieder her. Angeheftete Apps bleiben erhalten."
+
+#: contents/ui/ConfigPinnedApps.qml
+msgid "Reset pinned apps?"
+msgstr "Angeheftete Apps zurücksetzen?"
+
+#: contents/ui/ConfigPinnedApps.qml
+msgid "All groups and the custom pinned order will be removed. Your pinned apps themselves will stay pinned."
+msgstr "Alle Gruppen und die benutzerdefinierte Reihenfolge werden entfernt. Die angehefteten Apps selbst bleiben angeheftet."

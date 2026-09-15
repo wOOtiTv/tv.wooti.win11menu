@@ -8,17 +8,8 @@ Kirigami.FormLayout {
 
     property string cfg_language: "system"
     property alias cfg_icon: menuIcon.value
-    property alias cfg_iconSize: iconSizeSpin.value
-    property alias cfg_menuHeight: menuHeightSpin.value
-    property alias cfg_menuWidth: menuWidthSpin.value
     property bool cfg_showUserInfo: true
-    property bool cfg_showSessionButtonLabels: true
     property string cfg_sessionButtonAlignment: "right"
-    property bool cfg_showLockButton: true
-    property bool cfg_showLogoutButton: true
-    property bool cfg_showRestartButton: true
-    property bool cfg_showShutdownButton: true
-    property bool cfg_enablePinnedGroups: true
 
     function translatedText(sourceText) {
         return Translations.translate(
@@ -36,20 +27,6 @@ Kirigami.FormLayout {
         const index = languageCombo.indexOfValue(cfg_language)
         if (index >= 0 && languageCombo.currentIndex !== index) {
             languageCombo.currentIndex = index
-        }
-    }
-
-    onCfg_sessionButtonAlignmentChanged: {
-        const index = sessionButtonPositionCombo.indexOfValue(
-            cfg_sessionButtonAlignment
-        )
-
-        if (index >= 0 && sessionButtonPositionCombo.currentIndex !== index) {
-            sessionButtonPositionCombo.currentIndex = index
-        }
-
-        if (cfg_sessionButtonAlignment === "left" && cfg_showUserInfo) {
-            cfg_showUserInfo = false
         }
     }
 
@@ -94,128 +71,11 @@ Kirigami.FormLayout {
         implicitHeight: Kirigami.Units.smallSpacing * 2
     }
 
-    Controls.SpinBox {
-        id: iconSizeSpin
-
-        Kirigami.FormData.label: i18n("Icon size:")
-        from: 24
-        to: 48
-        stepSize: 4
-        editable: true
-    }
-
-    Controls.Label {
-        text: i18n("Min. 24 px · Max. 48 px · Default: 36 px")
-        opacity: 0.7
-    }
-
-    Item {
-        implicitHeight: Kirigami.Units.smallSpacing * 2
-    }
-
-    Controls.SpinBox {
-        id: menuHeightSpin
-
-        Kirigami.FormData.label: i18n("Menu height:")
-        from: 600
-        to: 1200
-        stepSize: 16
-        editable: true
-    }
-
-    Controls.Label {
-        text: i18n("Min. 600 px · Max. 1200 px · Default: 800 px")
-        opacity: 0.7
-    }
-
-    Item {
-        implicitHeight: Kirigami.Units.smallSpacing * 2
-    }
-
-    Controls.SpinBox {
-        id: menuWidthSpin
-
-        Kirigami.FormData.label: i18n("Menu width:")
-        from: 800
-        to: 1600
-        stepSize: 16
-        editable: true
-    }
-
-    Controls.Label {
-        text: i18n("Min. 800 px · Max. 1600 px · Default: 1000 px")
-        opacity: 0.7
-    }
-
-    Item {
-        implicitHeight: Kirigami.Units.smallSpacing * 2
-    }
-
     Controls.CheckBox {
         Kirigami.FormData.label: page.translatedText("User information:")
         text: page.translatedText("Show name and avatar")
         checked: page.cfg_showUserInfo
         enabled: page.cfg_sessionButtonAlignment !== "left"
         onToggled: page.cfg_showUserInfo = checked
-    }
-
-    Controls.CheckBox {
-        Kirigami.FormData.label: i18n("Pinned apps:")
-        text: i18n("Enable groups")
-        checked: page.cfg_enablePinnedGroups
-        onToggled: page.cfg_enablePinnedGroups = checked
-    }
-
-    Controls.CheckBox {
-        Kirigami.FormData.label: page.translatedText("Session buttons:")
-        text: page.translatedText("Show button labels")
-        checked: page.cfg_showSessionButtonLabels
-        onToggled: page.cfg_showSessionButtonLabels = checked
-    }
-
-    Controls.ComboBox {
-        id: sessionButtonPositionCombo
-
-        Kirigami.FormData.label: page.translatedText("Button position:")
-
-        model: [
-            { text: page.translatedText("Left"), value: "left" },
-            { text: page.translatedText("Center"), value: "center" },
-            { text: page.translatedText("Right"), value: "right" }
-        ]
-
-        textRole: "text"
-        valueRole: "value"
-
-        Component.onCompleted: {
-            const index = indexOfValue(page.cfg_sessionButtonAlignment)
-            currentIndex = index >= 0 ? index : 2
-        }
-
-        onActivated: page.cfg_sessionButtonAlignment = currentValue
-    }
-
-    Controls.CheckBox {
-        text: page.translatedText("Show Lock Screen")
-        checked: page.cfg_showLockButton
-        onToggled: page.cfg_showLockButton = checked
-    }
-
-    Controls.CheckBox {
-        text: page.translatedText("Show Log Out")
-        checked: page.cfg_showLogoutButton
-        onToggled: page.cfg_showLogoutButton = checked
-    }
-
-    Controls.CheckBox {
-        text: page.translatedText("Show Restart")
-        checked: page.cfg_showRestartButton
-        onToggled: page.cfg_showRestartButton = checked
-    }
-
-    Controls.CheckBox {
-        text: page.translatedText("Show Shut Down")
-        checked: page.cfg_showShutdownButton
-        onToggled: page.cfg_showShutdownButton = checked
     }
 }

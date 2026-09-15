@@ -101,7 +101,7 @@ msgstr ""
 msgid "Choose..."
 msgstr ""
 
-#: contents/ui/ConfigIcon.qml
+#: contents/ui/ConfigIcon.qml contents/ui/ConfigPinnedApps.qml
 msgid "Reset to default"
 msgstr ""
 
@@ -197,11 +197,11 @@ msgstr ""
 msgid "Remove from group"
 msgstr ""
 
-#: contents/ui/ConfigGeneral.qml
+#: contents/ui/ConfigGeneral.qml contents/ui/ConfigPinnedApps.qml
 msgid "Pinned apps:"
 msgstr ""
 
-#: contents/ui/ConfigGeneral.qml
+#: contents/ui/ConfigGeneral.qml contents/ui/ConfigPinnedApps.qml
 msgid "Enable groups"
 msgstr ""
 
@@ -227,4 +227,16 @@ msgstr ""
 
 #: contents/ui/AllAppsView.qml contents/ui/PinnedSection.qml contents/ui/SearchResultsView.qml
 msgid "Uninstall or Manage Add-Ons…"
+msgstr ""
+
+#: contents/ui/ConfigPinnedApps.qml
+msgid "Removes all groups and restores the default alphabetical order. Pinned apps are kept."
+msgstr ""
+
+#: contents/ui/ConfigPinnedApps.qml
+msgid "Reset pinned apps?"
+msgstr ""
+
+#: contents/ui/ConfigPinnedApps.qml
+msgid "All groups and the custom pinned order will be removed. Your pinned apps themselves will stay pinned."
 msgstr ""

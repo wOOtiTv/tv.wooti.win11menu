@@ -100,11 +100,7 @@ msgstr "Afsluiten"
 msgid "Menu icon:"
 msgstr "Menupictogram:"
 
-#: contents/ui/ConfigIcon.qml
-msgid "Choose..."
-msgstr "Kiezen..."
-
-#: contents/ui/ConfigIcon.qml
+#: contents/ui/ConfigIcon.qml contents/ui/ConfigPinnedApps.qml
 msgid "Reset to default"
 msgstr "Standaard herstellen"
 
@@ -200,11 +196,11 @@ msgstr "Groep hernoemen"
 msgid "Remove from group"
 msgstr "Uit groep verwijderen"
 
-#: contents/ui/ConfigGeneral.qml
+#: contents/ui/ConfigGeneral.qml contents/ui/ConfigPinnedApps.qml
 msgid "Pinned apps:"
 msgstr "Vastgemaakte apps:"
 
-#: contents/ui/ConfigGeneral.qml
+#: contents/ui/ConfigGeneral.qml contents/ui/ConfigPinnedApps.qml
 msgid "Enable groups"
 msgstr "Groepen inschakelen"
 
@@ -231,3 +227,15 @@ msgstr "Naam en avatar tonen"
 #: contents/ui/AllAppsView.qml contents/ui/PinnedSection.qml contents/ui/SearchResultsView.qml
 msgid "Uninstall or Manage Add-Ons…"
 msgstr "Verwijderen of add-ons beheren…"
+
+#: contents/ui/ConfigPinnedApps.qml
+msgid "Removes all groups and restores the default alphabetical order. Pinned apps are kept."
+msgstr "Verwijdert alle groepen en herstelt de standaard alfabetische volgorde. Vastgemaakte apps blijven behouden."
+
+#: contents/ui/ConfigPinnedApps.qml
+msgid "Reset pinned apps?"
+msgstr "Vastgemaakte apps herstellen?"
+
+#: contents/ui/ConfigPinnedApps.qml
+msgid "All groups and the custom pinned order will be removed. Your pinned apps themselves will stay pinned."
+msgstr "Alle groepen en de aangepaste volgorde van vastgemaakte apps worden verwijderd. De vastgemaakte apps zelf blijven vastgemaakt."

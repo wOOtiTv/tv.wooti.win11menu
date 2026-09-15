@@ -19,8 +19,9 @@ Item {
     property int columnCount: 8
     readonly property int iconSize: Math.max(
         24,
-        Math.min(48, Plasmoid.configuration.iconSize || 36)
+        Math.min(64, Plasmoid.configuration.iconSize || 36)
     )
+    readonly property int resultCellHeight: Math.max(80, iconSize + 44)
     readonly property int hoverInset: Math.max(2, 38 - iconSize)
 
     property string searchResultsText: ""
@@ -158,7 +159,7 @@ Item {
 
             clip: true
 
-            cellHeight: 80
+            cellHeight: searchResultsView.resultCellHeight
             cellWidth: width / searchResultsView.columnCount
 
             visible: searchResultsView.searchText.length > 0
@@ -442,7 +443,7 @@ Item {
 
             clip: true
 
-            cellHeight: 80
+            cellHeight: searchResultsView.resultCellHeight
             cellWidth: width / searchResultsView.columnCount
 
             visible: searchResultsView.searchText.length > 0
@@ -551,7 +552,7 @@ Item {
 
             clip: true
 
-            cellHeight: 80
+            cellHeight: searchResultsView.resultCellHeight
             cellWidth: width / searchResultsView.columnCount
 
             visible: searchResultsView.searchText.length > 0

@@ -10,6 +10,10 @@
       <default>false</default>
     </entry>
 
+    <entry name="allAppsViewMode" type="String">
+      <default>legacy</default>
+    </entry>
+
     <entry name="language" type="String">
       <default>system</default>
     </entry>
@@ -28,6 +32,10 @@
 
     <entry name="menuWidth" type="Int">
       <default>1000</default>
+    </entry>
+
+    <entry name="showSectionTitles" type="Bool">
+      <default>true</default>
     </entry>
 
     <entry name="showUserInfo" type="Bool">
