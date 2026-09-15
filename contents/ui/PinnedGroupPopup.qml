@@ -323,9 +323,18 @@ Controls.Popup {
 
                     delegate: Item {
                         id: groupAppItem
+
                         property var appData: modelData
                         property bool dragActive: false
                         property bool dragWasActive: false
+                        property string favoriteId: appData
+                            ? String(appData.favoriteId || "")
+                            : ""
+                        property string entryKey: favoriteId
+                            ? "app:" + favoriteId
+                            : ""
+                        property bool isGroup: false
+                        property string sourceGroupId: String(groupPopup.groupId || "")
 
                         width: Math.floor(
                             (groupAppsGrid.width
@@ -409,6 +418,14 @@ Controls.Popup {
                             height: groupAppItem.height
                             opacity: groupAppItem.dragActive ? 0.94 : 0
                             z: 2000
+
+                            Drag.active: groupAppItem.dragActive
+                            Drag.source: groupAppItem
+                            Drag.keys: ["wooti-pinned-app"]
+                            Drag.supportedActions: Qt.MoveAction
+                            Drag.proposedAction: Qt.MoveAction
+                            Drag.hotSpot.x: width / 2
+                            Drag.hotSpot.y: height / 2
 
                             Rectangle {
                                 width: groupPopup.iconSize + 18
@@ -534,9 +551,7 @@ Controls.Popup {
                                     return
                                 }
 
-                                var favoriteId = groupAppItem.appData
-                                    ? String(groupAppItem.appData.favoriteId || "")
-                                    : ""
+                                var favoriteId = groupAppItem.favoriteId
                                 var center = groupPopup.popupParent
                                     ? groupAppDragProxy.mapToItem(
                                         groupPopup.popupParent,
@@ -551,13 +566,29 @@ Controls.Popup {
                                         || center.y < groupPopup.y
                                         || center.y > groupPopup.y + groupPopup.height)
                                 )
+                                var dropAction = groupAppDragProxy.Drag.drop()
 
                                 groupAppItem.dragActive = false
                                 groupAppDragProxy.x = 0
                                 groupAppDragProxy.y = 0
 
+                                if (dropAction !== Qt.IgnoreAction && favoriteId) {
+                                    groupPopup.removeAppFromGroup(favoriteId)
+                                    groupPopup.close()
+
+                                    Qt.callLater(function() {
+                                        groupAppItem.dragWasActive = false
+                                    })
+                                    return
+                                }
+
                                 if (outsidePopup && favoriteId) {
                                     groupPopup.removeAppFromGroup(favoriteId)
+                                    groupPopup.close()
+
+                                    Qt.callLater(function() {
+                                        groupAppItem.dragWasActive = false
+                                    })
                                     return
                                 }
 
