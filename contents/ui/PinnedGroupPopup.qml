@@ -147,6 +147,26 @@ Controls.Popup {
         }
     }
 
+    function removeAppFromGroup(favoriteId) {
+        var id = String(favoriteId || "")
+
+        if (!groupController || !id) {
+            return
+        }
+
+        var wasLastApp = appEntries.length <= 1
+
+        if (wasLastApp) {
+            close()
+        }
+
+        groupController.removeFavoriteFromGroup(id, groupId)
+
+        if (!wasLastApp) {
+            rebuildApps()
+        }
+    }
+
     function openFor(anchorItem) {
         if (!popupParent || !anchorItem) {
             return
@@ -288,7 +308,7 @@ Controls.Popup {
             height: groupPopup.appsAreaHeight
             contentWidth: width
             contentHeight: groupAppsGrid.implicitHeight
-            clip: true
+            clip: false
             interactive: false
 
             Grid {
@@ -304,6 +324,8 @@ Controls.Popup {
                     delegate: Item {
                         id: groupAppItem
                         property var appData: modelData
+                        property bool dragActive: false
+                        property bool dragWasActive: false
 
                         width: Math.floor(
                             (groupAppsGrid.width
@@ -333,7 +355,10 @@ Controls.Popup {
 
                             radius: 12
                             color: "#30343d"
-                            opacity: groupAppMouse.containsMouse ? 1 : 0
+                            opacity: groupAppMouse.containsMouse
+                                || groupAppItem.dragActive
+                                    ? 1
+                                    : 0
 
                             Behavior on opacity {
                                 NumberAnimation { duration: 120 }
@@ -351,6 +376,7 @@ Controls.Popup {
                             source: groupAppItem.appData
                                 ? groupAppItem.appData.decoration
                                 : ""
+                            opacity: groupAppItem.dragActive ? 0.25 : 1
                         }
 
                         PlasmaComponents.Label {
@@ -371,6 +397,37 @@ Controls.Popup {
                             maximumLineCount: 1
                             elide: Text.ElideRight
                             font.pixelSize: 13
+                            opacity: groupAppItem.dragActive ? 0.25 : 1
+                        }
+
+                        Item {
+                            id: groupAppDragProxy
+
+                            x: 0
+                            y: 0
+                            width: groupAppItem.width
+                            height: groupAppItem.height
+                            opacity: groupAppItem.dragActive ? 0.94 : 0
+                            z: 2000
+
+                            Rectangle {
+                                width: groupPopup.iconSize + 18
+                                height: width
+                                anchors.centerIn: parent
+                                radius: 12
+                                color: "#3a3f49"
+                                border.width: 1
+                                border.color: Kirigami.Theme.highlightColor
+
+                                Kirigami.Icon {
+                                    width: groupPopup.iconSize
+                                    height: groupPopup.iconSize
+                                    anchors.centerIn: parent
+                                    source: groupAppItem.appData
+                                        ? groupAppItem.appData.decoration
+                                        : ""
+                                }
+                            }
                         }
 
                         Controls.Menu {
@@ -449,27 +506,64 @@ Controls.Popup {
                                 icon.name: "list-remove"
 
                                 onTriggered: {
-                                    if (!groupPopup.groupController) {
-                                        return
-                                    }
-
-                                    var wasLastApp = groupPopup.appEntries.length <= 1
-
-                                    if (wasLastApp) {
-                                        groupAppContextMenu.close()
-                                        groupPopup.close()
-                                    }
-
-                                    groupPopup.groupController.removeFavoriteFromGroup(
-                                        groupAppItem.appData.favoriteId,
-                                        groupPopup.groupId
+                                    groupAppContextMenu.close()
+                                    groupPopup.removeAppFromGroup(
+                                        groupAppItem.appData.favoriteId
                                     )
-
-                                    if (!wasLastApp) {
-                                        groupAppContextMenu.close()
-                                        groupPopup.rebuildApps()
-                                    }
                                 }
+                            }
+                        }
+
+                        DragHandler {
+                            id: groupAppDragHandler
+
+                            target: groupAppDragProxy
+                            acceptedButtons: Qt.LeftButton
+
+                            onActiveChanged: {
+                                if (active) {
+                                    groupAppDragProxy.x = 0
+                                    groupAppDragProxy.y = 0
+                                    groupAppItem.dragActive = true
+                                    groupAppItem.dragWasActive = true
+                                    groupAppContextMenu.close()
+                                    return
+                                }
+
+                                if (!groupAppItem.dragActive) {
+                                    return
+                                }
+
+                                var favoriteId = groupAppItem.appData
+                                    ? String(groupAppItem.appData.favoriteId || "")
+                                    : ""
+                                var center = groupPopup.popupParent
+                                    ? groupAppDragProxy.mapToItem(
+                                        groupPopup.popupParent,
+                                        groupAppDragProxy.width / 2,
+                                        groupAppDragProxy.height / 2
+                                    )
+                                    : Qt.point(0, 0)
+                                var outsidePopup = Boolean(
+                                    groupPopup.popupParent
+                                    && (center.x < groupPopup.x
+                                        || center.x > groupPopup.x + groupPopup.width
+                                        || center.y < groupPopup.y
+                                        || center.y > groupPopup.y + groupPopup.height)
+                                )
+
+                                groupAppItem.dragActive = false
+                                groupAppDragProxy.x = 0
+                                groupAppDragProxy.y = 0
+
+                                if (outsidePopup && favoriteId) {
+                                    groupPopup.removeAppFromGroup(favoriteId)
+                                    return
+                                }
+
+                                Qt.callLater(function() {
+                                    groupAppItem.dragWasActive = false
+                                })
                             }
                         }
 
@@ -487,6 +581,10 @@ Controls.Popup {
                                         mouse.x,
                                         mouse.y
                                     )
+                                    return
+                                }
+
+                                if (groupAppItem.dragWasActive) {
                                     return
                                 }
 
