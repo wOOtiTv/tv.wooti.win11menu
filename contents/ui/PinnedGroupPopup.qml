@@ -28,7 +28,7 @@ Controls.Popup {
 
     readonly property int iconSize: Math.max(
         24,
-        Math.min(48, Plasmoid.configuration.iconSize || 36)
+        Math.min(64, Plasmoid.configuration.iconSize || 36)
     )
     readonly property int hoverPadding: 4
     readonly property int hoverWidth: iconSize + 80
@@ -37,7 +37,7 @@ Controls.Popup {
     readonly property int columnSpacing: 4
     readonly property int rowSpacing: 4
     readonly property int cellWidth: 142
-    readonly property int cellHeight: 86
+    readonly property int cellHeight: Math.max(86, iconSize + 46)
     readonly property int displayAppCount: Math.min(
         maxGroupApps,
         appEntries.length
