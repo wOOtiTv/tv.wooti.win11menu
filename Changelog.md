@@ -1,6 +1,30 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.2] – Layout, Views & Settings Cleanup
+
+### Added
+- increased the configurable application icon size range to **24–64 px** while keeping **36 px** as the default
+- added a third **Pinned style** option for All Applications so the full app list can use the same visual presentation as pinned apps
+- added an option to hide the **Pinned** and **All** section headings and use a simple divider instead
+- added a **Reset to default** action for pinned apps that removes all groups and custom ordering while keeping the pinned applications themselves
+- split the previous General settings page into dedicated **General**, **Menu**, **Pinned Apps** and **Session Buttons** pages for a cleaner configuration layout
+
+### Changed
+- enlarged session-button icons to **24 px** when labels are shown and **46 px** in icon-only mode
+- application/grid cell sizing now expands with larger icon sizes so labels and hover areas remain balanced up to 64 px
+- All Applications can now switch between **Grid**, **List** and **Pinned style** views
+- removing an application from a group while a custom pinned order is active now places it directly after that group; if it was the last application, it takes over the former group position
+- runtime translations were extended for the new view, settings and reset options in English, German, French, Italian and Dutch
+- updated package metadata for version 1.3.2
+
+### Fixed
+- improved pinned reorder insertion targets so positions between entries remain directly reachable, including in partially filled final rows
+- restored clear group behavior by keeping application removal inside groups as an explicit **right-click → Remove from group** action only
+
+### Credits
+- icon sizing, section visibility, All Applications layout and session-button sizing were inspired by feedback in issue #22
+
 ## [1.3.1] – Pinned Ordering & Footer Customization
 
 ### Added
