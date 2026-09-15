@@ -17,10 +17,16 @@ Item {
     property int cellHeight: 88
     readonly property int iconSize: Math.max(
         24,
-        Math.min(48, Plasmoid.configuration.iconSize || 36)
+        Math.min(64, Plasmoid.configuration.iconSize || 36)
+    )
+    readonly property int effectiveCellHeight: Math.max(
+        cellHeight,
+        iconSize + 48
     )
     readonly property int hoverPadding: 4
     readonly property int hoverWidth: iconSize + 80
+    readonly property bool showSectionTitles:
+        Plasmoid.configuration.showSectionTitles !== false
 
     readonly property int effectiveColumnCount: Math.max(
         columnCount,
@@ -553,13 +559,14 @@ Item {
         font.bold: true
 
         visible: pinnedSection.searchText.length === 0
+            && pinnedSection.showSectionTitles
     }
 
     Grid {
         id: pinnedApps
 
         x: 32
-        y: 40
+        y: pinnedSection.showSectionTitles ? 40 : 8
 
         columns: pinnedSection.effectiveColumnCount
         rowSpacing: 0
@@ -684,7 +691,7 @@ Item {
                     pinnedEntry.reorderDropSide = 0
                 }
 
-                height: pinnedSection.cellHeight
+                height: pinnedSection.effectiveCellHeight
                 width: pinnedSection.effectiveCellWidth
                 z: pinnedEntry.dragActive ? 2000 : 0
 
@@ -1299,10 +1306,10 @@ Item {
             + remainder * pinnedSection.effectiveCellWidth
         y: pinnedApps.y
             + Math.floor(entryCount / pinnedSection.effectiveColumnCount)
-                * pinnedSection.cellHeight
+                * pinnedSection.effectiveCellHeight
         width: (pinnedSection.effectiveColumnCount - remainder)
             * pinnedSection.effectiveCellWidth
-        height: pinnedSection.cellHeight
+        height: pinnedSection.effectiveCellHeight
 
         visible: pinnedSection.searchText.length === 0
             && entryCount > 0
