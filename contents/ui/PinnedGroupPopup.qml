@@ -147,6 +147,56 @@ Controls.Popup {
         }
     }
 
+    function positionRemovedAppNearGroup(favoriteId, wasLastApp) {
+        if (!Plasmoid.configuration.pinnedOrderCustomized) {
+            return
+        }
+
+        var id = String(favoriteId || "")
+        var currentGroupId = String(groupId || "")
+
+        if (!id || !currentGroupId) {
+            return
+        }
+
+        var order = []
+
+        try {
+            var parsed = JSON.parse(
+                String(Plasmoid.configuration.pinnedOrder || "[]")
+            )
+            order = Array.isArray(parsed) ? parsed : []
+        } catch (error) {
+            console.warn("🦊 Could not update pinned order after ungrouping:", error)
+            return
+        }
+
+        var appKey = "app:" + id
+        var groupKey = "group:" + currentGroupId
+
+        // The app normally has no own order key while it lives inside a group,
+        // but remove any stale copy before inserting it at the new position.
+        for (var i = order.length - 1; i >= 0; --i) {
+            if (String(order[i]) === appKey) {
+                order.splice(i, 1)
+            }
+        }
+
+        var groupIndex = order.indexOf(groupKey)
+
+        if (groupIndex < 0) {
+            order.push(appKey)
+        } else if (wasLastApp) {
+            // The group disappears, so the app takes over its exact position.
+            order.splice(groupIndex, 1, appKey)
+        } else {
+            // Keep the group and place the removed app immediately after it.
+            order.splice(groupIndex + 1, 0, appKey)
+        }
+
+        Plasmoid.configuration.pinnedOrder = JSON.stringify(order)
+    }
+
     function openFor(anchorItem) {
         if (!popupParent || !anchorItem) {
             return
@@ -453,7 +503,15 @@ Controls.Popup {
                                         return
                                     }
 
+                                    var favoriteId = String(
+                                        groupAppItem.appData.favoriteId || ""
+                                    )
                                     var wasLastApp = groupPopup.appEntries.length <= 1
+
+                                    groupPopup.positionRemovedAppNearGroup(
+                                        favoriteId,
+                                        wasLastApp
+                                    )
 
                                     if (wasLastApp) {
                                         groupAppContextMenu.close()
@@ -461,7 +519,7 @@ Controls.Popup {
                                     }
 
                                     groupPopup.groupController.removeFavoriteFromGroup(
-                                        groupAppItem.appData.favoriteId,
+                                        favoriteId,
                                         groupPopup.groupId
                                     )
 
