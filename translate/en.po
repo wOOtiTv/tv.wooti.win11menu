@@ -239,3 +239,11 @@ msgstr "Reset pinned apps?"
 #: contents/ui/ConfigPinnedApps.qml
 msgid "All groups and the custom pinned order will be removed. Your pinned apps themselves will stay pinned."
 msgstr "All groups and the custom pinned order will be removed. Your pinned apps themselves will stay pinned."
+
+#: contents/ui/ConfigMenu.qml
+msgid "App columns:"
+msgstr "App columns:"
+
+#: contents/ui/ConfigMenu.qml
+msgid "Automatic"
+msgstr "Automatic"
