@@ -32,6 +32,13 @@ Item {
     readonly property int hoverPadding: 4
     readonly property int hoverWidth: iconSize + 80
     readonly property int hoverInset: Math.max(2, 38 - iconSize)
+    readonly property int configuredColumnCount: {
+        var value = Number(Plasmoid.configuration.appColumns || 0)
+        return value >= 4 && value <= 12 ? Math.round(value) : 0
+    }
+    readonly property int effectiveColumnCount: configuredColumnCount > 0
+        ? configuredColumnCount
+        : columnCount
 
     property string allText: ""
     property string viewListText: ""
@@ -51,7 +58,7 @@ Item {
     signal viewToggleRequested()
 
     readonly property int allAppsColumnCount:
-        listView ? 1 : columnCount
+        listView ? 1 : effectiveColumnCount
 
     readonly property int allAppsCellHeight:
         listView
@@ -440,11 +447,11 @@ Item {
         y: allAppsView.contentStartY
         width: parent.width - 64
         height: pinnedStyleGrid.count > 0
-            ? Math.ceil(pinnedStyleGrid.count / allAppsView.columnCount)
+            ? Math.ceil(pinnedStyleGrid.count / allAppsView.effectiveColumnCount)
                 * pinnedStyleGrid.cellHeight
             : 0
 
-        cellWidth: width / allAppsView.columnCount
+        cellWidth: width / allAppsView.effectiveColumnCount
         cellHeight: allAppsView.effectiveGridCellHeight
 
         visible: allAppsView.pinnedStyleView
