@@ -239,3 +239,11 @@ msgstr "Vastgemaakte apps herstellen?"
 #: contents/ui/ConfigPinnedApps.qml
 msgid "All groups and the custom pinned order will be removed. Your pinned apps themselves will stay pinned."
 msgstr "Alle groepen en de aangepaste volgorde van vastgemaakte apps worden verwijderd. De vastgemaakte apps zelf blijven vastgemaakt."
+
+#: contents/ui/ConfigMenu.qml
+msgid "App columns:"
+msgstr "App-kolommen:"
+
+#: contents/ui/ConfigMenu.qml
+msgid "Automatic"
+msgstr "Automatisch"
