@@ -239,3 +239,11 @@ msgstr "Angeheftete Apps zurücksetzen?"
 #: contents/ui/ConfigPinnedApps.qml
 msgid "All groups and the custom pinned order will be removed. Your pinned apps themselves will stay pinned."
 msgstr "Alle Gruppen und die benutzerdefinierte Reihenfolge werden entfernt. Die angehefteten Apps selbst bleiben angeheftet."
+
+#: contents/ui/ConfigMenu.qml
+msgid "App columns:"
+msgstr "App-Spalten:"
+
+#: contents/ui/ConfigMenu.qml
+msgid "Automatic"
+msgstr "Automatisch"
