@@ -8,6 +8,7 @@ Kirigami.FormLayout {
 
     property string cfg_language: "system"
     property alias cfg_iconSize: iconSizeSpin.value
+    property int cfg_appColumns: 0
     property alias cfg_menuHeight: menuHeightSpin.value
     property alias cfg_menuWidth: menuWidthSpin.value
     property bool cfg_showSectionTitles: true
@@ -44,12 +45,20 @@ Kirigami.FormLayout {
         }
     }
 
+    function syncAppColumnsCombo() {
+        const value = Number(page.cfg_appColumns || 0)
+        const index = appColumnsCombo.indexOfValue(value)
+
+        appColumnsCombo.currentIndex = index >= 0 ? index : 0
+    }
+
     Item {
         implicitHeight: Kirigami.Units.gridUnit
     }
 
     onCfg_allAppsViewModeChanged: syncViewModeCombo()
     onCfg_allAppsListViewChanged: syncViewModeCombo()
+    onCfg_appColumnsChanged: syncAppColumnsCombo()
 
     Controls.SpinBox {
         id: iconSizeSpin
@@ -102,6 +111,36 @@ Kirigami.FormLayout {
     Controls.Label {
         text: i18n("Min. 800 px · Max. 1600 px · Default: 1000 px")
         opacity: 0.7
+    }
+
+    Item {
+        implicitHeight: Kirigami.Units.smallSpacing * 2
+    }
+
+    Controls.ComboBox {
+        id: appColumnsCombo
+
+        Kirigami.FormData.label: page.translatedText("App columns:")
+
+        model: [
+            { text: page.translatedText("Automatic"), value: 0 },
+            { text: "4", value: 4 },
+            { text: "5", value: 5 },
+            { text: "6", value: 6 },
+            { text: "7", value: 7 },
+            { text: "8", value: 8 },
+            { text: "9", value: 9 },
+            { text: "10", value: 10 },
+            { text: "11", value: 11 },
+            { text: "12", value: 12 }
+        ]
+
+        textRole: "text"
+        valueRole: "value"
+
+        Component.onCompleted: page.syncAppColumnsCombo()
+
+        onActivated: page.cfg_appColumns = Number(currentValue)
     }
 
     Item {
