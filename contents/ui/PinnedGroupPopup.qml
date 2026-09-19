@@ -741,9 +741,6 @@ Controls.Popup {
                                     groupAppItem.dragActive = true
                                     groupAppItem.dragWasActive = true
 
-                                    if (groupPopup.contextMenuController) {
-                                        groupPopup.contextMenuController.closeContextMenus()
-                                    }
                                 } else if (groupAppItem.dragActive) {
                                     groupDragProxy.Drag.drop()
                                     groupAppItem.dragActive = false
