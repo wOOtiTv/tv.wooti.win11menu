@@ -231,6 +231,17 @@ Controls.Popup {
             return
         }
 
+        var groupData = null
+
+        if (groupController.groupIndex && groupController.pinnedGroups) {
+            var currentGroupIndex = groupController.groupIndex(groupId)
+
+            if (currentGroupIndex >= 0
+                    && currentGroupIndex < groupController.pinnedGroups.length) {
+                groupData = groupController.pinnedGroups[currentGroupIndex]
+            }
+        }
+
         for (var i = 0; i < favoriteDataSource.count; ++i) {
             var favorite = favoriteDataSource.itemAt(i)
 
@@ -253,7 +264,45 @@ Controls.Popup {
             })
         }
 
-        if (launcherController) {
+        if (groupData && groupData.customOrder) {
+            var orderedEntries = []
+            var storedApps = Array.isArray(groupData.apps)
+                ? groupData.apps
+                : []
+
+            for (var appIndex = 0; appIndex < storedApps.length; ++appIndex) {
+                var storedId = String(storedApps[appIndex] || "")
+
+                for (var entryIndex = 0; entryIndex < entries.length; ++entryIndex) {
+                    if (String(entries[entryIndex].favoriteId) === storedId) {
+                        orderedEntries.push(entries[entryIndex])
+                        break
+                    }
+                }
+            }
+
+            // Keep any unexpected model entries visible instead of dropping them.
+            for (var fallbackIndex = 0; fallbackIndex < entries.length; ++fallbackIndex) {
+                var fallbackEntry = entries[fallbackIndex]
+                var alreadyAdded = false
+
+                for (var orderedIndex = 0;
+                        orderedIndex < orderedEntries.length;
+                        ++orderedIndex) {
+                    if (String(orderedEntries[orderedIndex].favoriteId)
+                            === String(fallbackEntry.favoriteId)) {
+                        alreadyAdded = true
+                        break
+                    }
+                }
+
+                if (!alreadyAdded) {
+                    orderedEntries.push(fallbackEntry)
+                }
+            }
+
+            entries = orderedEntries
+        } else if (launcherController) {
             entries.sort(function(leftEntry, rightEntry) {
                 return launcherController.comparePinnedEntries(
                     leftEntry,
@@ -263,6 +312,16 @@ Controls.Popup {
         }
 
         appEntries = entries
+    }
+
+    function clearAllDropFeedback() {
+        for (var i = 0; i < groupAppsRepeater.count; ++i) {
+            var item = groupAppsRepeater.itemAt(i)
+
+            if (item && item.clearDropFeedback) {
+                item.clearDropFeedback()
+            }
+        }
     }
 
     Item {
@@ -349,11 +408,46 @@ Controls.Popup {
                 columnSpacing: groupPopup.columnSpacing
 
                 Repeater {
+                    id: groupAppsRepeater
                     model: groupPopup.appEntries.slice(0, groupPopup.maxGroupApps)
 
                     delegate: Item {
                         id: groupAppItem
+
                         property var appData: modelData
+                        property string favoriteId: appData
+                            ? String(appData.favoriteId || "")
+                            : ""
+                        property bool dragActive: false
+                        property bool dragWasActive: false
+                        property bool validDropHover: false
+                        property bool dropAfter: false
+
+                        function updateDropFeedback(drag) {
+                            var source = drag ? drag.source : null
+                            var sourceId = source
+                                ? String(source.favoriteId || "")
+                                : ""
+
+                            validDropHover = Boolean(
+                                source
+                                && source !== groupAppItem
+                                && sourceId
+                                && groupAppItem.favoriteId
+                            )
+
+                            dropAfter = validDropHover
+                                && drag.x >= groupAppItem.width / 2
+
+                            if (drag) {
+                                drag.accepted = validDropHover
+                            }
+                        }
+
+                        function clearDropFeedback() {
+                            validDropHover = false
+                            dropAfter = false
+                        }
 
                         width: Math.floor(
                             (groupAppsGrid.width
@@ -362,6 +456,108 @@ Controls.Popup {
                                 / groupPopup.columnCount
                         )
                         height: groupPopup.cellHeight
+                        z: dragActive ? 2000 : 0
+
+                        Item {
+                            id: groupDragProxy
+
+                            x: 0
+                            y: 0
+                            width: groupAppItem.width
+                            height: groupAppItem.height
+                            opacity: groupAppItem.dragActive ? 0.92 : 0
+                            z: 1500
+
+                            Drag.active: groupAppItem.dragActive
+                            Drag.source: groupAppItem
+                            Drag.keys: ["wooti-group-app"]
+                            Drag.supportedActions: Qt.MoveAction
+                            Drag.proposedAction: Qt.MoveAction
+                            Drag.hotSpot.x: width / 2
+                            Drag.hotSpot.y: height / 2
+
+                            Rectangle {
+                                width: groupPopup.iconSize + 18
+                                height: width
+                                anchors.centerIn: parent
+                                radius: 12
+                                color: "#3a3f49"
+                                border.width: 1
+                                border.color: Kirigami.Theme.highlightColor
+
+                                Kirigami.Icon {
+                                    anchors.centerIn: parent
+                                    width: groupPopup.iconSize
+                                    height: groupPopup.iconSize
+                                    source: groupAppItem.appData
+                                        ? groupAppItem.appData.decoration
+                                        : ""
+                                }
+                            }
+                        }
+
+                        DropArea {
+                            id: groupAppDropArea
+
+                            anchors.fill: parent
+                            keys: ["wooti-group-app"]
+
+                            onEntered: function(drag) {
+                                groupAppItem.updateDropFeedback(drag)
+                            }
+
+                            onPositionChanged: function(drag) {
+                                groupAppItem.updateDropFeedback(drag)
+                            }
+
+                            onExited: {
+                                groupAppItem.clearDropFeedback()
+                            }
+
+                            onDropped: function(drop) {
+                                var source = drop.source
+                                var sourceId = source
+                                    ? String(source.favoriteId || "")
+                                    : ""
+                                var insertAfter = groupAppItem.dropAfter
+
+                                groupPopup.clearAllDropFeedback()
+
+                                if (!sourceId
+                                        || !groupAppItem.favoriteId
+                                        || sourceId === groupAppItem.favoriteId
+                                        || !groupPopup.groupController
+                                        || !groupPopup.groupController.moveFavoriteWithinGroup) {
+                                    drop.accepted = false
+                                    return
+                                }
+
+                                if (groupPopup.groupController.moveFavoriteWithinGroup(
+                                        sourceId,
+                                        groupPopup.groupId,
+                                        groupAppItem.favoriteId,
+                                        insertAfter
+                                    )) {
+                                    drop.acceptProposedAction()
+                                    return
+                                }
+
+                                drop.accepted = false
+                            }
+                        }
+
+                        Rectangle {
+                            visible: groupAppItem.validDropHover
+                            width: 3
+                            height: Math.max(20, parent.height - 12)
+                            y: 6
+                            x: groupAppItem.dropAfter
+                                ? parent.width - width / 2
+                                : -width / 2
+                            radius: width / 2
+                            color: Kirigami.Theme.highlightColor
+                            z: 1800
+                        }
 
                         Rectangle {
                             id: groupAppHover
@@ -531,6 +727,34 @@ Controls.Popup {
                             }
                         }
 
+                        DragHandler {
+                            id: groupAppDragHandler
+
+                            target: groupDragProxy
+                            enabled: groupAppItem.favoriteId.length > 0
+                            acceptedButtons: Qt.LeftButton
+
+                            onActiveChanged: {
+                                if (active) {
+                                    groupDragProxy.x = 0
+                                    groupDragProxy.y = 0
+                                    groupAppItem.dragActive = true
+                                    groupAppItem.dragWasActive = true
+
+                                } else if (groupAppItem.dragActive) {
+                                    groupDragProxy.Drag.drop()
+                                    groupAppItem.dragActive = false
+                                    groupDragProxy.x = 0
+                                    groupDragProxy.y = 0
+                                    groupPopup.clearAllDropFeedback()
+
+                                    Qt.callLater(function() {
+                                        groupAppItem.dragWasActive = false
+                                    })
+                                }
+                            }
+                        }
+
                         MouseArea {
                             id: groupAppMouse
                             anchors.fill: parent
@@ -545,6 +769,10 @@ Controls.Popup {
                                         mouse.x,
                                         mouse.y
                                     )
+                                    return
+                                }
+
+                                if (groupAppItem.dragWasActive) {
                                     return
                                 }
 

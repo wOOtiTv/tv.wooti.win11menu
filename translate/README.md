@@ -8,6 +8,7 @@ The launcher uses English source strings and supports:
 - German (`de`)
 - French (`fr`)
 - Italian (`it`)
+- Spanish (`es`)
 - Dutch (`nl`)
 
 The default setting follows the system language. Users can override the launcher language in **General → Language**.
@@ -25,6 +26,7 @@ translate/
 ├── de.po
 ├── fr.po
 ├── it.po
+├── es.po
 └── nl.po
 ```
 

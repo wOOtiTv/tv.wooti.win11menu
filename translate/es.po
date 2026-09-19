@@ -1,73 +1,71 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Spanish translation for wOOti Win11 Menu.
+# Copyright (C) 2026 wOOtiTv
 # This file is distributed under the same license as the wOOti Win11 Menu package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: wOOti Win11 Menu 1.2.5\n"
+"Project-Id-Version: wOOti Win11 Menu 1.3.3\n"
 "Report-Msgid-Bugs-To: https://github.com/wOOtiTv/tv.wooti.win11menu/issues\n"
-"POT-Creation-Date: 2026-09-10 12:15+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2026-09-19 20:35+0200\n"
+"Last-Translator: wOOtiTv <mail@wooti.tv>\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: contents/config/config.qml
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Language:"
-msgstr ""
+msgstr "Idioma:"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "System default"
-msgstr ""
+msgstr "Predeterminado del sistema"
 
 #: contents/ui/main.qml
 msgid "Search for apps, files and settings"
-msgstr ""
+msgstr "Buscar aplicaciones, archivos y ajustes"
 
 #: contents/ui/main.qml
 msgid "Pinned"
-msgstr ""
+msgstr "Anclado"
 
 #: contents/ui/main.qml
 msgid "Unpin"
-msgstr ""
+msgstr "Desanclar de Inicio"
 
 #: contents/ui/main.qml
 msgid "All"
-msgstr ""
+msgstr "Todas"
 
 #: contents/ui/main.qml
 msgid "View: List  ▾"
-msgstr ""
+msgstr "Vista: Lista  ▾"
 
 #: contents/ui/main.qml
 msgid "View: Grid  ▾"
-msgstr ""
+msgstr "Vista: Cuadrícula  ▾"
 
 #: contents/ui/main.qml
 msgid "Pin"
-msgstr ""
+msgstr "Anclar a Inicio"
 
 #: contents/ui/main.qml
 msgid "Search results"
-msgstr ""
+msgstr "Resultados de búsqueda"
 
 #: contents/ui/main.qml
 msgid "Files"
-msgstr ""
+msgstr "Archivos"
 
 #: contents/ui/main.qml
 msgid "Settings"
-msgstr ""
+msgstr "Ajustes"
 
 #: contents/ui/main.qml
 msgid ""
@@ -75,176 +73,212 @@ msgid ""
 "\n"
 "💡 Baloo only searches indexed folders.\n"
 "Check file search under System Settings → Search → File Search."
-msgstr ""
+msgstr "No se encontraron resultados\n\n💡 Baloo solo busca en carpetas indexadas.\nComprueba la búsqueda de archivos en Configuración del sistema → Buscar → Búsqueda de archivos."
 
 #: contents/ui/main.qml
 msgid "No results found"
-msgstr ""
+msgstr "No se encontraron resultados"
 
 #: contents/ui/main.qml
 msgid "Log Out"
-msgstr ""
+msgstr "Cerrar sesión"
 
 #: contents/ui/main.qml
 msgid "Restart"
-msgstr ""
+msgstr "Reiniciar"
 
 #: contents/ui/main.qml
 msgid "Shut Down"
-msgstr ""
+msgstr "Apagar"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Menu icon:"
-msgstr ""
+msgstr "Icono del menú:"
 
 #: contents/ui/ConfigIcon.qml
 msgid "Choose..."
-msgstr ""
+msgstr "Elegir..."
 
 #: contents/ui/ConfigIcon.qml contents/ui/ConfigPinnedApps.qml
 msgid "Reset to default"
-msgstr ""
+msgstr "Restablecer valores predeterminados"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Current icon:"
-msgstr ""
+msgstr "Icono actual:"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Icon size:"
-msgstr ""
+msgstr "Tamaño de los iconos:"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Min. 24 px · Max. 48 px · Default: 36 px"
-msgstr ""
+msgstr "Mín. 24 px · Máx. 48 px · Predeterminado: 36 px"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Menu height:"
-msgstr ""
+msgstr "Altura del menú:"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Min. 600 px · Max. 1200 px · Default: 800 px"
-msgstr ""
+msgstr "Mín. 600 px · Máx. 1200 px · Predeterminado: 800 px"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Menu width:"
-msgstr ""
+msgstr "Anchura del menú:"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Min. 800 px · Max. 1600 px · Default: 1000 px"
-msgstr ""
+msgstr "Mín. 800 px · Máx. 1600 px · Predeterminado: 1000 px"
 
 #: contents/ui/main.qml
 msgid "Lock Screen"
-msgstr ""
+msgstr "Bloquear pantalla"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Session buttons:"
-msgstr ""
+msgstr "Botones de sesión:"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Show button labels"
-msgstr ""
+msgstr "Mostrar etiquetas de los botones"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Show Lock Screen"
-msgstr ""
+msgstr "Mostrar Bloquear pantalla"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Show Log Out"
-msgstr ""
+msgstr "Mostrar Cerrar sesión"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Show Restart"
-msgstr ""
+msgstr "Mostrar Reiniciar"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Show Shut Down"
-msgstr ""
+msgstr "Mostrar Apagar"
 
 #: contents/ui/main.qml
 msgid "Rename group…"
-msgstr ""
+msgstr "Cambiar nombre del grupo…"
 
 #: contents/ui/main.qml
 msgid "Dissolve group"
-msgstr ""
+msgstr "Disolver grupo"
 
 #: contents/ui/main.qml
 msgid "Add to group…"
-msgstr ""
+msgstr "Añadir al grupo…"
 
 #: contents/ui/main.qml
 msgid "Add to group"
-msgstr ""
+msgstr "Añadir al grupo"
 
 #: contents/ui/main.qml
 msgid "New group…"
-msgstr ""
+msgstr "Nuevo grupo…"
 
 #: contents/ui/main.qml
 msgid "Add %1 to:"
-msgstr ""
+msgstr "Añadir %1 a:"
 
 #: contents/ui/main.qml
 msgid "Group name"
-msgstr ""
+msgstr "Nombre del grupo"
 
 #: contents/ui/main.qml
 msgid "Rename group"
-msgstr ""
+msgstr "Cambiar nombre del grupo"
 
 #: contents/ui/main.qml
 msgid "Remove from group"
-msgstr ""
+msgstr "Quitar del grupo"
 
 #: contents/ui/ConfigGeneral.qml contents/ui/ConfigPinnedApps.qml
 msgid "Pinned apps:"
-msgstr ""
+msgstr "Aplicaciones ancladas:"
 
 #: contents/ui/ConfigGeneral.qml contents/ui/ConfigPinnedApps.qml
 msgid "Enable groups"
-msgstr ""
+msgstr "Activar grupos"
 
 #: contents/ui/main.qml
 msgid "Add to Desktop"
-msgstr ""
+msgstr "Añadir al escritorio"
 
 #: contents/ui/main.qml
 msgid "Pin to Task Manager"
-msgstr ""
+msgstr "Anclar a la barra de tareas"
 
 #: contents/ui/main.qml
 msgid "Edit Application…"
-msgstr ""
+msgstr "Editar aplicación…"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "User information:"
-msgstr ""
+msgstr "Información del usuario:"
 
 #: contents/ui/ConfigGeneral.qml
 msgid "Show name and avatar"
-msgstr ""
+msgstr "Mostrar nombre y avatar"
 
 #: contents/ui/AllAppsView.qml contents/ui/PinnedSection.qml contents/ui/SearchResultsView.qml
 msgid "Uninstall or Manage Add-Ons…"
-msgstr ""
+msgstr "Desinstalar o gestionar complementos…"
 
 #: contents/ui/ConfigPinnedApps.qml
 msgid "Removes all groups and restores the default alphabetical order. Pinned apps are kept."
-msgstr ""
+msgstr "Elimina todos los grupos y restablece el orden alfabético predeterminado. Las aplicaciones ancladas se conservan."
 
 #: contents/ui/ConfigPinnedApps.qml
 msgid "Reset pinned apps?"
-msgstr ""
+msgstr "¿Restablecer las aplicaciones ancladas?"
 
 #: contents/ui/ConfigPinnedApps.qml
 msgid "All groups and the custom pinned order will be removed. Your pinned apps themselves will stay pinned."
-msgstr ""
+msgstr "Se eliminarán todos los grupos y el orden personalizado de las aplicaciones ancladas. Las aplicaciones seguirán ancladas."
 
 #: contents/ui/ConfigMenu.qml
 msgid "App columns:"
-msgstr ""
+msgstr "Columnas de aplicaciones:"
 
 #: contents/ui/ConfigMenu.qml
 msgid "Automatic"
-msgstr ""
+msgstr "Automático"
+
+#: contents/ui/Translations.js
+msgid "Menu"
+msgstr "Menú"
+
+#: contents/ui/Translations.js
+msgid "Pinned Apps"
+msgstr "Aplicaciones ancladas"
+
+#: contents/ui/Translations.js
+msgid "Pinned style"
+msgstr "Estilo anclado"
+
+#: contents/ui/Translations.js
+msgid "Sections:"
+msgstr "Secciones:"
+
+#: contents/ui/Translations.js
+msgid "Session Buttons"
+msgstr "Botones de sesión"
+
+#: contents/ui/Translations.js
+msgid "All Applications view:"
+msgstr "Vista de todas las aplicaciones:"
+
+#: contents/ui/Translations.js
+msgid "Min. 24 px · Max. 64 px · Default: 36 px"
+msgstr "Mín. 24 px · Máx. 64 px · Predeterminado: 36 px"
+
+#: contents/ui/Translations.js
+msgid "Show Pinned and All headings"
+msgstr "Mostrar encabezados «Anclado» y «Todas»"
+
+#: contents/ui/Translations.js
+msgid "View: Pinned style  ▾"
+msgstr "Vista: Estilo anclado  ▾"

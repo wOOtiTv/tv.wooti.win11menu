@@ -239,3 +239,11 @@ msgstr "Réinitialiser les applications épinglées ?"
 #: contents/ui/ConfigPinnedApps.qml
 msgid "All groups and the custom pinned order will be removed. Your pinned apps themselves will stay pinned."
 msgstr "Tous les groupes et l’ordre personnalisé des applications épinglées seront supprimés. Les applications épinglées resteront épinglées."
+
+#: contents/ui/ConfigMenu.qml
+msgid "App columns:"
+msgstr "Colonnes d’applications :"
+
+#: contents/ui/ConfigMenu.qml
+msgid "Automatic"
+msgstr "Automatique"

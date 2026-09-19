@@ -74,7 +74,8 @@ PlasmoidItem {
             sanitizedGroups.push({
                 id: String(group.id || ""),
                 name: String(group.name || ""),
-                apps: apps
+                apps: apps,
+                customOrder: Boolean(group.customOrder)
             })
         }
 
@@ -150,6 +151,47 @@ PlasmoidItem {
         }
 
         return (pinnedGroups[index].apps || []).indexOf(id) >= 0
+    }
+
+    function moveFavoriteWithinGroup(favoriteId, groupId, targetFavoriteId, insertAfter) {
+        var id = String(favoriteId || "")
+        var targetId = String(targetFavoriteId || "")
+        var groups = copyPinnedGroups()
+
+        if (!id || !targetId || id === targetId) {
+            return false
+        }
+
+        for (var i = 0; i < groups.length; ++i) {
+            if (String(groups[i].id) !== String(groupId)) {
+                continue
+            }
+
+            var apps = Array.isArray(groups[i].apps)
+                ? groups[i].apps.slice()
+                : []
+            var sourceIndex = apps.indexOf(id)
+            var targetIndex = apps.indexOf(targetId)
+
+            if (sourceIndex < 0 || targetIndex < 0) {
+                return false
+            }
+
+            apps.splice(sourceIndex, 1)
+            targetIndex = apps.indexOf(targetId)
+
+            if (targetIndex < 0) {
+                return false
+            }
+
+            apps.splice(targetIndex + (insertAfter ? 1 : 0), 0, id)
+            groups[i].apps = apps
+            groups[i].customOrder = true
+            savePinnedGroups(groups)
+            return true
+        }
+
+        return false
     }
 
     function addFavoriteToGroup(favoriteId, groupId) {
@@ -239,7 +281,8 @@ PlasmoidItem {
         groups.push({
             id: groupId,
             name: cleanName,
-            apps: [id]
+            apps: [id],
+            customOrder: false
         })
 
         savePinnedGroups(groups)
@@ -426,8 +469,8 @@ PlasmoidItem {
                     var previewEntries = []
                     var previewIcons = []
 
-                    // Collect all grouped apps with their display names so the
-                    // preview follows the same alphabetical order as the launcher.
+                    // Collect all grouped apps in stored group order. Legacy
+                    // groups remain alphabetical until the user reorders them.
                     for (var appIndex = 0; appIndex < groupApps.length; ++appIndex) {
                         var groupFavoriteId = String(groupApps[appIndex] || "")
 
@@ -445,9 +488,11 @@ PlasmoidItem {
                         }
                     }
 
-                    previewEntries.sort(comparePinnedEntries)
+                    if (!group.customOrder) {
+                        previewEntries.sort(comparePinnedEntries)
+                    }
 
-                    // Show up to four alphabetically sorted app icons as a quick preview.
+                    // Show up to four icons using the group's current display order.
                     for (var previewIndex = 0;
                             previewIndex < previewEntries.length && previewIndex < 4;
                             ++previewIndex) {

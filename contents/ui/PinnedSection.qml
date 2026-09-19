@@ -27,11 +27,17 @@ Item {
     readonly property int hoverWidth: iconSize + 80
     readonly property bool showSectionTitles:
         Plasmoid.configuration.showSectionTitles !== false
+    readonly property int configuredColumnCount: {
+        var value = Number(Plasmoid.configuration.appColumns || 0)
+        return value >= 4 && value <= 12 ? Math.round(value) : 0
+    }
 
-    readonly property int effectiveColumnCount: Math.max(
-        columnCount,
-        Math.floor((width - 64) / 132)
-    )
+    readonly property int effectiveColumnCount: configuredColumnCount > 0
+        ? configuredColumnCount
+        : Math.max(
+            columnCount,
+            Math.floor((width - 64) / 132)
+        )
     readonly property int effectiveCellWidth: Math.max(
         1,
         Math.floor((width - 64) / effectiveColumnCount)

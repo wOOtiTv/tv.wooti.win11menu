@@ -41,6 +41,7 @@ Kirigami.FormLayout {
             { text: "Deutsch", value: "de" },
             { text: "Français", value: "fr" },
             { text: "Italiano", value: "it" },
+            { text: "Español", value: "es" },
             { text: "Nederlands", value: "nl" }
         ]
 
