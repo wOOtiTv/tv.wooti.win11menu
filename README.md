@@ -37,9 +37,10 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 - ⌨️ **Quick search** – press `Ctrl+F` to instantly focus the search field
 - 🎨 **Custom menu icon** – choose the launcher icon directly in General settings
 - 📏 **Flexible menu size** – configure menu width and height to fit your screen and preferred layout
+- 🧱 **Configurable app columns** – keep automatic column sizing or choose a fixed 4–12 column layout
 - 🖼️ **Configurable app icons** – adjust application icon size from 24 px to 64 px
 - 🧹 **Layout reset** – remove pinned groups and custom ordering without unpinning applications
-- 🌍 **Multi-language support** – English, German, French, Italian and Dutch
+- 🌍 **Multi-language support** – English, German, French, Italian, Spanish and Dutch
 - ⚙️ **Language selection** – follow the system language or choose a language manually
 - 🇬🇧 **English fallback** – missing translations fall back to English
 - 👤 **User info** – avatar and full name of the current user, with an optional privacy toggle
@@ -52,7 +53,7 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 Open **Configure Windows 11 Start Menu**. Settings are organized into dedicated pages:
 
 - **General** – language, menu icon and user information
-- **Menu** – application icon size, menu height/width, section headings and All Applications view style
+- **Menu** – application icon size, app columns, menu height/width, section headings and All Applications view style
 - **Pinned Apps** – enable groups or reset groups/custom ordering back to the alphabetical default
 - **Session Buttons** – button labels, position and individual Lock/Log Out/Restart/Shut Down visibility
 - **Keyboard Shortcuts**
@@ -61,6 +62,7 @@ Open **Configure Windows 11 Start Menu**. Settings are organized into dedicated 
 Important options include:
 
 - **Icon size** – choose an application icon size from 24 px to 64 px (default: 36 px)
+- **App columns** – keep the adaptive **Automatic** layout or choose a fixed value from 4 to 12 columns
 - **Menu height** – choose a launcher height from 600 px to 1200 px (default: 800 px)
 - **Menu width** – choose a launcher width from 800 px to 1600 px (default: 1000 px)
 - **Sections** – show the normal **Pinned** / **All** headings or hide them and use a simple divider
@@ -76,7 +78,7 @@ Choosing the **Left** session-button position automatically hides the user name 
 
 Disabling pinned groups does **not** delete existing group assignments. Re-enabling the option restores them. Use **Reset to default** if you intentionally want to remove all groups and return to alphabetical pinned ordering.
 
-Wider menu widths automatically provide additional pinned-app columns while keeping the familiar minimum of 8 columns.
+With **App columns → Automatic**, wider menu widths automatically provide additional columns while keeping the familiar minimum of 8 columns. Choosing a fixed value keeps that exact 4–12 column count.
 
 ### 🗂️ Pinned applications and groups
 
@@ -93,8 +95,10 @@ Pinned ordering and group behavior:
 - dragging an application or a group to an insertion marker creates and saves a custom pinned order
 - applications and groups can be moved to the first position, between other entries or to the final position
 - dragged groups are reordered only; groups cannot be nested inside other groups
-- applications inside a group stay alphabetically sorted
-- a group shows a compact preview of the applications it contains
+- applications inside a group start alphabetically sorted and can then be reordered with drag & drop inside the opened group
+- once a group is manually reordered, its custom application order is saved and restored
+- dragging applications out of a group is intentionally unsupported; removal remains a right-click action
+- a group shows a compact preview of the applications it contains and follows its saved custom order
 - clicking a group opens its applications in a compact popup
 - each group can contain up to **16 applications**
 - full groups are not valid drag & drop targets
@@ -126,6 +130,7 @@ Supported languages:
 - English
 - Français
 - Italiano
+- Español
 - Nederlands
 
 If a translation is missing, the launcher falls back to English.
