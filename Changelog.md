@@ -1,6 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.3] – App Grid Density, Group Ordering & Spanish
+
+### Added
+- added configurable application columns with **Automatic** plus fixed **4–12 column** options
+- added drag & drop reordering for applications **inside pinned groups** while keeping drag-out removal intentionally unsupported
+- added full **Spanish (Español)** language support alongside English, German, French, Italian and Dutch
+
+### Changed
+- **Automatic** app columns preserve the existing adaptive layout, while a fixed value keeps the selected number of columns across Pinned and grid-style All Applications views
+- existing pinned groups remain alphabetically ordered until the first manual reorder inside that group; afterwards the custom group order is saved and restored
+- pinned-group preview icons follow the saved custom group order after a group has been manually reordered
+- updated translation tooling and documentation for the additional Spanish catalog
+- updated package metadata for version 1.3.3
+
+### Fixed
+- kept the pinned-group popup open when starting an internal drag operation so group applications can be reordered reliably
+
+### Credits
+- configurable app columns were inspired by feedback in issue #25
+- pinned-group ordering and Spanish language support were inspired by feedback in issue #26
+
 ## [1.3.2] – Layout, Views & Settings Cleanup
 
 ### Added
