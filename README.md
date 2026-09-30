@@ -37,6 +37,7 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 - ⌨️ **Quick search** – press `Ctrl+F` to instantly focus the search field
 - 🎨 **Custom menu icon** – choose the launcher icon directly in General settings
 - 📏 **Flexible menu size** – configure menu width and height to fit your screen and preferred layout
+- 📍 **Configurable menu position** – follow the Start button by default or optionally open the menu at the bottom center of the screen
 - 🧱 **Configurable app columns** – keep automatic column sizing or choose a fixed 4–12 column layout
 - 🖼️ **Configurable app icons** – adjust application icon size from 24 px to 64 px
 - 🧹 **Layout reset** – remove pinned groups and custom ordering without unpinning applications
@@ -53,7 +54,7 @@ Clean dark design, fast search and full KDE integration – built with pure QML.
 Open **Configure Windows 11 Start Menu**. Settings are organized into dedicated pages:
 
 - **General** – language, menu icon and user information
-- **Menu** – application icon size, app columns, menu height/width, section headings and All Applications view style
+- **Menu** – application icon size, app columns, menu height/width, menu position, section headings and All Applications view style
 - **Pinned Apps** – enable groups or reset groups/custom ordering back to the alphabetical default
 - **Session Buttons** – button labels, position and individual Lock/Log Out/Restart/Shut Down visibility
 - **Keyboard Shortcuts**
@@ -65,6 +66,7 @@ Important options include:
 - **App columns** – keep the adaptive **Automatic** layout or choose a fixed value from 4 to 12 columns
 - **Menu height** – choose a launcher height from 600 px to 1200 px (default: 800 px)
 - **Menu width** – choose a launcher width from 800 px to 1600 px (default: 1000 px)
+- **Menu position** – **Follow panel** keeps the normal Start-button-relative behavior; **Bottom center** opens the launcher horizontally centered at the bottom of the screen
 - **Sections** – show the normal **Pinned** / **All** headings or hide them and use a simple divider
 - **All Applications view** – choose **Grid**, **List** or **Pinned style**
 - **Pinned apps → Enable groups** – enable or disable pinned application groups
@@ -79,6 +81,8 @@ Choosing the **Left** session-button position automatically hides the user name 
 Disabling pinned groups does **not** delete existing group assignments. Re-enabling the option restores them. Use **Reset to default** if you intentionally want to remove all groups and return to alphabetical pinned ordering.
 
 With **App columns → Automatic**, wider menu widths automatically provide additional columns while keeping the familiar minimum of 8 columns. Choosing a fixed value keeps that exact 4–12 column count.
+
+The default **Menu position → Follow panel** behavior is unchanged and follows the launcher button like the normal Windows-style layout. **Bottom center** is an optional alternative for users who want the menu fixed to the horizontal center of the screen.
 
 ### 🗂️ Pinned applications and groups
 
