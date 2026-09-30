@@ -1,6 +1,24 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.4] – Menu Positioning & Popup Polish
+
+### Added
+- added a configurable **Menu position** option
+- **Follow panel** remains the default and keeps the normal Windows-style behavior where the launcher opens relative to the Start button
+- added optional **Bottom center** positioning so the launcher can open horizontally centered at the bottom of the screen even when the Start button is placed elsewhere
+
+### Changed
+- Bottom center positioning now uses Plasma's native popup anchoring instead of forcing window coordinates, improving reliability on Plasma 6 / Wayland
+- refined the launcher surface around Plasma's popup padding so the menu reads as one integrated window instead of a framed window inside another framed window
+- integrated the footer more cleanly into the launcher surface
+- added menu-position translations for English, German, French, Italian, Spanish and Dutch
+- updated package metadata for version 1.3.4
+
+### Credits
+- configurable menu positioning completes the remaining request from issue #19
+- thanks to **fridoo** for pointing to Menu 11 Next as a useful technical reference for centered popup positioning
+
 ## [1.3.3] – App Grid Density, Group Ordering & Spanish
 
 ### Added
