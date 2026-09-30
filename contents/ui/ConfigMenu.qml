@@ -11,6 +11,7 @@ Kirigami.FormLayout {
     property int cfg_appColumns: 0
     property alias cfg_menuHeight: menuHeightSpin.value
     property alias cfg_menuWidth: menuWidthSpin.value
+    property string cfg_menuPosition: "followPanel"
     property bool cfg_showSectionTitles: true
     property string cfg_allAppsViewMode: "legacy"
     property bool cfg_allAppsListView: false
@@ -52,6 +53,13 @@ Kirigami.FormLayout {
         appColumnsCombo.currentIndex = index >= 0 ? index : 0
     }
 
+    function syncMenuPositionCombo() {
+        const value = String(page.cfg_menuPosition || "followPanel")
+        const index = menuPositionCombo.indexOfValue(value)
+
+        menuPositionCombo.currentIndex = index >= 0 ? index : 0
+    }
+
     Item {
         implicitHeight: Kirigami.Units.gridUnit
     }
@@ -59,6 +67,7 @@ Kirigami.FormLayout {
     onCfg_allAppsViewModeChanged: syncViewModeCombo()
     onCfg_allAppsListViewChanged: syncViewModeCombo()
     onCfg_appColumnsChanged: syncAppColumnsCombo()
+    onCfg_menuPositionChanged: syncMenuPositionCombo()
 
     Controls.SpinBox {
         id: iconSizeSpin
@@ -111,6 +120,28 @@ Kirigami.FormLayout {
     Controls.Label {
         text: i18n("Min. 800 px · Max. 1600 px · Default: 1000 px")
         opacity: 0.7
+    }
+
+    Item {
+        implicitHeight: Kirigami.Units.smallSpacing * 2
+    }
+
+    Controls.ComboBox {
+        id: menuPositionCombo
+
+        Kirigami.FormData.label: page.translatedText("Menu position:")
+
+        model: [
+            { text: page.translatedText("Follow panel"), value: "followPanel" },
+            { text: page.translatedText("Bottom center"), value: "bottomCenter" }
+        ]
+
+        textRole: "text"
+        valueRole: "value"
+
+        Component.onCompleted: page.syncMenuPositionCombo()
+
+        onActivated: page.cfg_menuPosition = String(currentValue)
     }
 
     Item {
