@@ -413,12 +413,19 @@ PlasmoidItem {
                 return
             }
 
-            if (popupWindow.hasOwnProperty("backgroundHints")) {
+            // Window.window is Plasma's AppletPopup here. QML/C++ properties
+            // are not reliably reported by JavaScript hasOwnProperty(), so
+            // assign the native popup background hint directly.
+            try {
                 popupWindow.backgroundHints = PlasmaCore.Types.NoBackground
+            } catch (error) {
+                console.warn("🦊 Could not disable Plasma popup background:", error)
             }
 
-            if (popupWindow.hasOwnProperty("color")) {
+            try {
                 popupWindow.color = "transparent"
+            } catch (error) {
+                // Not all window implementations expose a writable color.
             }
         }
 
