@@ -35,7 +35,7 @@ Rectangle {
     signal closeLauncherRequested()
 
     height: 78
-    radius: 18
+    radius: 0
     color: "#15171d"
 
     KCoreAddons.KUser {

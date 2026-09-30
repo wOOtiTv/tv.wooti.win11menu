@@ -38,6 +38,10 @@
       <default>1000</default>
     </entry>
 
+    <entry name="menuPosition" type="String">
+      <default>followPanel</default>
+    </entry>
+
     <entry name="showSectionTitles" type="Bool">
       <default>true</default>
     </entry>

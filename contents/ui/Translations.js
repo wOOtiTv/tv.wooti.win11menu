@@ -73,7 +73,10 @@ var catalogs = {
         "User information:": "Benutzerinformationen:",
         "View: Grid  ▾": "Ansicht: Raster  ▾",
         "View: List  ▾": "Ansicht: Liste  ▾",
-        "View: Pinned style  ▾": "Ansicht: Wie angeheftet  ▾"
+        "View: Pinned style  ▾": "Ansicht: Wie angeheftet  ▾",
+        "Menu position:": "Menüposition:",
+        "Follow panel": "Panel folgen",
+        "Bottom center": "Unten mittig"
     },
     "en": {
         "Add %1 to:": "Add %1 to:",
@@ -144,7 +147,10 @@ var catalogs = {
         "User information:": "User information:",
         "View: Grid  ▾": "View: Grid  ▾",
         "View: List  ▾": "View: List  ▾",
-        "View: Pinned style  ▾": "View: Pinned style  ▾"
+        "View: Pinned style  ▾": "View: Pinned style  ▾",
+        "Menu position:": "Menu position:",
+        "Follow panel": "Follow panel",
+        "Bottom center": "Bottom center"
     },
     "es": {
         "Add %1 to:": "Añadir %1 a:",
@@ -215,7 +221,10 @@ var catalogs = {
         "User information:": "Información del usuario:",
         "View: Grid  ▾": "Vista: Cuadrícula  ▾",
         "View: List  ▾": "Vista: Lista  ▾",
-        "View: Pinned style  ▾": "Vista: Estilo anclado  ▾"
+        "View: Pinned style  ▾": "Vista: Estilo anclado  ▾",
+        "Menu position:": "Posición del menú:",
+        "Follow panel": "Seguir el panel",
+        "Bottom center": "Abajo centrado"
     },
     "fr": {
         "Add %1 to:": "Ajouter %1 à :",
@@ -286,7 +295,10 @@ var catalogs = {
         "User information:": "Informations utilisateur :",
         "View: Grid  ▾": "Affichage : Grille  ▾",
         "View: List  ▾": "Affichage : Liste  ▾",
-        "View: Pinned style  ▾": "Affichage : Style épinglé  ▾"
+        "View: Pinned style  ▾": "Affichage : Style épinglé  ▾",
+        "Menu position:": "Position du menu :",
+        "Follow panel": "Suivre le panneau",
+        "Bottom center": "En bas au centre"
     },
     "it": {
         "Add %1 to:": "Aggiungi %1 a:",
@@ -357,7 +369,10 @@ var catalogs = {
         "User information:": "Informazioni utente:",
         "View: Grid  ▾": "Visualizzazione: Griglia  ▾",
         "View: List  ▾": "Visualizzazione: Elenco  ▾",
-        "View: Pinned style  ▾": "Visualizzazione: Stile appuntati  ▾"
+        "View: Pinned style  ▾": "Visualizzazione: Stile appuntati  ▾",
+        "Menu position:": "Posizione del menu:",
+        "Follow panel": "Segui il pannello",
+        "Bottom center": "In basso al centro"
     },
     "nl": {
         "Add %1 to:": "%1 toevoegen aan:",
@@ -428,7 +443,10 @@ var catalogs = {
         "User information:": "Gebruikersinformatie:",
         "View: Grid  ▾": "Weergave: Raster  ▾",
         "View: List  ▾": "Weergave: Lijst  ▾",
-        "View: Pinned style  ▾": "Weergave: Vastgemaakte stijl  ▾"
+        "View: Pinned style  ▾": "Weergave: Vastgemaakte stijl  ▾",
+        "Menu position:": "Menupositie:",
+        "Follow panel": "Paneel volgen",
+        "Bottom center": "Onderaan gecentreerd"
     }
 };
 

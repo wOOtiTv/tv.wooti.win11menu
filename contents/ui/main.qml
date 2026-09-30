@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Window
 import QtCore
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
@@ -396,6 +397,15 @@ PlasmoidItem {
     // Launcher – Hauptfenster
     // ─────────────────────────────────────────────
 
+    Item {
+        id: bottomCenterAnchor
+
+        parent: root.compactRepresentationItem
+        width: 1
+        height: 1
+        visible: false
+    }
+
     fullRepresentation: Item {
         id: launcher
 
@@ -404,6 +414,113 @@ PlasmoidItem {
         // ─────────────────────────────────────────
 
         readonly property var appletInterface: Plasmoid
+
+        readonly property var popupWindow: launcher.Window.window
+        readonly property real popupLeftPadding:
+            popupWindow && popupWindow.leftPadding !== undefined
+                ? Number(popupWindow.leftPadding)
+                : 0
+        readonly property real popupRightPadding:
+            popupWindow && popupWindow.rightPadding !== undefined
+                ? Number(popupWindow.rightPadding)
+                : 0
+        readonly property real popupTopPadding:
+            popupWindow && popupWindow.topPadding !== undefined
+                ? Number(popupWindow.topPadding)
+                : 0
+        readonly property real popupBottomPadding:
+            popupWindow && popupWindow.bottomPadding !== undefined
+                ? Number(popupWindow.bottomPadding)
+                : 0
+
+        readonly property bool bottomCenterPosition:
+            String(plasmoid.configuration.menuPosition || "followPanel")
+                === "bottomCenter"
+
+        function defaultPopupDirection() {
+            switch (Plasmoid.location) {
+            case PlasmaCore.Types.TopEdge:
+                return Qt.BottomEdge
+            case PlasmaCore.Types.LeftEdge:
+                return Qt.RightEdge
+            case PlasmaCore.Types.RightEdge:
+                return Qt.LeftEdge
+            default:
+                return Qt.TopEdge
+            }
+        }
+
+        function updateBottomCenterAnchor() {
+            var compactItem = root.compactRepresentationItem
+
+            if (!compactItem) {
+                return false
+            }
+
+            var screen = root.availableScreenRect
+            var compactGlobal = compactItem.mapToGlobal(0, 0)
+
+            bottomCenterAnchor.width = Math.max(1, compactItem.width)
+            bottomCenterAnchor.height = Math.max(1, compactItem.height)
+            bottomCenterAnchor.x = Math.round(
+                screen.x + screen.width / 2
+                    - compactGlobal.x
+                    - bottomCenterAnchor.width / 2
+            )
+            bottomCenterAnchor.y = 0
+            return true
+        }
+
+        function applyPopupAnchor() {
+            var popupWindow = launcher.Window.window
+            var compactItem = root.compactRepresentationItem
+
+            if (!popupWindow || !compactItem) {
+                return
+            }
+
+            if (bottomCenterPosition && updateBottomCenterAnchor()) {
+                popupWindow.visualParent = bottomCenterAnchor
+                popupWindow.popupDirection = Qt.TopEdge
+            } else {
+                popupWindow.visualParent = compactItem
+                popupWindow.popupDirection = defaultPopupDirection()
+            }
+        }
+
+        Timer {
+            id: popupAnchorTimer
+            interval: 1
+            repeat: false
+            onTriggered: launcher.applyPopupAnchor()
+        }
+
+        Connections {
+            target: root
+
+            function onExpandedChanged() {
+                if (plasmoid.expanded) {
+                    popupAnchorTimer.restart()
+                }
+            }
+        }
+
+        Connections {
+            target: launcher.Window.window
+
+            function onVisibleChanged() {
+                if (launcher.Window.window
+                        && launcher.Window.window.visible) {
+                    popupAnchorTimer.restart()
+                }
+            }
+
+            function onScreenChanged() {
+                if (plasmoid.expanded) {
+                    popupAnchorTimer.restart()
+                }
+            }
+        }
 
         // 8 Spalten wie bei unserem aktuellen Layout.
         // Die Zellbreite folgt der tatsächlich verfügbaren Popup-Breite.
@@ -664,7 +781,60 @@ PlasmoidItem {
 
         height: popupHeight
         width: popupWidth
-        clip: true
+        clip: false
+
+        // Plasma 6 keeps theme padding around a normal AppletPopup. Paint our
+        // own surface into that padding so the launcher reads as one window
+        // instead of a framed window inside another framed window.
+        Rectangle {
+            id: popupSurfaceCover
+
+            x: -launcher.popupLeftPadding
+            y: -launcher.popupTopPadding
+            width: launcher.width
+                + launcher.popupLeftPadding
+                + launcher.popupRightPadding
+            height: launcher.height
+                + launcher.popupTopPadding
+                + launcher.popupBottomPadding
+
+            radius: 18
+            color: "#18191f"
+            clip: true
+            z: -2
+
+            Rectangle {
+                anchors.fill: parent
+                radius: parent.radius
+                color: "#20232b"
+                opacity: 0.92
+            }
+        }
+
+        // Continue the darker footer through Plasma's left/right/bottom
+        // padding as well. The actual footer stays at its normal coordinates.
+        Rectangle {
+            id: popupFooterCover
+
+            x: -launcher.popupLeftPadding
+            y: launcher.height - 78
+            width: launcher.width
+                + launcher.popupLeftPadding
+                + launcher.popupRightPadding
+            height: 78 + launcher.popupBottomPadding
+
+            radius: 18
+            color: "#15171d"
+            z: -1
+
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                height: parent.radius
+                color: parent.color
+            }
+        }
 
         Rectangle {
             id: launcherBackground

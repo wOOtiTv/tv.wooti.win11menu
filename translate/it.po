@@ -247,3 +247,15 @@ msgstr "Colonne app:"
 #: contents/ui/ConfigMenu.qml
 msgid "Automatic"
 msgstr "Automatico"
+
+#: contents/ui/ConfigMenu.qml
+msgid "Menu position:"
+msgstr "Posizione del menu:"
+
+#: contents/ui/ConfigMenu.qml
+msgid "Follow panel"
+msgstr "Segui il pannello"
+
+#: contents/ui/ConfigMenu.qml
+msgid "Bottom center"
+msgstr "In basso al centro"
