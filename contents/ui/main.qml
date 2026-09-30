@@ -386,18 +386,206 @@ PlasmoidItem {
         )
     }
 
-    onExpandedChanged: function() {
-        if (!plasmoid.expanded) {
-            searchText = ""
-            closeContextMenus()
-        }
-    }
-
     // ─────────────────────────────────────────────
     // Launcher – Hauptfenster
     // ─────────────────────────────────────────────
 
-    fullRepresentation: Item {
+    // ─────────────────────────────────────────────
+    // Custom launcher dialog
+    // ─────────────────────────────────────────────
+    //
+    // The launcher already renders its complete visual background. Plasma's
+    // normal fullRepresentation adds another themed AppletPopup around it,
+    // so we keep the panel button compact and show the launcher in our own
+    // frameless dialog without an additional Plasma background.
+
+    property Item compactVisualParent: null
+
+    readonly property bool bottomCenterPosition:
+        String(plasmoid.configuration.menuPosition || "followPanel")
+            === "bottomCenter"
+
+    function openLauncher() {
+        launcherDialog.visible = true
+    }
+
+    function closeLauncher() {
+        launcherDialog.visible = false
+    }
+
+    function toggleLauncher() {
+        launcherDialog.visible = !launcherDialog.visible
+    }
+
+    function resetLauncherState() {
+        searchText = ""
+        closeContextMenus()
+    }
+
+    preferredRepresentation: compactRepresentationComponent
+    compactRepresentation: compactRepresentationComponent
+    fullRepresentation: compactRepresentationComponent
+
+    Component {
+        id: compactRepresentationComponent
+
+        Item {
+            id: compactRoot
+
+            implicitWidth: Kirigami.Units.iconSizes.smallMedium
+                + Kirigami.Units.smallSpacing * 2
+            implicitHeight: implicitWidth
+
+            Component.onCompleted: {
+                root.compactVisualParent = compactRoot
+            }
+
+            Component.onDestruction: {
+                if (root.compactVisualParent === compactRoot) {
+                    root.compactVisualParent = null
+                }
+            }
+
+            Kirigami.Icon {
+                anchors.fill: parent
+                source: (!plasmoid.configuration.icon
+                    || plasmoid.configuration.icon === "start-here")
+                    ? root.bundledDefaultIcon
+                    : plasmoid.configuration.icon
+                active: compactMouse.containsMouse
+                smooth: true
+            }
+
+            MouseArea {
+                id: compactMouse
+
+                anchors.fill: parent
+                hoverEnabled: true
+                acceptedButtons: Qt.LeftButton
+                cursorShape: Qt.PointingHandCursor
+
+                onClicked: root.toggleLauncher()
+            }
+        }
+    }
+
+    Plasmoid.onActivated: {
+        root.toggleLauncher()
+    }
+
+    PlasmaCore.Dialog {
+        id: launcherDialog
+
+        visible: false
+        visualParent: root.compactVisualParent
+        location: root.bottomCenterPosition
+            ? PlasmaCore.Types.BottomEdge
+            : Plasmoid.location
+
+        hideOnWindowDeactivate: true
+        backgroundHints: PlasmaCore.Types.NoBackground
+        flags: Qt.Popup | Qt.FramelessWindowHint
+
+        width: launcher.popupWidth
+        height: launcher.popupHeight
+
+        function clamp(value, minimum, maximum) {
+            return Math.max(minimum, Math.min(maximum, value))
+        }
+
+        function reposition() {
+            if (!visible || !screen) {
+                return
+            }
+
+            var area = screen.availableGeometry
+            var offset = Kirigami.Units.smallSpacing
+            var targetX = area.x + offset
+            var targetY = area.y + area.height - height - offset
+            var visual = root.compactVisualParent
+            var appletPosition = visual
+                ? visual.mapToGlobal(0, 0)
+                : Qt.point(area.x, area.y + area.height)
+
+            if (root.bottomCenterPosition) {
+                targetX = area.x + (area.width - width) / 2
+                targetY = area.y + area.height - height - offset
+            } else if (Plasmoid.location === PlasmaCore.Types.TopEdge) {
+                var topCenterX = appletPosition.x
+                    + (visual ? visual.width / 2 : 0)
+
+                targetX = clamp(
+                    topCenterX - width / 2,
+                    area.x + offset,
+                    area.x + area.width - width - offset
+                )
+                targetY = area.y + offset
+            } else if (Plasmoid.location === PlasmaCore.Types.LeftEdge) {
+                var leftCenterY = appletPosition.y
+                    + (visual ? visual.height / 2 : 0)
+
+                targetX = area.x + offset
+                targetY = clamp(
+                    leftCenterY - height / 2,
+                    area.y + offset,
+                    area.y + area.height - height - offset
+                )
+            } else if (Plasmoid.location === PlasmaCore.Types.RightEdge) {
+                var rightCenterY = appletPosition.y
+                    + (visual ? visual.height / 2 : 0)
+
+                targetX = area.x + area.width - width - offset
+                targetY = clamp(
+                    rightCenterY - height / 2,
+                    area.y + offset,
+                    area.y + area.height - height - offset
+                )
+            } else {
+                var bottomCenterX = appletPosition.x
+                    + (visual ? visual.width / 2 : 0)
+
+                targetX = clamp(
+                    bottomCenterX - width / 2,
+                    area.x + offset,
+                    area.x + area.width - width - offset
+                )
+                targetY = area.y + area.height - height - offset
+            }
+
+            x = Math.round(targetX)
+            y = Math.round(targetY)
+        }
+
+        onVisibleChanged: {
+            if (visible) {
+                Qt.callLater(function() {
+                    launcherDialog.reposition()
+                    searchBar.focusSearchField()
+                })
+            } else {
+                root.resetLauncherState()
+            }
+        }
+
+        onWidthChanged: {
+            if (visible) {
+                Qt.callLater(reposition)
+            }
+        }
+
+        onHeightChanged: {
+            if (visible) {
+                Qt.callLater(reposition)
+            }
+        }
+
+        onScreenChanged: {
+            if (visible) {
+                Qt.callLater(reposition)
+            }
+        }
+
+        mainItem: Item {
         id: launcher
 
         // ─────────────────────────────────────────
@@ -405,79 +593,6 @@ PlasmoidItem {
         // ─────────────────────────────────────────
 
         readonly property var appletInterface: Plasmoid
-        readonly property bool bottomCenterPosition:
-            String(plasmoid.configuration.menuPosition || "followPanel")
-                === "bottomCenter"
-
-        function schedulePopupPosition() {
-            if (bottomCenterPosition && plasmoid.expanded) {
-                popupPositionTimer.restart()
-            }
-        }
-
-        function applyPopupPosition() {
-            if (!bottomCenterPosition || !plasmoid.expanded) {
-                return
-            }
-
-            var popupWindow = launcher.Window.window
-
-            if (!popupWindow || !popupWindow.visible || !popupWindow.screen) {
-                return
-            }
-
-            var screen = popupWindow.screen.availableGeometry
-            var offset = Kirigami.Units.smallSpacing
-
-            popupWindow.x = Math.round(
-                screen.x + (screen.width - popupWindow.width) / 2
-            )
-            popupWindow.y = Math.round(
-                screen.y + screen.height - popupWindow.height - offset
-            )
-        }
-
-        Timer {
-            id: popupPositionTimer
-            interval: 1
-            repeat: false
-            onTriggered: launcher.applyPopupPosition()
-        }
-
-        Connections {
-            target: root
-
-            function onExpandedChanged() {
-                if (plasmoid.expanded) {
-                    launcher.schedulePopupPosition()
-                }
-            }
-        }
-
-        Connections {
-            target: launcher.Window.window
-            enabled: launcher.bottomCenterPosition
-
-            function onVisibleChanged() {
-                if (launcher.Window.window
-                        && launcher.Window.window.visible) {
-                    launcher.schedulePopupPosition()
-                }
-            }
-
-            function onWidthChanged() {
-                launcher.schedulePopupPosition()
-            }
-
-            function onHeightChanged() {
-                launcher.schedulePopupPosition()
-            }
-
-            function onScreenChanged() {
-                launcher.schedulePopupPosition()
-            }
-        }
-
         // 8 Spalten wie bei unserem aktuellen Layout.
         // Die Zellbreite folgt der tatsächlich verfügbaren Popup-Breite.
         readonly property int columnCount: 8
@@ -661,7 +776,7 @@ PlasmoidItem {
             )
 
             if (closeRequested) {
-                plasmoid.expanded = false
+                root.closeLauncher()
             }
         }
 
@@ -781,7 +896,7 @@ PlasmoidItem {
             // Ctrl+F bringt den Fokus jederzeit direkt zurück ins Suchfeld.
             Shortcut {
                 sequence: "Ctrl+F"
-                enabled: plasmoid.expanded
+                enabled: launcherDialog.visible
 
                 onActivated: {
                     searchBar.focusSearchField()
@@ -831,10 +946,10 @@ PlasmoidItem {
                 }
 
                 Connections {
-                    target: root
+                    target: launcherDialog
 
-                    function onExpandedChanged() {
-                        if (!plasmoid.expanded) {
+                    function onVisibleChanged() {
+                        if (!launcherDialog.visible) {
                             normalContentScroll.contentY = 0
                         }
                     }
@@ -909,7 +1024,7 @@ PlasmoidItem {
                         onViewToggleRequested: launcher.cycleAllAppsViewMode()
 
                         onCloseLauncherRequested: {
-                            plasmoid.expanded = false
+                            root.closeLauncher()
                         }
                     }
                 }
@@ -1053,7 +1168,7 @@ PlasmoidItem {
 
                 onCloseLauncherRequested: {
                     root.searchText = ""
-                    plasmoid.expanded = false
+                    root.closeLauncher()
                 }
             }
 
@@ -1079,9 +1194,11 @@ PlasmoidItem {
                 shutdownText: i18n("Shut Down")
 
                 onCloseLauncherRequested: {
-                    plasmoid.expanded = false
+                    root.closeLauncher()
                 }
             }
+        }
+    
         }
     }
 
