@@ -397,6 +397,15 @@ PlasmoidItem {
     // Launcher – Hauptfenster
     // ─────────────────────────────────────────────
 
+    Item {
+        id: bottomCenterAnchor
+
+        parent: root.compactRepresentationItem
+        width: 1
+        height: 1
+        visible: false
+    }
+
     fullRepresentation: Item {
         id: launcher
 
@@ -428,39 +437,62 @@ PlasmoidItem {
             String(plasmoid.configuration.menuPosition || "followPanel")
                 === "bottomCenter"
 
-        function schedulePopupPosition() {
-            if (bottomCenterPosition && plasmoid.expanded) {
-                popupPositionTimer.restart()
+        function defaultPopupDirection() {
+            switch (Plasmoid.location) {
+            case PlasmaCore.Types.TopEdge:
+                return Qt.BottomEdge
+            case PlasmaCore.Types.LeftEdge:
+                return Qt.RightEdge
+            case PlasmaCore.Types.RightEdge:
+                return Qt.LeftEdge
+            default:
+                return Qt.TopEdge
             }
         }
 
-        function applyPopupPosition() {
-            if (!bottomCenterPosition || !plasmoid.expanded) {
-                return
+        function updateBottomCenterAnchor() {
+            var compactItem = root.compactRepresentationItem
+
+            if (!compactItem) {
+                return false
             }
 
+            var screen = root.availableScreenRect
+            var compactGlobal = compactItem.mapToGlobal(0, 0)
+
+            bottomCenterAnchor.width = Math.max(1, compactItem.width)
+            bottomCenterAnchor.height = Math.max(1, compactItem.height)
+            bottomCenterAnchor.x = Math.round(
+                screen.x + screen.width / 2
+                    - compactGlobal.x
+                    - bottomCenterAnchor.width / 2
+            )
+            bottomCenterAnchor.y = 0
+            return true
+        }
+
+        function applyPopupAnchor() {
             var popupWindow = launcher.Window.window
+            var compactItem = root.compactRepresentationItem
 
-            if (!popupWindow || !popupWindow.visible || !popupWindow.screen) {
+            if (!popupWindow || !compactItem) {
                 return
             }
 
-            var screen = popupWindow.screen.availableGeometry
-            var offset = Kirigami.Units.smallSpacing
-
-            popupWindow.x = Math.round(
-                screen.x + (screen.width - popupWindow.width) / 2
-            )
-            popupWindow.y = Math.round(
-                screen.y + screen.height - popupWindow.height - offset
-            )
+            if (bottomCenterPosition && updateBottomCenterAnchor()) {
+                popupWindow.visualParent = bottomCenterAnchor
+                popupWindow.popupDirection = Qt.TopEdge
+            } else {
+                popupWindow.visualParent = compactItem
+                popupWindow.popupDirection = defaultPopupDirection()
+            }
         }
 
         Timer {
-            id: popupPositionTimer
+            id: popupAnchorTimer
             interval: 1
             repeat: false
-            onTriggered: launcher.applyPopupPosition()
+            onTriggered: launcher.applyPopupAnchor()
         }
 
         Connections {
@@ -468,32 +500,25 @@ PlasmoidItem {
 
             function onExpandedChanged() {
                 if (plasmoid.expanded) {
-                    launcher.schedulePopupPosition()
+                    popupAnchorTimer.restart()
                 }
             }
         }
 
         Connections {
             target: launcher.Window.window
-            enabled: launcher.bottomCenterPosition
 
             function onVisibleChanged() {
                 if (launcher.Window.window
                         && launcher.Window.window.visible) {
-                    launcher.schedulePopupPosition()
+                    popupAnchorTimer.restart()
                 }
             }
 
-            function onWidthChanged() {
-                launcher.schedulePopupPosition()
-            }
-
-            function onHeightChanged() {
-                launcher.schedulePopupPosition()
-            }
-
             function onScreenChanged() {
-                launcher.schedulePopupPosition()
+                if (plasmoid.expanded) {
+                    popupAnchorTimer.restart()
+                }
             }
         }
 
