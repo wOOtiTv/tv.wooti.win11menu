@@ -282,3 +282,15 @@ msgstr "Mostrar encabezados «Anclado» y «Todas»"
 #: contents/ui/Translations.js
 msgid "View: Pinned style  ▾"
 msgstr "Vista: Estilo anclado  ▾"
+
+#: contents/ui/ConfigMenu.qml
+msgid "Menu position:"
+msgstr "Posición del menú:"
+
+#: contents/ui/ConfigMenu.qml
+msgid "Follow panel"
+msgstr "Seguir el panel"
+
+#: contents/ui/ConfigMenu.qml
+msgid "Bottom center"
+msgstr "Abajo centrado"
