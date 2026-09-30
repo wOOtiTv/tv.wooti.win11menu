@@ -406,38 +406,23 @@ PlasmoidItem {
 
         readonly property var appletInterface: Plasmoid
 
-        function removePlasmaPopupFrame() {
-            var popupWindow = launcher.Window.window
-
-            if (!popupWindow) {
-                return
-            }
-
-            // Window.window is Plasma's AppletPopup here. QML/C++ properties
-            // are not reliably reported by JavaScript hasOwnProperty(), so
-            // assign the native popup background hint directly.
-            try {
-                popupWindow.backgroundHints = PlasmaCore.Types.NoBackground
-            } catch (error) {
-                console.warn("🦊 Could not disable Plasma popup background:", error)
-            }
-
-            try {
-                popupWindow.color = "transparent"
-            } catch (error) {
-                // Not all window implementations expose a writable color.
-            }
-        }
-
-        Component.onCompleted: {
-            Qt.callLater(removePlasmaPopupFrame)
-        }
-
-        onVisibleChanged: {
-            if (visible) {
-                Qt.callLater(removePlasmaPopupFrame)
-            }
-        }
+        readonly property var popupWindow: launcher.Window.window
+        readonly property real popupLeftPadding:
+            popupWindow && popupWindow.leftPadding !== undefined
+                ? Number(popupWindow.leftPadding)
+                : 0
+        readonly property real popupRightPadding:
+            popupWindow && popupWindow.rightPadding !== undefined
+                ? Number(popupWindow.rightPadding)
+                : 0
+        readonly property real popupTopPadding:
+            popupWindow && popupWindow.topPadding !== undefined
+                ? Number(popupWindow.topPadding)
+                : 0
+        readonly property real popupBottomPadding:
+            popupWindow && popupWindow.bottomPadding !== undefined
+                ? Number(popupWindow.bottomPadding)
+                : 0
 
         readonly property bool bottomCenterPosition:
             String(plasmoid.configuration.menuPosition || "followPanel")
@@ -483,10 +468,7 @@ PlasmoidItem {
 
             function onExpandedChanged() {
                 if (plasmoid.expanded) {
-                    Qt.callLater(function() {
-                        launcher.removePlasmaPopupFrame()
-                        launcher.schedulePopupPosition()
-                    })
+                    launcher.schedulePopupPosition()
                 }
             }
         }
@@ -774,7 +756,60 @@ PlasmoidItem {
 
         height: popupHeight
         width: popupWidth
-        clip: true
+        clip: false
+
+        // Plasma 6 keeps theme padding around a normal AppletPopup. Paint our
+        // own surface into that padding so the launcher reads as one window
+        // instead of a framed window inside another framed window.
+        Rectangle {
+            id: popupSurfaceCover
+
+            x: -launcher.popupLeftPadding
+            y: -launcher.popupTopPadding
+            width: launcher.width
+                + launcher.popupLeftPadding
+                + launcher.popupRightPadding
+            height: launcher.height
+                + launcher.popupTopPadding
+                + launcher.popupBottomPadding
+
+            radius: 18
+            color: "#18191f"
+            clip: true
+            z: -2
+
+            Rectangle {
+                anchors.fill: parent
+                radius: parent.radius
+                color: "#20232b"
+                opacity: 0.92
+            }
+        }
+
+        // Continue the darker footer through Plasma's left/right/bottom
+        // padding as well. The actual footer stays at its normal coordinates.
+        Rectangle {
+            id: popupFooterCover
+
+            x: -launcher.popupLeftPadding
+            y: launcher.height - 78
+            width: launcher.width
+                + launcher.popupLeftPadding
+                + launcher.popupRightPadding
+            height: 78 + launcher.popupBottomPadding
+
+            radius: 18
+            color: "#15171d"
+            z: -1
+
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                height: parent.radius
+                color: parent.color
+            }
+        }
 
         Rectangle {
             id: launcherBackground
