@@ -38,17 +38,6 @@ Rectangle {
     radius: 18
     color: "#15171d"
 
-    // Keep the footer visually connected to the launcher body: only the
-    // bottom corners should remain rounded. Rectangle.radius affects all
-    // four corners, so cover the rounded top edge with the same footer color.
-    Rectangle {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        height: footer.radius
-        color: footer.color
-    }
-
     KCoreAddons.KUser {
         id: currentUser
     }
