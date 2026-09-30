@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Window
 import QtCore
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
@@ -404,6 +405,78 @@ PlasmoidItem {
         // ─────────────────────────────────────────
 
         readonly property var appletInterface: Plasmoid
+        readonly property bool bottomCenterPosition:
+            String(plasmoid.configuration.menuPosition || "followPanel")
+                === "bottomCenter"
+
+        function schedulePopupPosition() {
+            if (bottomCenterPosition && plasmoid.expanded) {
+                popupPositionTimer.restart()
+            }
+        }
+
+        function applyPopupPosition() {
+            if (!bottomCenterPosition || !plasmoid.expanded) {
+                return
+            }
+
+            var popupWindow = launcher.Window.window
+
+            if (!popupWindow || !popupWindow.visible || !popupWindow.screen) {
+                return
+            }
+
+            var screen = popupWindow.screen.availableGeometry
+            var offset = Kirigami.Units.smallSpacing
+
+            popupWindow.x = Math.round(
+                screen.x + (screen.width - popupWindow.width) / 2
+            )
+            popupWindow.y = Math.round(
+                screen.y + screen.height - popupWindow.height - offset
+            )
+        }
+
+        Timer {
+            id: popupPositionTimer
+            interval: 1
+            repeat: false
+            onTriggered: launcher.applyPopupPosition()
+        }
+
+        Connections {
+            target: root
+
+            function onExpandedChanged() {
+                if (plasmoid.expanded) {
+                    launcher.schedulePopupPosition()
+                }
+            }
+        }
+
+        Connections {
+            target: launcher.Window.window
+            enabled: launcher.bottomCenterPosition
+
+            function onVisibleChanged() {
+                if (launcher.Window.window
+                        && launcher.Window.window.visible) {
+                    launcher.schedulePopupPosition()
+                }
+            }
+
+            function onWidthChanged() {
+                launcher.schedulePopupPosition()
+            }
+
+            function onHeightChanged() {
+                launcher.schedulePopupPosition()
+            }
+
+            function onScreenChanged() {
+                launcher.schedulePopupPosition()
+            }
+        }
 
         // 8 Spalten wie bei unserem aktuellen Layout.
         // Die Zellbreite folgt der tatsächlich verfügbaren Popup-Breite.
